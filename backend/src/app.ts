@@ -10,6 +10,7 @@ import { equipmentRouter } from "./routes/equipment.js";
 import { artisanRouter } from "./routes/artisans.js";
 import { feedRouter } from "./routes/feed.js";
 import { invitationRouter } from "./routes/invitations.js";
+import { opengraphRouter } from "./routes/opengraph.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -31,6 +32,7 @@ app.use("/api/equipment", equipmentRouter);
 app.use("/api/artisans", artisanRouter);
 app.use("/api/communities", feedRouter);
 app.use("/api", invitationRouter);
+app.use("/api/opengraph", opengraphRouter);
 
 // Health check
 app.get("/api/health", (_req, res) => {

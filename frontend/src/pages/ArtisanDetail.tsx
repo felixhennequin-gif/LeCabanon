@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { api } from "../lib/api";
 import { useAuth } from "../contexts/AuthContext";
 import { StarRating } from "../components/StarRating";
+import { LinkPreview } from "../components/LinkPreview";
 import { ArrowLeft, Phone, Mail, MapPin, Trash2 } from "lucide-react";
 
 interface Review {
@@ -23,6 +24,7 @@ interface ArtisanData {
   zone?: string;
   phone?: string;
   email?: string;
+  website?: string;
   createdById: string;
   communityId: string;
   avgRating: number | null;
@@ -96,6 +98,12 @@ export function ArtisanDetail() {
             </a>
           )}
         </div>
+
+        {artisan.website && (
+          <div className="mt-4">
+            <LinkPreview url={artisan.website} />
+          </div>
+        )}
 
         <p className="text-xs text-gray-400 mt-4">
           Ajouté par{" "}

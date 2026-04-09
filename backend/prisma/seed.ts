@@ -166,8 +166,8 @@ async function main() {
 
   // ─── 5. Artisans (Avenue Guillon) ───────────────────────────
   const artisansGuillonData = [
-    { createdById: jp.id, communityId: guillon.id, name: "Michel Dupont", company: "Dupont Plomberie", category: "Plomberie", zone: "Maisons-Laffitte et environs", phone: "06 12 34 56 78", email: "contact@dupont-plomberie.fr" },
-    { createdById: marie.id, communityId: guillon.id, name: "Karim Benali", company: "KB Électricité", category: "Électricité", zone: "Yvelines Nord", phone: "06 23 45 67 89", email: "karim@kb-elec.fr" },
+    { createdById: jp.id, communityId: guillon.id, name: "Michel Dupont", company: "Dupont Plomberie", category: "Plomberie", zone: "Maisons-Laffitte et environs", phone: "06 12 34 56 78", email: "contact@dupont-plomberie.fr", website: "https://www.dupont-plomberie.fr" },
+    { createdById: marie.id, communityId: guillon.id, name: "Karim Benali", company: "KB Électricité", category: "Électricité", zone: "Yvelines Nord", phone: "06 23 45 67 89", email: "karim@kb-elec.fr", website: "https://www.kb-elec.fr" },
     { createdById: patrick.id, communityId: guillon.id, name: "Laurent Moreau", company: "Moreau & Fils", category: "Maçonnerie", zone: "Sartrouville - Maisons-Laffitte", phone: "06 34 56 78 90", email: "moreau.fils@orange.fr" },
     { createdById: sophie.id, communityId: guillon.id, name: "Émilie Blanc", company: "Blanc Peinture Déco", category: "Peinture", zone: "Maisons-Laffitte", phone: "06 45 67 89 01", email: "emilie.blanc.peinture@gmail.com" },
     { createdById: alain.id, communityId: guillon.id, name: "Pierre Lefèvre", company: "Lefèvre Menuiserie", category: "Menuiserie", zone: "Yvelines", phone: "06 56 78 90 12", email: "contact@lefevre-menuiserie.fr" },

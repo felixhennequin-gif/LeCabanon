@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useParams, Link } from "react-router-dom";
 import { api } from "../lib/api";
 import { StarRating } from "../components/StarRating";
-import { Plus, ArrowLeft, HardHat, Phone, MapPin } from "lucide-react";
+import { Plus, ArrowLeft, HardHat, Phone, MapPin, Globe } from "lucide-react";
 
 const ARTISAN_CATEGORIES = [
   "Plomberie", "Électricité", "Maçonnerie", "Peinture", "Menuiserie",
@@ -17,6 +17,7 @@ interface ArtisanItem {
   zone?: string;
   phone?: string;
   email?: string;
+  website?: string;
   createdById: string;
   avgRating: number | null;
   reviewCount: number;
@@ -97,7 +98,10 @@ export function ArtisanList() {
             >
               <div className="flex items-start justify-between">
                 <div>
-                  <h3 className="font-semibold text-gray-900">{a.name}</h3>
+                  <h3 className="font-semibold text-gray-900">
+                    {a.name}
+                    {a.website && <Globe className="inline w-3.5 h-3.5 text-gray-400 ml-1.5 -mt-0.5" />}
+                  </h3>
                   {a.company && <p className="text-sm text-gray-500">{a.company}</p>}
                 </div>
                 <span className="text-xs px-2 py-0.5 bg-primary-50 text-primary-700 rounded-full">{a.category}</span>
@@ -125,7 +129,7 @@ export function ArtisanList() {
 }
 
 function ArtisanForm({ communityId, onClose, onCreated }: { communityId: string; onClose: () => void; onCreated: () => void }) {
-  const [form, setForm] = useState({ name: "", company: "", category: ARTISAN_CATEGORIES[0], zone: "", phone: "", email: "" });
+  const [form, setForm] = useState({ name: "", company: "", category: ARTISAN_CATEGORIES[0], zone: "", phone: "", email: "", website: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -186,6 +190,10 @@ function ArtisanForm({ communityId, onClose, onCreated }: { communityId: string;
             <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
             <input value={form.email} onChange={(e) => update("email", e.target.value)} type="email" className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-primary-500" />
           </div>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Site web (optionnel)</label>
+          <input value={form.website} onChange={(e) => update("website", e.target.value)} type="url" className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-primary-500" placeholder="https://www.artisan-exemple.fr" />
         </div>
         <div className="flex gap-2 justify-end">
           <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-gray-600 bg-white border border-gray-300 rounded-lg cursor-pointer">Annuler</button>
