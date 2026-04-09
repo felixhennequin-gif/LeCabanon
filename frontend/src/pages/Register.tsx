@@ -1,11 +1,13 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { Warehouse } from "lucide-react";
 
 export function Register() {
   const { register } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const redirectTo = searchParams.get("redirect");
   const [form, setForm] = useState({ email: "", password: "", firstName: "", lastName: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -20,7 +22,7 @@ export function Register() {
     setLoading(true);
     try {
       await register(form);
-      navigate("/communities");
+      navigate(redirectTo && redirectTo.startsWith("/") ? redirectTo : "/communities");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erreur d'inscription");
     } finally {
@@ -99,7 +101,7 @@ export function Register() {
 
         <p className="text-center mt-4 text-sm text-gray-500">
           Déjà un compte ?{" "}
-          <Link to="/login" className="text-primary-600 hover:underline">
+          <Link to={redirectTo ? `/login?redirect=${encodeURIComponent(redirectTo)}` : "/login"} className="text-primary-600 hover:underline">
             Se connecter
           </Link>
         </p>
