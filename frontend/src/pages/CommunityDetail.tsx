@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { api } from "../lib/api";
 import { FeedList } from "../components/FeedList";
-import { Wrench, HardHat, Users, Settings } from "lucide-react";
+import { MobileDrawer } from "../components/MobileDrawer";
+import { Wrench, HardHat, Users, Settings, Menu } from "lucide-react";
 
 interface CommunityData {
   id: string;
@@ -16,6 +17,7 @@ export function CommunityDetail() {
   const { id } = useParams<{ id: string }>();
   const [community, setCommunity] = useState<CommunityData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -35,24 +37,39 @@ export function CommunityDetail() {
 
   return (
     <div>
-      <div className="flex items-start justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold">{community.name}</h1>
-          {community.description && <p className="text-gray-500 mt-1">{community.description}</p>}
+      {/* Header — compact on mobile with burger, full on desktop */}
+      <div className="flex items-start justify-between mb-4 sm:mb-6">
+        <div className="min-w-0">
+          <h1 className="text-xl sm:text-2xl font-bold truncate">{community.name}</h1>
+          {community.description && <p className="text-gray-500 mt-1 hidden sm:block">{community.description}</p>}
+          {/* Mobile stats row */}
+          <div className="flex items-center gap-3 mt-1.5 sm:hidden text-xs text-gray-400">
+            <span>{community._count.equipment} matériel</span>
+            <span>{community._count.artisans} artisans</span>
+            <span>{community._count.members} membres</span>
+          </div>
         </div>
-        {isAdmin && (
-          <Link
-            to={`/communities/${id}/admin`}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 no-underline bg-white"
+        <div className="flex items-center gap-2">
+          {isAdmin && (
+            <Link
+              to={`/communities/${id}/admin`}
+              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 no-underline bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+            >
+              <Settings className="w-4 h-4" />
+              Admin
+            </Link>
+          )}
+          <button
+            onClick={() => setDrawerOpen(true)}
+            className="sm:hidden p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 bg-transparent border-none cursor-pointer"
           >
-            <Settings className="w-4 h-4" />
-            Admin
-          </Link>
-        )}
+            <Menu className="w-5 h-5" />
+          </button>
+        </div>
       </div>
 
-      {/* Navigation cards */}
-      <div className="grid gap-4 sm:grid-cols-3 mb-8">
+      {/* Navigation cards — hidden on mobile */}
+      <div className="hidden sm:grid gap-4 sm:grid-cols-3 mb-8">
         <Link
           to={`/communities/${id}/equipment`}
           className="bg-white p-6 rounded-xl border border-gray-200 hover:border-primary-300 hover:shadow-sm transition-all no-underline text-center"
@@ -86,6 +103,15 @@ export function CommunityDetail() {
 
       {/* Feed */}
       <FeedList communityId={id!} />
+
+      {/* Mobile drawer */}
+      <MobileDrawer
+        isOpen={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        communityId={id}
+        communityCounts={community._count}
+        isAdmin={isAdmin}
+      />
     </div>
   );
 }
