@@ -5,6 +5,7 @@ import {
   createArtisan,
   listArtisans,
   getArtisan,
+  getArtisanPublic,
   updateArtisan,
   deleteArtisan,
   createReview,
@@ -13,6 +14,10 @@ import {
 
 export const artisanRouter = Router();
 
+// Public routes (no auth)
+artisanRouter.get("/:id/public", getArtisanPublic);
+
+// Protected routes
 artisanRouter.use(authenticate);
 
 // Community-scoped routes
