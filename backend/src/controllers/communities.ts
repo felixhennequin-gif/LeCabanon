@@ -38,7 +38,7 @@ export async function createCommunity(req: Request, res: Response, next: NextFun
     res.status(201).json(community);
   } catch (err) {
     if (err instanceof z.ZodError) {
-      res.status(400).json({ error: err.errors[0].message });
+      res.status(400).json({ error: err.issues[0].message });
       return;
     }
     next(err);
@@ -67,7 +67,7 @@ export async function joinCommunity(req: Request, res: Response, next: NextFunct
     res.json(community);
   } catch (err) {
     if (err instanceof z.ZodError) {
-      res.status(400).json({ error: err.errors[0].message });
+      res.status(400).json({ error: err.issues[0].message });
       return;
     }
     next(err);
@@ -99,7 +99,7 @@ export async function getMyCommunities(req: Request, res: Response, next: NextFu
 
 export async function getCommunity(req: Request, res: Response, next: NextFunction) {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
     // Verify membership
     const membership = await prisma.communityMember.findUnique({
       where: { userId_communityId: { userId: req.userId!, communityId: id } },
@@ -126,7 +126,7 @@ export async function getCommunity(req: Request, res: Response, next: NextFuncti
 
 export async function updateCommunity(req: Request, res: Response, next: NextFunction) {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const membership = await prisma.communityMember.findUnique({
       where: { userId_communityId: { userId: req.userId!, communityId: id } },
     });
@@ -148,7 +148,8 @@ export async function updateCommunity(req: Request, res: Response, next: NextFun
 
 export async function removeMember(req: Request, res: Response, next: NextFunction) {
   try {
-    const { id, userId } = req.params;
+    const id = req.params.id as string;
+    const userId = req.params.userId as string;
     const membership = await prisma.communityMember.findUnique({
       where: { userId_communityId: { userId: req.userId!, communityId: id } },
     });
