@@ -23,3 +23,7 @@ body {
   font-family: "Inter", system-ui, -apple-system, sans-serif;
   margin: 0;
 }
+
+.dark body {
+  @apply bg-gray-950 text-gray-100;
+}
