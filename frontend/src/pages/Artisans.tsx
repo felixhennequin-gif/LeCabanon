@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useParams, Link } from "react-router-dom";
 import { api } from "../lib/api";
 import { StarRating } from "../components/StarRating";
-import { Plus, ArrowLeft, HardHat, Phone, MapPin, Globe } from "lucide-react";
+import { Plus, ArrowLeft, HardHat, Phone, MapPin, Globe, BadgeCheck } from "lucide-react";
 
 const ARTISAN_CATEGORIES = [
   "Plomberie", "Électricité", "Maçonnerie", "Peinture", "Menuiserie",
@@ -19,6 +19,7 @@ interface ArtisanItem {
   email?: string;
   website?: string;
   createdById: string;
+  claimed: boolean;
   avgRating: number | null;
   reviewCount: number;
 }
@@ -100,6 +101,7 @@ export function ArtisanList() {
                 <div>
                   <h3 className="font-semibold text-gray-900">
                     {a.name}
+                    {a.claimed && <BadgeCheck className="inline w-3.5 h-3.5 text-green-500 ml-1 -mt-0.5" />}
                     {a.website && <Globe className="inline w-3.5 h-3.5 text-gray-400 ml-1.5 -mt-0.5" />}
                   </h3>
                   {a.company && <p className="text-sm text-gray-500">{a.company}</p>}
