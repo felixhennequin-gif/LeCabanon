@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { api } from "../lib/api";
 import { useAuth } from "../contexts/AuthContext";
-import { Plus, ArrowLeft, Trash2, Package } from "lucide-react";
+import { Plus, ArrowLeft, Trash2, Package, MessageCircle } from "lucide-react";
 
 const EQUIPMENT_CATEGORIES = [
   "Jardinage", "Bricolage", "Nettoyage", "Électroportatif",
@@ -23,6 +23,7 @@ interface EquipmentItem {
 export function EquipmentList() {
   const { communityId } = useParams<{ communityId: string }>();
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [equipment, setEquipment] = useState<EquipmentItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("");
@@ -118,12 +119,29 @@ export function EquipmentList() {
                   )}
                 </div>
                 {e.description && <p className="text-sm text-gray-500 mt-2 line-clamp-2">{e.description}</p>}
-                <Link to={`/users/${e.owner.id}`} className="flex items-center gap-2 mt-3 pt-3 border-t border-gray-100 no-underline hover:underline">
-                  <div className="w-6 h-6 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center text-xs font-medium">
-                    {e.owner.firstName[0]}{e.owner.lastName[0]}
-                  </div>
-                  <span className="text-xs text-gray-500">{e.owner.firstName} {e.owner.lastName}</span>
-                </Link>
+                <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
+                  <Link to={`/users/${e.owner.id}`} className="flex items-center gap-2 no-underline hover:underline">
+                    <div className="w-6 h-6 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center text-xs font-medium">
+                      {e.owner.firstName[0]}{e.owner.lastName[0]}
+                    </div>
+                    <span className="text-xs text-gray-500">{e.owner.firstName} {e.owner.lastName}</span>
+                  </Link>
+                  {e.ownerId !== user?.id && (
+                    <button
+                      onClick={async () => {
+                        const conv = await api<{ id: string }>("/conversations", {
+                          method: "POST",
+                          body: JSON.stringify({ recipientId: e.ownerId, communityId }),
+                        });
+                        navigate(`/messages/${conv.id}`);
+                      }}
+                      className="text-gray-400 hover:text-primary-600 bg-transparent border-none cursor-pointer p-1"
+                      title="Contacter"
+                    >
+                      <MessageCircle className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           ))}
