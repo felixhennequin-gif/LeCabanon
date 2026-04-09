@@ -7,6 +7,55 @@ LeCabanon est une plateforme de partage entre voisins : annuaire de matériel à
 **Repo** : `felixhennequin-gif/LeCabanon`
 **Structure** : monorepo avec `/backend` et `/frontend` à la racine
 
+## Branching strategy
+
+- **`main`** = production, jamais de push direct. Toutes les modifications passent par une PR.
+- **`dev`** = branche d'intégration. Les PRs vers `main` partent de `dev`.
+- **`feature/<nom>`** = créées depuis `dev`, mergées dans `dev` via PR.
+- **`hotfix/<nom>`** = créées depuis `main`, mergées dans `main` ET `dev`.
+
+### Workflow
+
+1. Créer une branche `feature/<nom>` depuis `dev`
+2. Développer, commiter, pusher
+3. Ouvrir une PR vers `dev`
+4. La CI doit passer (backend + frontend)
+5. Merger dans `dev`
+6. Quand `dev` est stable, ouvrir une PR `dev` → `main`
+7. Merger = release
+
+## CI / GitHub Actions
+
+Le workflow `.github/workflows/ci.yml` est déclenché sur `push` et `pull_request` vers `main` et `dev`. Deux jobs tournent **en parallèle** :
+
+### Job `backend`
+- Service PostgreSQL 16 (user: test, password: test, db: lecabanon_test) avec health check
+- Install → `npx prisma generate` → `npx prisma migrate deploy` → `npx tsc --noEmit` → `npm run build`
+- Tests commentés pour plus tard (`npm test`)
+
+### Job `frontend`
+- Install → `npm run lint` (ESLint) → `npx tsc -b` (type-check) → `npm run build` (Vite)
+
+## Déploiement
+
+### Architecture prod
+- Le backend Express sert le frontend (build Vite dans `../frontend/dist`) en production via `express.static` + fallback SPA
+- pm2 gère le process Node.js via `ecosystem.config.cjs` à la racine
+- Port **3002** en production (pour ne pas conflicte avec cocktail-app sur 3000)
+
+### Scripts
+- `scripts/deploy.sh` — déploiement complet : git pull, npm ci, prisma migrate, build backend + frontend, pm2 restart
+- `scripts/setup-db.sh` — premier setup de la base PostgreSQL (create db + user)
+
+### Commandes pm2
+```bash
+pm2 start ecosystem.config.cjs   # Premier lancement
+pm2 restart lecabanon-api         # Redémarrer après deploy
+pm2 logs lecabanon-api            # Voir les logs
+pm2 save                          # Sauvegarder la liste de process
+pm2 startup                       # Configurer le démarrage auto au boot
+```
+
 ## Stack
 
 ### Backend (`/backend`)
@@ -205,6 +254,19 @@ npm run dev            # Vite → port 5173
 # Database
 npx prisma studio     # GUI de la DB
 npx prisma migrate dev --name <nom>  # Nouvelle migration
+
+# Deploy (serveur de prod)
+./scripts/setup-db.sh              # Premier setup DB uniquement
+./scripts/deploy.sh                # Déploiement complet
+pm2 logs lecabanon-api             # Voir les logs
+
+# Git workflow
+git checkout dev
+git checkout -b feature/<nom>
+# ... développer ...
+git push origin feature/<nom>
+# Ouvrir PR → dev
+# Quand dev stable : PR dev → main
 ```
 
 ## Notes pour Claude Code
@@ -217,3 +279,9 @@ npx prisma migrate dev --name <nom>  # Nouvelle migration
 - React Router v7 (pas v6) — les APIs peuvent différer
 - Le toggle de visibilité des avis (PUBLIC/PRIVATE) concerne l'avis, pas l'artisan
 - L'avis "privé" est visible uniquement par les membres de la communauté (pas uniquement l'auteur malgré ce que dit le label actuel côté front — à corriger)
+- Zod v4 utilise `.issues` (pas `.errors`) pour accéder aux erreurs de validation
+- Toujours brancher depuis `dev`, jamais directement depuis `main`
+- Les PRs vers `main` doivent passer la CI (jobs backend + frontend)
+- Ne jamais push directement sur `main`
+- En production, le frontend est servi par Express (pas de serveur Vite séparé). Le port est 3002.
+- Les logs pm2 sont dans `logs/` (gitignored)
