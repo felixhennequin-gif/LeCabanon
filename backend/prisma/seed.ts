@@ -13,6 +13,23 @@ const PASSWORD = await bcrypt.hash("Test1234!", 12);
 async function main() {
   console.log("🌱 Seeding LeCabanon database...\n");
 
+  // ─── Clean ALL data (order matters for FK constraints) ──────
+  console.log("🗑️  Nettoyage de la base...");
+  await prisma.reviewReply.deleteMany();
+  await prisma.message.deleteMany();
+  await prisma.conversation.deleteMany();
+  await prisma.activity.deleteMany();
+  await prisma.invitation.deleteMany();
+  await prisma.reviewMedia.deleteMany();
+  await prisma.review.deleteMany();
+  await prisma.artisanCommunity.deleteMany();
+  await prisma.artisan.deleteMany();
+  await prisma.equipment.deleteMany();
+  await prisma.communityMember.deleteMany();
+  await prisma.community.deleteMany();
+  await prisma.user.deleteMany();
+  console.log("✅ Base nettoyée\n");
+
   // ─── 1. Users ───────────────────────────────────────────────
   const usersData = [
     { email: "felix@lecabanon.fr", firstName: "Félix", lastName: "Hennequin" },
@@ -31,11 +48,7 @@ async function main() {
 
   const users: Record<string, { id: string }> = {};
   for (const u of usersData) {
-    const user = await prisma.user.upsert({
-      where: { email: u.email },
-      update: { firstName: u.firstName, lastName: u.lastName },
-      create: { ...u, password: PASSWORD },
-    });
+    const user = await prisma.user.create({ data: { ...u, password: PASSWORD } });
     users[u.email] = user;
   }
   console.log(`✅ ${usersData.length} utilisateurs`);
@@ -77,11 +90,7 @@ async function main() {
 
   const communities: Record<string, { id: string }> = {};
   for (const c of communitiesData) {
-    const community = await prisma.community.upsert({
-      where: { accessCode: c.accessCode },
-      update: { name: c.name, description: c.description },
-      create: c,
-    });
+    const community = await prisma.community.create({ data: c });
     communities[c.accessCode] = community;
   }
   console.log(`✅ ${communitiesData.length} communautés`);
@@ -108,28 +117,10 @@ async function main() {
     { userId: thomas.id, communityId: tilleuls.id, role: MemberRole.ADMIN },
   ];
 
-  let membersCount = 0;
   for (const m of membersData) {
-    await prisma.communityMember.upsert({
-      where: { userId_communityId: { userId: m.userId, communityId: m.communityId } },
-      update: { role: m.role },
-      create: m,
-    });
-    membersCount++;
+    await prisma.communityMember.create({ data: m });
   }
-  console.log(`✅ ${membersCount} membres`);
-
-  // ─── Clean existing data ──────────────────────────────────────
-  await prisma.reviewReply.deleteMany();
-  await prisma.message.deleteMany();
-  await prisma.conversation.deleteMany();
-  await prisma.activity.deleteMany();
-  await prisma.invitation.deleteMany();
-  await prisma.reviewMedia.deleteMany();
-  await prisma.review.deleteMany();
-  await prisma.artisanCommunity.deleteMany();
-  await prisma.artisan.deleteMany();
-  await prisma.equipment.deleteMany();
+  console.log(`✅ ${membersData.length} membres`);
 
   // ─── 4. Equipment (Avenue Guillon) ──────────────────────────
   const equipmentData = [

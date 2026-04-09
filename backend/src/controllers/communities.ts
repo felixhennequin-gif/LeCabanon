@@ -117,11 +117,18 @@ export async function getCommunity(req: Request, res: Response, next: NextFuncti
         members: {
           include: { user: { select: { id: true, firstName: true, lastName: true, email: true, photo: true } } },
         },
-        _count: { select: { members: true, equipment: true, artisans: true } },
+        _count: { select: { members: true, equipment: true, artisanCommunities: true } },
       },
     });
 
-    res.json({ ...community, role: membership.role });
+    res.json({
+      ...community,
+      role: membership.role,
+      _count: {
+        ...community!._count,
+        artisans: community!._count.artisanCommunities,
+      },
+    });
   } catch (err) {
     next(err);
   }
