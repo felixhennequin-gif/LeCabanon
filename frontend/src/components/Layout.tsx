@@ -1,10 +1,46 @@
+import { useState, useEffect } from "react";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import { Home, LogOut, User, Warehouse } from "lucide-react";
+import { api } from "../lib/api";
+import { Home, LogOut, MessageCircle, User, Warehouse } from "lucide-react";
+
+interface ConversationSummary {
+  id: string;
+  unreadCount: number;
+}
 
 export function Layout() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [unreadTotal, setUnreadTotal] = useState(0);
+
+  useEffect(() => {
+    if (!user) return;
+
+    function fetchUnread() {
+      api<ConversationSummary[]>("/conversations").then((convs) => {
+        setUnreadTotal(convs.reduce((sum, c) => sum + c.unreadCount, 0));
+      }).catch(() => {});
+    }
+
+    fetchUnread();
+
+    // Listen for real-time updates
+    let cleanup: (() => void) | undefined;
+    import("../lib/socket.js").then(({ connectSocket }) => {
+      const s = connectSocket();
+      const onNewMessage = () => fetchUnread();
+      const onMessageSent = () => fetchUnread();
+      s.on("new_message", onNewMessage);
+      s.on("message_sent", onMessageSent);
+      cleanup = () => {
+        s.off("new_message", onNewMessage);
+        s.off("message_sent", onMessageSent);
+      };
+    }).catch(() => {});
+
+    return () => cleanup?.();
+  }, [user]);
 
   function handleLogout() {
     logout();
@@ -25,6 +61,15 @@ export function Layout() {
               <Link to="/communities" className="text-gray-600 hover:text-primary-700 no-underline text-sm flex items-center gap-1">
                 <Home className="w-4 h-4" />
                 Communautés
+              </Link>
+              <Link to="/messages" className="text-gray-600 hover:text-primary-700 no-underline text-sm flex items-center gap-1 relative">
+                <MessageCircle className="w-4 h-4" />
+                Messages
+                {unreadTotal > 0 && (
+                  <span className="absolute -top-1.5 -right-2.5 bg-red-500 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                    {unreadTotal > 9 ? "9+" : unreadTotal}
+                  </span>
+                )}
               </Link>
               <Link to="/profile" className="text-gray-600 hover:text-primary-700 no-underline text-sm flex items-center gap-1">
                 <User className="w-4 h-4" />
