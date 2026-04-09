@@ -118,6 +118,7 @@ async function main() {
 
   // ─── Clean existing data ──────────────────────────────────────
   await prisma.activity.deleteMany();
+  await prisma.invitation.deleteMany();
   await prisma.reviewMedia.deleteMany();
   await prisma.review.deleteMany();
   await prisma.artisan.deleteMany();
@@ -293,6 +294,39 @@ async function main() {
   }
   console.log(`✅ ${activityData.length} activités`);
 
+  // ─── 8. Invitations ──────────────────────────────────────────
+  const invitationsData = [
+    {
+      communityId: guillon.id,
+      createdById: felix.id,
+      expiresAt: new Date(Date.now() + 7 * DAY),
+      maxUses: null,
+      uses: 0,
+      active: true,
+    },
+    {
+      communityId: guillon.id,
+      createdById: felix.id,
+      expiresAt: new Date(Date.now() - 2 * DAY),
+      maxUses: null,
+      uses: 3,
+      active: true,
+    },
+    {
+      communityId: bellevue.id,
+      createdById: sophie.id,
+      expiresAt: new Date(Date.now() + DAY),
+      maxUses: 5,
+      uses: 2,
+      active: true,
+    },
+  ];
+
+  for (const inv of invitationsData) {
+    await prisma.invitation.create({ data: inv });
+  }
+  console.log(`✅ ${invitationsData.length} invitations`);
+
   // ─── Summary ────────────────────────────────────────────────
   const counts = await Promise.all([
     prisma.user.count(),
@@ -302,6 +336,7 @@ async function main() {
     prisma.artisan.count(),
     prisma.review.count(),
     prisma.activity.count(),
+    prisma.invitation.count(),
   ]);
 
   console.log("\n📊 Résumé de la base :");
@@ -312,6 +347,7 @@ async function main() {
   console.log(`   Artisans     : ${counts[4]}`);
   console.log(`   Avis         : ${counts[5]}`);
   console.log(`   Activités    : ${counts[6]}`);
+  console.log(`   Invitations  : ${counts[7]}`);
   console.log("\n✨ Seed terminé !");
 }
 
