@@ -53,6 +53,34 @@ npm install
 npm run dev            # http://localhost:5173
 ```
 
+## Déploiement
+
+### Premier setup (serveur Debian)
+
+```bash
+# Créer la base de données PostgreSQL
+./scripts/setup-db.sh
+
+# Configurer le .env backend
+cp backend/.env.example backend/.env
+# Éditer backend/.env avec les vrais identifiants
+
+# Premier déploiement
+./scripts/deploy.sh
+
+# Configurer pm2 pour démarrer au boot
+pm2 save
+pm2 startup
+```
+
+### Déploiements suivants
+
+```bash
+./scripts/deploy.sh
+```
+
+L'application tourne sur le port **3002** (configurable dans `ecosystem.config.cjs`). Express sert le frontend en production.
+
 ## Contribuer
 
 1. Fork le repo
@@ -117,6 +145,34 @@ cd frontend
 npm install
 npm run dev            # http://localhost:5173
 ```
+
+## Deployment
+
+### First setup (Debian server)
+
+```bash
+# Create the PostgreSQL database
+./scripts/setup-db.sh
+
+# Configure the backend .env
+cp backend/.env.example backend/.env
+# Edit backend/.env with real credentials
+
+# First deploy
+./scripts/deploy.sh
+
+# Configure pm2 to start on boot
+pm2 save
+pm2 startup
+```
+
+### Subsequent deploys
+
+```bash
+./scripts/deploy.sh
+```
+
+The app runs on port **3002** (configurable in `ecosystem.config.cjs`). Express serves the frontend in production.
 
 ## Contributing
 

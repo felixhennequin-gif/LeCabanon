@@ -30,11 +30,31 @@ Le workflow `.github/workflows/ci.yml` est déclenché sur `push` et `pull_reque
 
 ### Job `backend`
 - Service PostgreSQL 16 (user: test, password: test, db: lecabanon_test) avec health check
-- Install → `npx prisma generate` → `npx prisma migrate deploy` → `npx tsc --noEmit`
+- Install → `npx prisma generate` → `npx prisma migrate deploy` → `npx tsc --noEmit` → `npm run build`
 - Tests commentés pour plus tard (`npm test`)
 
 ### Job `frontend`
 - Install → `npm run lint` (ESLint) → `npx tsc -b` (type-check) → `npm run build` (Vite)
+
+## Déploiement
+
+### Architecture prod
+- Le backend Express sert le frontend (build Vite dans `../frontend/dist`) en production via `express.static` + fallback SPA
+- pm2 gère le process Node.js via `ecosystem.config.cjs` à la racine
+- Port **3002** en production (pour ne pas conflicte avec cocktail-app sur 3000)
+
+### Scripts
+- `scripts/deploy.sh` — déploiement complet : git pull, npm ci, prisma migrate, build backend + frontend, pm2 restart
+- `scripts/setup-db.sh` — premier setup de la base PostgreSQL (create db + user)
+
+### Commandes pm2
+```bash
+pm2 start ecosystem.config.cjs   # Premier lancement
+pm2 restart lecabanon-api         # Redémarrer après deploy
+pm2 logs lecabanon-api            # Voir les logs
+pm2 save                          # Sauvegarder la liste de process
+pm2 startup                       # Configurer le démarrage auto au boot
+```
 
 ## Stack
 
@@ -248,6 +268,11 @@ npm run dev            # Vite → port 5173
 npx prisma studio     # GUI de la DB
 npx prisma migrate dev --name <nom>  # Nouvelle migration
 
+# Deploy (serveur de prod)
+./scripts/setup-db.sh              # Premier setup DB uniquement
+./scripts/deploy.sh                # Déploiement complet
+pm2 logs lecabanon-api             # Voir les logs
+
 # Git workflow
 git checkout dev
 git checkout -b feature/<nom>
@@ -271,3 +296,5 @@ git push origin feature/<nom>
 - Toujours brancher depuis `dev`, jamais directement depuis `main`
 - Les PRs vers `main` doivent passer la CI (jobs backend + frontend)
 - Ne jamais push directement sur `main`
+- En production, le frontend est servi par Express (pas de serveur Vite séparé). Le port est 3002.
+- Les logs pm2 sont dans `logs/` (gitignored)
