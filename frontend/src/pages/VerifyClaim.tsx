@@ -31,7 +31,7 @@ function VerifyClaimInner({ id, token }: { id: string; token: string }) {
   if (status === "error") {
     return (
       <div className="max-w-md mx-auto mt-12 text-center">
-        <div className="bg-white rounded-xl border border-gray-200 p-8">
+        <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-8">
           <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
           <h1 className="text-xl font-bold mb-2">Vérification échouée</h1>
           <p className="text-sm text-gray-500 mb-6">{error}</p>
@@ -73,7 +73,7 @@ export function VerifyClaim() {
   if (!id || !token) {
     return (
       <div className="max-w-md mx-auto mt-12 text-center">
-        <div className="bg-white rounded-xl border border-gray-200 p-8">
+        <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-8">
           <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
           <h1 className="text-xl font-bold mb-2">Lien invalide</h1>
           <p className="text-sm text-gray-500">Ce lien de vérification est invalide.</p>

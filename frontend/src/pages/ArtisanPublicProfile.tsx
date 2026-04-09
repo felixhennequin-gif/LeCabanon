@@ -58,7 +58,7 @@ export function ArtisanPublicProfile() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex justify-center py-12">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex justify-center py-12">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" />
       </div>
     );
@@ -66,7 +66,7 @@ export function ArtisanPublicProfile() {
 
   if (error || !artisan) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center">
         <p className="text-gray-500">{error || "Artisan introuvable"}</p>
       </div>
     );
@@ -91,10 +91,10 @@ export function ArtisanPublicProfile() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       <div className="max-w-3xl mx-auto px-4 py-8">
         {/* Header */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+        <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
           <div className="flex items-start justify-between">
             <div>
               <div className="flex items-center gap-2">
@@ -195,7 +195,7 @@ export function ArtisanPublicProfile() {
         ) : (
           <div className="space-y-4">
             {artisan.reviews.map((r) => (
-              <div key={r.id} className="bg-white p-4 rounded-xl border border-gray-200">
+              <div key={r.id} className="bg-white dark:bg-gray-900 p-4 rounded-xl border border-gray-200 dark:border-gray-700">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center text-sm font-medium">
@@ -238,7 +238,7 @@ export function ArtisanPublicProfile() {
         )}
 
         {/* CTA */}
-        <div className="mt-8 text-center bg-white rounded-xl border border-gray-200 p-6">
+        <div className="mt-8 text-center bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
           <p className="text-sm text-gray-600 mb-3">
             Rejoignez une communauté pour contacter {artisan.name} et voir tous les avis
           </p>
