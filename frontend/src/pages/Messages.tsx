@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams, Link } from "react-router-dom";
 import { api } from "../lib/api";
 import { useAuth } from "../contexts/AuthContext";
-import { ArrowLeft, Send, Check, CheckCheck } from "lucide-react";
+import { ArrowLeft, Send, Check, CheckCheck, Package } from "lucide-react";
 
 interface ConversationSummary {
   id: string;
@@ -26,7 +26,9 @@ interface MessageData {
 export function Messages() {
   const { conversationId } = useParams<{ conversationId?: string }>();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { user } = useAuth();
+  const equipmentContext = searchParams.get("context") === "equipment" ? searchParams.get("equipmentName") : null;
   const [conversations, setConversations] = useState<ConversationSummary[]>([]);
   const [messages, setMessages] = useState<MessageData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -347,6 +349,16 @@ export function Messages() {
               )}
               <div ref={messagesEndRef} />
             </div>
+
+            {/* Equipment context banner */}
+            {equipmentContext && (
+              <div className="px-4 py-2 bg-primary-50 dark:bg-primary-900/20 border-t border-primary-200 dark:border-primary-800 flex items-center gap-2">
+                <Package className="w-4 h-4 text-primary-600 dark:text-primary-400 shrink-0" />
+                <p className="text-xs text-primary-700 dark:text-primary-300">
+                  À propos de <strong>{equipmentContext}</strong>
+                </p>
+              </div>
+            )}
 
             {/* Input */}
             <div className="px-4 py-3 border-t border-gray-200 dark:border-gray-700">
