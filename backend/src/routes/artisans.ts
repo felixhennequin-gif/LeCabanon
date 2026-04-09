@@ -12,6 +12,7 @@ import {
   listReviews,
 } from "../controllers/artisans.js";
 import { claimArtisan, verifyClaim, updateArtisanProfile } from "../controllers/claim.js";
+import { createReply, updateReply } from "../controllers/reviewReplies.js";
 
 export const artisanRouter = Router();
 
@@ -38,3 +39,7 @@ artisanRouter.patch("/:id/profile", updateArtisanProfile);
 // Reviews
 artisanRouter.post("/:id/reviews", createReview);
 artisanRouter.get("/:id/reviews", listReviews);
+
+// Review replies
+artisanRouter.post("/reviews/:reviewId/reply", createReply);
+artisanRouter.patch("/reviews/:reviewId/reply", updateReply);
