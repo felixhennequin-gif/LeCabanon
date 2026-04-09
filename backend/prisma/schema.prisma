@@ -24,6 +24,7 @@ model User {
   createdArtisans    Artisan[]
   reviews            Review[]
   activities         Activity[]
+  invitations        Invitation[]
 }
 
 model Community {
@@ -37,10 +38,11 @@ model Community {
   createdById String
   createdBy   User   @relation("CreatedCommunities", fields: [createdById], references: [id])
 
-  members    CommunityMember[]
-  equipment  Equipment[]
-  artisans   Artisan[]
-  activities Activity[]
+  members     CommunityMember[]
+  equipment   Equipment[]
+  artisans    Artisan[]
+  activities  Activity[]
+  invitations Invitation[]
 }
 
 model CommunityMember {
@@ -150,6 +152,22 @@ model Activity {
   createdAt   DateTime     @default(now())
 
   @@index([communityId, createdAt(sort: Desc)])
+}
+
+model Invitation {
+  id          String   @id @default(cuid())
+  token       String   @unique @default(cuid())
+  communityId String
+  community   Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  createdById String
+  createdBy   User     @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  expiresAt   DateTime
+  maxUses     Int?
+  uses        Int      @default(0)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  @@index([token])
 }
 
 enum ActivityType {
