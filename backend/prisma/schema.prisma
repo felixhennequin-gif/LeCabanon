@@ -18,11 +18,12 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  memberships      CommunityMember[]
+  memberships        CommunityMember[]
   createdCommunities Community[]    @relation("CreatedCommunities")
-  equipment        Equipment[]
-  createdArtisans  Artisan[]
-  reviews          Review[]
+  equipment          Equipment[]
+  createdArtisans    Artisan[]
+  reviews            Review[]
+  activities         Activity[]
 }
 
 model Community {
@@ -36,9 +37,10 @@ model Community {
   createdById String
   createdBy   User   @relation("CreatedCommunities", fields: [createdById], references: [id])
 
-  members   CommunityMember[]
-  equipment Equipment[]
-  artisans  Artisan[]
+  members    CommunityMember[]
+  equipment  Equipment[]
+  artisans   Artisan[]
+  activities Activity[]
 }
 
 model CommunityMember {
@@ -71,6 +73,8 @@ model Equipment {
   owner       User      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   communityId String
   community   Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+
+  activities Activity[]
 }
 
 model Artisan {
@@ -89,7 +93,8 @@ model Artisan {
   communityId String
   community   Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
 
-  reviews Review[]
+  reviews    Review[]
+  activities Activity[]
 }
 
 model Review {
@@ -105,7 +110,8 @@ model Review {
   authorId  String
   author    User    @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
-  media ReviewMedia[]
+  media      ReviewMedia[]
+  activities Activity[]
 }
 
 enum Visibility {
@@ -124,4 +130,33 @@ model ReviewMedia {
 enum MediaType {
   IMAGE
   VIDEO
+}
+
+model Activity {
+  id          String       @id @default(cuid())
+  type        ActivityType
+  communityId String
+  community   Community    @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  actorId     String
+  actor       User         @relation(fields: [actorId], references: [id], onDelete: Cascade)
+
+  equipmentId String?
+  equipment   Equipment?   @relation(fields: [equipmentId], references: [id], onDelete: SetNull)
+  artisanId   String?
+  artisan     Artisan?     @relation(fields: [artisanId], references: [id], onDelete: SetNull)
+  reviewId    String?
+  review      Review?      @relation(fields: [reviewId], references: [id], onDelete: SetNull)
+
+  createdAt   DateTime     @default(now())
+
+  @@index([communityId, createdAt(sort: Desc)])
+}
+
+enum ActivityType {
+  MEMBER_JOINED
+  EQUIPMENT_ADDED
+  EQUIPMENT_REMOVED
+  ARTISAN_ADDED
+  ARTISAN_REMOVED
+  REVIEW_ADDED
 }
