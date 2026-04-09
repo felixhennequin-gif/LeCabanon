@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { api } from "../lib/api";
 import { useAuth } from "../contexts/AuthContext";
 import { StarRating } from "../components/StarRating";
@@ -98,7 +98,10 @@ export function ArtisanDetail() {
         </div>
 
         <p className="text-xs text-gray-400 mt-4">
-          Ajouté par {artisan.createdBy.firstName} {artisan.createdBy.lastName}
+          Ajouté par{" "}
+          <Link to={`/users/${artisan.createdBy.id}`} className="text-gray-500 no-underline hover:underline">
+            {artisan.createdBy.firstName} {artisan.createdBy.lastName}
+          </Link>
         </p>
       </div>
 
@@ -121,11 +124,11 @@ export function ArtisanDetail() {
             <div key={r.id} className="bg-white p-4 rounded-xl border border-gray-200">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center text-sm font-medium">
+                  <Link to={`/users/${r.author.id}`} className="w-8 h-8 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center text-sm font-medium no-underline">
                     {r.author.firstName[0]}{r.author.lastName[0]}
-                  </div>
+                  </Link>
                   <div>
-                    <p className="text-sm font-medium text-gray-900">{r.author.firstName} {r.author.lastName}</p>
+                    <Link to={`/users/${r.author.id}`} className="text-sm font-medium text-gray-900 no-underline hover:underline">{r.author.firstName} {r.author.lastName}</Link>
                     <StarRating rating={r.rating} size={14} />
                   </div>
                 </div>

@@ -118,12 +118,12 @@ export function EquipmentList() {
                   )}
                 </div>
                 {e.description && <p className="text-sm text-gray-500 mt-2 line-clamp-2">{e.description}</p>}
-                <div className="flex items-center gap-2 mt-3 pt-3 border-t border-gray-100">
+                <Link to={`/users/${e.owner.id}`} className="flex items-center gap-2 mt-3 pt-3 border-t border-gray-100 no-underline hover:underline">
                   <div className="w-6 h-6 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center text-xs font-medium">
                     {e.owner.firstName[0]}{e.owner.lastName[0]}
                   </div>
                   <span className="text-xs text-gray-500">{e.owner.firstName} {e.owner.lastName}</span>
-                </div>
+                </Link>
               </div>
             </div>
           ))}
