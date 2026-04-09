@@ -1,7 +1,7 @@
 import "dotenv/config";
 import pg from "pg";
 import { PrismaPg } from "@prisma/adapter-pg";
-import { PrismaClient, MemberRole, Visibility, ActivityType } from "../generated/prisma/client.js";
+import { PrismaClient, MemberRole, Visibility, ActivityType, MessageStatus } from "../generated/prisma/client.js";
 import bcrypt from "bcryptjs";
 
 const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
@@ -117,6 +117,8 @@ async function main() {
   console.log(`✅ ${membersCount} membres`);
 
   // ─── Clean existing data ──────────────────────────────────────
+  await prisma.message.deleteMany();
+  await prisma.conversation.deleteMany();
   await prisma.activity.deleteMany();
   await prisma.invitation.deleteMany();
   await prisma.reviewMedia.deleteMany();
@@ -327,6 +329,64 @@ async function main() {
   }
   console.log(`✅ ${invitationsData.length} invitations`);
 
+  // ─── 9. Conversations & Messages ─────────────────────────────
+  function normalizeParticipants(a: string, b: string): [string, string] {
+    return a < b ? [a, b] : [b, a];
+  }
+
+  // Conversation 1: Félix ↔ JP (Avenue Guillon) — about equipment
+  const [p1a, p2a] = normalizeParticipants(felix.id, jp.id);
+  const conv1 = await prisma.conversation.create({
+    data: { participant1Id: p1a, participant2Id: p2a, communityId: guillon.id },
+  });
+
+  const conv1Messages = [
+    { conversationId: conv1.id, senderId: felix.id, content: "Salut Jean-Pierre ! Ta tondeuse est dispo ce week-end ?", status: MessageStatus.READ, createdAt: new Date(now - 3 * DAY) },
+    { conversationId: conv1.id, senderId: jp.id, content: "Salut Félix ! Oui pas de souci, tu peux passer la prendre samedi matin", status: MessageStatus.READ, createdAt: new Date(now - 3 * DAY + 1800000) },
+    { conversationId: conv1.id, senderId: felix.id, content: "Super, je passe vers 10h. Merci !", status: MessageStatus.READ, createdAt: new Date(now - 3 * DAY + 3600000) },
+    { conversationId: conv1.id, senderId: jp.id, content: "Parfait. Pense à mettre de l'essence, le réservoir est presque vide", status: MessageStatus.READ, createdAt: new Date(now - 3 * DAY + 5400000) },
+    { conversationId: conv1.id, senderId: felix.id, content: "Noté, je ferai le plein 👍", status: MessageStatus.READ, createdAt: new Date(now - 2 * DAY) },
+  ];
+
+  for (const m of conv1Messages) {
+    await prisma.message.create({ data: m });
+  }
+
+  // Conversation 2: Félix ↔ Marie (Avenue Guillon) — about an artisan
+  const [p1b, p2b] = normalizeParticipants(felix.id, marie.id);
+  const conv2 = await prisma.conversation.create({
+    data: { participant1Id: p1b, participant2Id: p2b, communityId: guillon.id },
+  });
+
+  const conv2Messages = [
+    { conversationId: conv2.id, senderId: marie.id, content: "Hello Félix, tu aurais le numéro de l'électricien que tu recommandais ?", status: MessageStatus.READ, createdAt: new Date(now - DAY) },
+    { conversationId: conv2.id, senderId: felix.id, content: "Karim Benali ! Tu peux voir sa fiche dans l'annuaire artisans de la communauté", status: MessageStatus.READ, createdAt: new Date(now - DAY + 900000) },
+    { conversationId: conv2.id, senderId: marie.id, content: "Ah super merci, je vais regarder ça", status: MessageStatus.SENT, createdAt: new Date(now - DAY + 1800000) },
+  ];
+
+  for (const m of conv2Messages) {
+    await prisma.message.create({ data: m });
+  }
+
+  // Conversation 3: Sophie ↔ Nicolas (Quartier Bellevue)
+  const [p1c, p2c] = normalizeParticipants(sophie.id, nicolas.id);
+  const conv3 = await prisma.conversation.create({
+    data: { participant1Id: p1c, participant2Id: p2c, communityId: bellevue.id },
+  });
+
+  const conv3Messages = [
+    { conversationId: conv3.id, senderId: nicolas.id, content: "Sophie, est-ce que ta tronçonneuse est disponible ? J'ai un arbre à élaguer", status: MessageStatus.READ, createdAt: new Date(now - 2 * DAY) },
+    { conversationId: conv3.id, senderId: sophie.id, content: "Oui bien sûr ! Par contre elle est assez puissante, tu as l'habitude ?", status: MessageStatus.READ, createdAt: new Date(now - 2 * DAY + 3600000) },
+    { conversationId: conv3.id, senderId: nicolas.id, content: "Oui t'inquiète j'ai l'habitude avec mon poste à souder 😄 je gère les outils dangereux", status: MessageStatus.READ, createdAt: new Date(now - 2 * DAY + 7200000) },
+    { conversationId: conv3.id, senderId: sophie.id, content: "Haha ok ! Tu passes quand tu veux, je suis là demain après-midi", status: MessageStatus.SENT, createdAt: new Date(now - DAY) },
+  ];
+
+  for (const m of conv3Messages) {
+    await prisma.message.create({ data: m });
+  }
+
+  console.log(`✅ 3 conversations, ${conv1Messages.length + conv2Messages.length + conv3Messages.length} messages`);
+
   // ─── Summary ────────────────────────────────────────────────
   const counts = await Promise.all([
     prisma.user.count(),
@@ -337,17 +397,21 @@ async function main() {
     prisma.review.count(),
     prisma.activity.count(),
     prisma.invitation.count(),
+    prisma.conversation.count(),
+    prisma.message.count(),
   ]);
 
   console.log("\n📊 Résumé de la base :");
-  console.log(`   Utilisateurs : ${counts[0]}`);
-  console.log(`   Communautés  : ${counts[1]}`);
-  console.log(`   Membres      : ${counts[2]}`);
-  console.log(`   Matériel     : ${counts[3]}`);
-  console.log(`   Artisans     : ${counts[4]}`);
-  console.log(`   Avis         : ${counts[5]}`);
-  console.log(`   Activités    : ${counts[6]}`);
-  console.log(`   Invitations  : ${counts[7]}`);
+  console.log(`   Utilisateurs  : ${counts[0]}`);
+  console.log(`   Communautés   : ${counts[1]}`);
+  console.log(`   Membres       : ${counts[2]}`);
+  console.log(`   Matériel      : ${counts[3]}`);
+  console.log(`   Artisans      : ${counts[4]}`);
+  console.log(`   Avis          : ${counts[5]}`);
+  console.log(`   Activités     : ${counts[6]}`);
+  console.log(`   Invitations   : ${counts[7]}`);
+  console.log(`   Conversations : ${counts[8]}`);
+  console.log(`   Messages      : ${counts[9]}`);
   console.log("\n✨ Seed terminé !");
 }
 
