@@ -3,21 +3,12 @@ import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import { api } from "../lib/api";
 import { BadgeCheck, AlertCircle } from "lucide-react";
 
-export function VerifyClaim() {
-  const { id } = useParams<{ id: string }>();
-  const [searchParams] = useSearchParams();
+function VerifyClaimInner({ id, token }: { id: string; token: string }) {
   const navigate = useNavigate();
-  const token = searchParams.get("token");
   const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (!id || !token) {
-      setStatus("error");
-      setError("Lien de vérification invalide");
-      return;
-    }
-
     api(`/artisans/${id}/verify-claim`, {
       method: "POST",
       body: JSON.stringify({ token }),
@@ -72,4 +63,24 @@ export function VerifyClaim() {
       </div>
     </div>
   );
+}
+
+export function VerifyClaim() {
+  const { id } = useParams<{ id: string }>();
+  const [searchParams] = useSearchParams();
+  const token = searchParams.get("token");
+
+  if (!id || !token) {
+    return (
+      <div className="max-w-md mx-auto mt-12 text-center">
+        <div className="bg-white rounded-xl border border-gray-200 p-8">
+          <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
+          <h1 className="text-xl font-bold mb-2">Lien invalide</h1>
+          <p className="text-sm text-gray-500">Ce lien de vérification est invalide.</p>
+        </div>
+      </div>
+    );
+  }
+
+  return <VerifyClaimInner key={`${id}-${token}`} id={id} token={token} />;
 }
