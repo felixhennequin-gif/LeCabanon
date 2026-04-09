@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, Link } from "react-router-dom";
 import { api } from "../lib/api";
 import { useAuth } from "../contexts/AuthContext";
@@ -28,11 +28,7 @@ export function EquipmentList() {
   const [filter, setFilter] = useState("");
   const [showForm, setShowForm] = useState(false);
 
-  useEffect(() => {
-    loadEquipment();
-  }, [communityId, filter]);
-
-  async function loadEquipment() {
+  const loadEquipment = useCallback(async () => {
     setLoading(true);
     try {
       const params = filter ? `?category=${encodeURIComponent(filter)}` : "";
@@ -41,7 +37,11 @@ export function EquipmentList() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [communityId, filter]);
+
+  useEffect(() => {
+    loadEquipment();
+  }, [loadEquipment]);
 
   async function handleDelete(id: string) {
     if (!confirm("Supprimer ce matériel ?")) return;

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, Link } from "react-router-dom";
 import { api } from "../lib/api";
 import { StarRating } from "../components/StarRating";
@@ -29,11 +29,7 @@ export function ArtisanList() {
   const [filter, setFilter] = useState("");
   const [showForm, setShowForm] = useState(false);
 
-  useEffect(() => {
-    loadArtisans();
-  }, [communityId, filter]);
-
-  async function loadArtisans() {
+  const loadArtisans = useCallback(async () => {
     setLoading(true);
     try {
       const params = filter ? `?category=${encodeURIComponent(filter)}` : "";
@@ -42,7 +38,11 @@ export function ArtisanList() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [communityId, filter]);
+
+  useEffect(() => {
+    loadArtisans();
+  }, [loadArtisans]);
 
   return (
     <div>
