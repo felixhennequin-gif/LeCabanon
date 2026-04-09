@@ -1,0 +1,127 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String?
+  firstName String
+  lastName  String
+  photo     String?
+  googleId  String?  @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  memberships      CommunityMember[]
+  createdCommunities Community[]    @relation("CreatedCommunities")
+  equipment        Equipment[]
+  createdArtisans  Artisan[]
+  reviews          Review[]
+}
+
+model Community {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  accessCode  String   @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  createdById String
+  createdBy   User   @relation("CreatedCommunities", fields: [createdById], references: [id])
+
+  members   CommunityMember[]
+  equipment Equipment[]
+  artisans  Artisan[]
+}
+
+model CommunityMember {
+  userId      String
+  communityId String
+  role        MemberRole @default(MEMBER)
+  joinedAt    DateTime   @default(now())
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  community Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+
+  @@id([userId, communityId])
+}
+
+enum MemberRole {
+  ADMIN
+  MEMBER
+}
+
+model Equipment {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  category    String
+  photos      String[] @default([])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  ownerId     String
+  owner       User      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  communityId String
+  community   Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+}
+
+model Artisan {
+  id        String   @id @default(cuid())
+  name      String
+  company   String?
+  category  String
+  zone      String?
+  phone     String?
+  email     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  createdById String
+  createdBy   User      @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  communityId String
+  community   Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+
+  reviews Review[]
+}
+
+model Review {
+  id         String     @id @default(cuid())
+  rating     Int
+  comment    String?
+  visibility Visibility @default(PUBLIC)
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  artisanId String
+  artisan   Artisan @relation(fields: [artisanId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    User    @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  media ReviewMedia[]
+}
+
+enum Visibility {
+  PUBLIC
+  PRIVATE
+}
+
+model ReviewMedia {
+  id       String    @id @default(cuid())
+  url      String
+  type     MediaType @default(IMAGE)
+  reviewId String
+  review   Review    @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+}
