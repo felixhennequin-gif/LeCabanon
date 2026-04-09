@@ -9,6 +9,7 @@ import { CommunityDetail } from "./pages/CommunityDetail";
 import { EquipmentList } from "./pages/Equipment";
 import { ArtisanList } from "./pages/Artisans";
 import { ArtisanDetail } from "./pages/ArtisanDetail";
+import { Profile } from "./pages/Profile";
 
 export default function App() {
   return (
@@ -26,6 +27,7 @@ export default function App() {
             <Route path="/communities/:communityId/equipment" element={<EquipmentList />} />
             <Route path="/communities/:communityId/artisans" element={<ArtisanList />} />
             <Route path="/artisans/:id" element={<ArtisanDetail />} />
+            <Route path="/profile" element={<Profile />} />
           </Route>
 
           {/* Default redirect */}
