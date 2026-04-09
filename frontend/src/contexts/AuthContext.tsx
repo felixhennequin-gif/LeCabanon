@@ -20,20 +20,18 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const hasToken = !!localStorage.getItem("accessToken");
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(hasToken);
 
   useEffect(() => {
-    const token = localStorage.getItem("accessToken");
-    if (token) {
+    if (hasToken) {
       api<User>("/auth/me")
         .then(setUser)
         .catch(() => clearTokens())
         .finally(() => setLoading(false));
-    } else {
-      setLoading(false);
     }
-  }, []);
+  }, [hasToken]);
 
   async function login(email: string, password: string) {
     const data = await api<{ user: User; accessToken: string; refreshToken: string }>(
@@ -65,6 +63,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
   const ctx = useContext(AuthContext);
   if (!ctx) throw new Error("useAuth must be used within AuthProvider");
