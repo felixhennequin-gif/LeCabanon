@@ -29,7 +29,6 @@ export function CommunityDetail() {
   const { user } = useAuth();
   const [community, setCommunity] = useState<CommunityData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [showAdmin, setShowAdmin] = useState(false);
   const [tab, setTab] = useState<Tab>("feed");
 
   useEffect(() => {
@@ -60,13 +59,13 @@ export function CommunityDetail() {
           </div>
         </div>
         {isAdmin && (
-          <button
-            onClick={() => setShowAdmin(!showAdmin)}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer bg-white"
+          <Link
+            to={`/communities/${id}/admin`}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 no-underline bg-white"
           >
             <Settings className="w-4 h-4" />
             Admin
-          </button>
+          </Link>
         )}
       </div>
 
