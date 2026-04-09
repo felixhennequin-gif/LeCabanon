@@ -12,6 +12,7 @@ import { ArtisanDetail } from "./pages/ArtisanDetail";
 import { Profile } from "./pages/Profile";
 import { UserProfile } from "./pages/UserProfile";
 import { CommunityAdmin } from "./pages/CommunityAdmin";
+import { InvitationLanding } from "./pages/InvitationLanding";
 
 export default function App() {
   return (
@@ -21,6 +22,7 @@ export default function App() {
           {/* Public routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/invite/:token" element={<InvitationLanding />} />
 
           {/* Protected routes */}
           <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
