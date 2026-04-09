@@ -7,6 +7,7 @@ import { Register } from "./pages/Register";
 import { Communities } from "./pages/Communities";
 import { CommunityDetail } from "./pages/CommunityDetail";
 import { EquipmentList } from "./pages/Equipment";
+import { EquipmentDetail } from "./pages/EquipmentDetail";
 import { ArtisanList } from "./pages/Artisans";
 import { ArtisanDetail } from "./pages/ArtisanDetail";
 import { Profile } from "./pages/Profile";
@@ -36,6 +37,7 @@ export default function App() {
             <Route path="/communities/:id/admin" element={<CommunityAdmin />} />
             <Route path="/communities/:communityId/members" element={<Members />} />
             <Route path="/communities/:communityId/equipment" element={<EquipmentList />} />
+            <Route path="/equipment/:id" element={<EquipmentDetail />} />
             <Route path="/communities/:communityId/artisans" element={<ArtisanList />} />
             <Route path="/artisans/:id" element={<ArtisanDetail />} />
             <Route path="/artisans/:id/verify-claim" element={<VerifyClaim />} />

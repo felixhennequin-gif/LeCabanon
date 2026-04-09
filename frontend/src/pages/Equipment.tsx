@@ -1,8 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { api } from "../lib/api";
-import { useAuth } from "../contexts/AuthContext";
-import { Plus, ArrowLeft, Trash2, Package, MessageCircle } from "lucide-react";
+import { Plus, ArrowLeft, Package } from "lucide-react";
 
 const EQUIPMENT_CATEGORIES = [
   "Jardinage", "Bricolage", "Nettoyage", "Électroportatif",
@@ -22,8 +21,6 @@ interface EquipmentItem {
 
 export function EquipmentList() {
   const { communityId } = useParams<{ communityId: string }>();
-  const { user } = useAuth();
-  const navigate = useNavigate();
   const [equipment, setEquipment] = useState<EquipmentItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("");
@@ -43,12 +40,6 @@ export function EquipmentList() {
   useEffect(() => {
     loadEquipment();
   }, [loadEquipment]);
-
-  async function handleDelete(id: string) {
-    if (!confirm("Supprimer ce matériel ?")) return;
-    await api(`/equipment/${id}`, { method: "DELETE" });
-    setEquipment((prev) => prev.filter((e) => e.id !== id));
-  }
 
   return (
     <div>
@@ -96,7 +87,7 @@ export function EquipmentList() {
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {equipment.map((e) => (
-            <div key={e.id} className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+            <Link key={e.id} to={`/equipment/${e.id}`} className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden no-underline hover:border-primary-300 dark:hover:border-primary-600 hover:shadow-sm transition-all">
               <div className="h-40 bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
                 {e.photos[0] ? (
                   <img src={e.photos[0]} alt={e.name} className="w-full h-full object-cover" />
@@ -105,45 +96,21 @@ export function EquipmentList() {
                 )}
               </div>
               <div className="p-4">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h3 className="font-semibold text-gray-900 dark:text-gray-100">{e.name}</h3>
-                    <span className="inline-block text-xs px-2 py-0.5 bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 rounded-full mt-1">{e.category}</span>
-                  </div>
-                  {(e.ownerId === user?.id) && (
-                    <div className="flex gap-1">
-                      <button onClick={() => handleDelete(e.id)} className="text-gray-400 hover:text-red-500 bg-transparent border-none cursor-pointer p-1">
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  )}
+                <div>
+                  <h3 className="font-semibold text-gray-900 dark:text-gray-100">{e.name}</h3>
+                  <span className="inline-block text-xs px-2 py-0.5 bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 rounded-full mt-1">{e.category}</span>
                 </div>
                 {e.description && <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 line-clamp-2">{e.description}</p>}
-                <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100 dark:border-gray-800">
-                  <Link to={`/users/${e.owner.id}`} className="flex items-center gap-2 no-underline hover:underline">
+                <div className="flex items-center mt-3 pt-3 border-t border-gray-100 dark:border-gray-800">
+                  <div className="flex items-center gap-2">
                     <div className="w-6 h-6 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center text-xs font-medium">
                       {e.owner.firstName[0]}{e.owner.lastName[0]}
                     </div>
                     <span className="text-xs text-gray-500">{e.owner.firstName} {e.owner.lastName}</span>
-                  </Link>
-                  {e.ownerId !== user?.id && (
-                    <button
-                      onClick={async () => {
-                        const conv = await api<{ id: string }>("/conversations", {
-                          method: "POST",
-                          body: JSON.stringify({ recipientId: e.ownerId, communityId }),
-                        });
-                        navigate(`/messages/${conv.id}`);
-                      }}
-                      className="text-gray-400 hover:text-primary-600 bg-transparent border-none cursor-pointer p-1"
-                      title="Contacter"
-                    >
-                      <MessageCircle className="w-4 h-4" />
-                    </button>
-                  )}
+                  </div>
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       )}
