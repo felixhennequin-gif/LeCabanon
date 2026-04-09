@@ -2,6 +2,7 @@ import type { Request, Response, NextFunction } from "express";
 import { z } from "zod";
 import { prisma } from "../utils/prisma.js";
 import { AppError } from "../middlewares/errorHandler.js";
+import { getOnlineUsers } from "../socket.js";
 
 function normalizeParticipants(a: string, b: string): [string, string] {
   return a < b ? [a, b] : [b, a];
@@ -39,7 +40,10 @@ export async function listConversations(req: Request, res: Response, next: NextF
       }),
     );
 
-    res.json(result);
+    // Attach online status
+    const online = getOnlineUsers();
+    const withOnline = result.map((c) => ({ ...c, online: online.has(c.other.id) }));
+    res.json(withOnline);
   } catch (err) {
     next(err);
   }
