@@ -5,7 +5,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { api } from "../lib/api";
 import { useAuth } from "../contexts/AuthContext";
-import { ArrowLeft, Eye, EyeOff, RefreshCw, Trash2 } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff, RefreshCw, Trash2, Link2, Copy, Check, Share2, X as XIcon } from "lucide-react";
 
 interface Member {
   userId: string;
@@ -22,6 +22,38 @@ interface CommunityData {
   members: Member[];
   _count: { members: number; equipment: number; artisans: number };
 }
+
+interface InvitationData {
+  id: string;
+  token: string;
+  expiresAt: string;
+  maxUses: number | null;
+  uses: number;
+  active: boolean;
+  createdAt: string;
+  expired: boolean;
+  createdBy: { firstName: string; lastName: string };
+}
+
+interface NewInvitation {
+  id: string;
+  token: string;
+  url: string;
+  expiresAt: string;
+  maxUses: number | null;
+  uses: number;
+  active: boolean;
+}
+
+const DURATION_OPTIONS = [
+  { label: "1 heure", value: 1 },
+  { label: "6 heures", value: 6 },
+  { label: "12 heures", value: 12 },
+  { label: "24 heures", value: 24 },
+  { label: "48 heures", value: 48 },
+  { label: "7 jours", value: 168 },
+  { label: "30 jours", value: 720 },
+];
 
 const editSchema = z.object({
   name: z.string().min(1, "Nom requis"),
@@ -41,6 +73,12 @@ export function CommunityAdmin() {
   const [saveMsg, setSaveMsg] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteConfirmName, setDeleteConfirmName] = useState("");
+  const [invitations, setInvitations] = useState<InvitationData[]>([]);
+  const [newInvite, setNewInvite] = useState<NewInvitation | null>(null);
+  const [inviteDuration, setInviteDuration] = useState(24);
+  const [inviteMaxUses, setInviteMaxUses] = useState("");
+  const [inviteCreating, setInviteCreating] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<EditForm>({
     resolver: zodResolver(editSchema),
@@ -57,6 +95,7 @@ export function CommunityAdmin() {
           setCommunity(data);
           setAccessCode(data.accessCode);
           reset({ name: data.name, description: data.description || "" });
+          api<InvitationData[]>(`/communities/${id}/invitations`).then(setInvitations);
         })
         .catch(() => navigate("/communities", { replace: true }))
         .finally(() => setLoading(false));
@@ -172,7 +211,151 @@ export function CommunityAdmin() {
         </button>
       </section>
 
-      {/* Section 3: Members */}
+      {/* Section 3: Invitations */}
+      <section className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+        <h2 className="text-lg font-semibold mb-4">Invitations</h2>
+
+        {/* Create invitation form */}
+        <div className="flex flex-wrap items-end gap-3 mb-4">
+          <div>
+            <label className="block text-xs font-medium text-gray-500 mb-1">Durée de validité</label>
+            <select
+              value={inviteDuration}
+              onChange={(e) => setInviteDuration(Number(e.target.value))}
+              className="border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white"
+            >
+              {DURATION_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>{opt.label}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-500 mb-1">Max. utilisations</label>
+            <input
+              type="number"
+              min="1"
+              value={inviteMaxUses}
+              onChange={(e) => setInviteMaxUses(e.target.value)}
+              placeholder="Illimité"
+              className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-28"
+            />
+          </div>
+          <button
+            onClick={async () => {
+              setInviteCreating(true);
+              try {
+                const body: Record<string, unknown> = { expiresIn: inviteDuration };
+                if (inviteMaxUses) body.maxUses = Number(inviteMaxUses);
+                const inv = await api<NewInvitation>(`/communities/${id}/invitations`, {
+                  method: "POST",
+                  body: JSON.stringify(body),
+                });
+                setNewInvite(inv);
+                setCopied(false);
+                api<InvitationData[]>(`/communities/${id}/invitations`).then(setInvitations);
+              } finally {
+                setInviteCreating(false);
+              }
+            }}
+            disabled={inviteCreating}
+            className="inline-flex items-center gap-1.5 bg-primary-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary-700 disabled:opacity-50 cursor-pointer"
+          >
+            <Link2 className="w-4 h-4" />
+            {inviteCreating ? "..." : "Générer un lien"}
+          </button>
+        </div>
+
+        {/* Newly generated link */}
+        {newInvite && (
+          <div className="bg-primary-50 border border-primary-200 rounded-lg p-4 mb-4">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-medium text-primary-700">Lien d'invitation généré</span>
+              <button onClick={() => setNewInvite(null)} className="text-gray-400 hover:text-gray-600 bg-transparent border-none cursor-pointer">
+                <XIcon className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="flex items-center gap-2 mb-3">
+              <input
+                readOnly
+                value={newInvite.url}
+                className="flex-1 bg-white border border-gray-300 rounded-lg px-3 py-1.5 text-sm font-mono"
+                onFocus={(e) => e.target.select()}
+              />
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(newInvite.url);
+                  setCopied(true);
+                  setTimeout(() => setCopied(false), 2000);
+                }}
+                className="inline-flex items-center gap-1 px-3 py-1.5 text-sm border border-gray-300 rounded-lg bg-white hover:bg-gray-50 cursor-pointer"
+              >
+                {copied ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4" />}
+                {copied ? "Copié" : "Copier"}
+              </button>
+              {typeof navigator.share === "function" && (
+                <button
+                  onClick={() => {
+                    navigator.share({
+                      title: `Rejoignez ${community!.name} sur LeCabanon`,
+                      text: `Vous êtes invité à rejoindre la communauté ${community!.name} sur LeCabanon !`,
+                      url: newInvite.url,
+                    });
+                  }}
+                  className="inline-flex items-center gap-1 px-3 py-1.5 text-sm border border-gray-300 rounded-lg bg-white hover:bg-gray-50 cursor-pointer"
+                >
+                  <Share2 className="w-4 h-4" />
+                  Partager
+                </button>
+              )}
+            </div>
+            <p className="text-xs text-gray-500">
+              Expire le {new Date(newInvite.expiresAt).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+              {newInvite.maxUses ? ` — ${newInvite.maxUses} utilisation${newInvite.maxUses > 1 ? "s" : ""} max.` : " — utilisations illimitées"}
+            </p>
+          </div>
+        )}
+
+        {/* Existing invitations list */}
+        {invitations.length > 0 && (
+          <div className="space-y-2">
+            <h3 className="text-sm font-medium text-gray-700 mb-2">Invitations existantes</h3>
+            {invitations.map((inv) => {
+              const status = !inv.active ? "Révoqué" : inv.expired ? "Expiré" : "Actif";
+              const statusColor = status === "Actif" ? "text-green-600 bg-green-50" : "text-gray-500 bg-gray-100";
+              return (
+                <div key={inv.id} className={`flex items-center justify-between p-3 rounded-lg border ${inv.expired ? "border-gray-200 opacity-60" : "border-gray-200"}`}>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <code className="text-xs font-mono text-gray-500 truncate">...{inv.token.slice(-8)}</code>
+                      <span className={`text-xs px-1.5 py-0.5 rounded ${statusColor}`}>{status}</span>
+                    </div>
+                    <p className="text-xs text-gray-400">
+                      Créé le {new Date(inv.createdAt).toLocaleDateString("fr-FR")} — Expire le {new Date(inv.expiresAt).toLocaleDateString("fr-FR")} — {inv.uses}/{inv.maxUses ?? "\u221E"} utilisations
+                    </p>
+                  </div>
+                  {!inv.expired && inv.active && (
+                    <button
+                      onClick={async () => {
+                        if (!confirm("Révoquer cette invitation ?")) return;
+                        await fetch(`/api/communities/${id}/invitations/${inv.id}`, {
+                          method: "DELETE",
+                          headers: { "Authorization": `Bearer ${localStorage.getItem("accessToken")}` },
+                        });
+                        setInvitations((prev) => prev.map((i) => i.id === inv.id ? { ...i, active: false, expired: true } : i));
+                      }}
+                      className="text-gray-400 hover:text-red-500 bg-transparent border-none cursor-pointer ml-3"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </section>
+
+      {/* Section 4: Members */}
       <section className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
         <h2 className="text-lg font-semibold mb-1">Membres</h2>
         <p className="text-sm text-gray-400 mb-4">{community._count.members} membre{community._count.members > 1 ? "s" : ""}</p>
@@ -204,7 +387,7 @@ export function CommunityAdmin() {
         </div>
       </section>
 
-      {/* Section 4: Danger zone */}
+      {/* Section 5: Danger zone */}
       <section className="rounded-xl border-2 border-red-200 bg-red-50 p-6">
         <h2 className="text-lg font-semibold text-red-700 mb-2">Zone dangereuse</h2>
         <p className="text-sm text-red-600 mb-4">Ces actions sont irréversibles.</p>
