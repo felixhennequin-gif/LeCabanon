@@ -35,7 +35,7 @@ app.get("/api/health", (_req, res) => {
 
 // Serve frontend in production
 if (process.env.NODE_ENV === "production") {
-  const frontendDist = path.join(__dirname, "../../frontend/dist");
+  const frontendDist = path.join(__dirname, "../../../frontend/dist");
   app.use(express.static(frontendDist));
 
   // SPA fallback — only for non-API routes
