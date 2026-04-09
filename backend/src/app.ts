@@ -8,6 +8,7 @@ import { userRouter } from "./routes/users.js";
 import { communityRouter } from "./routes/communities.js";
 import { equipmentRouter } from "./routes/equipment.js";
 import { artisanRouter } from "./routes/artisans.js";
+import { feedRouter } from "./routes/feed.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -27,6 +28,7 @@ app.use("/api/users", userRouter);
 app.use("/api/communities", communityRouter);
 app.use("/api/equipment", equipmentRouter);
 app.use("/api/artisans", artisanRouter);
+app.use("/api/communities", feedRouter);
 
 // Health check
 app.get("/api/health", (_req, res) => {
