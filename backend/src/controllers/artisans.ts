@@ -11,6 +11,7 @@ const createArtisanSchema = z.object({
   zone: z.string().optional(),
   phone: z.string().optional(),
   email: z.string().email().optional().or(z.literal("")),
+  website: z.string().url().optional().or(z.literal("")),
 });
 
 const createReviewSchema = z.object({
@@ -32,6 +33,7 @@ export async function createArtisan(req: Request, res: Response, next: NextFunct
         zone: data.zone,
         phone: data.phone,
         email: data.email || null,
+        website: data.website || null,
         createdById: req.userId!,
         communityId,
       },
@@ -135,6 +137,7 @@ export async function updateArtisan(req: Request, res: Response, next: NextFunct
         zone: req.body.zone,
         phone: req.body.phone,
         email: req.body.email,
+        website: req.body.website,
       },
     });
     res.json(updated);
