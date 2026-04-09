@@ -25,6 +25,8 @@ async function main() {
     { email: "nicolas.garnier@email.fr", firstName: "Nicolas", lastName: "Garnier" },
     { email: "isabelle.leroy@email.fr", firstName: "Isabelle", lastName: "Leroy" },
     { email: "thomas.bernard@email.fr", firstName: "Thomas", lastName: "Bernard" },
+    // Artisan user (will claim a fiche)
+    { email: "karim@kb-elec.fr", firstName: "Karim", lastName: "Benali" },
   ];
 
   const users: Record<string, { id: string }> = {};
@@ -49,6 +51,7 @@ async function main() {
   const nicolas = users["nicolas.garnier@email.fr"];
   const isabelle = users["isabelle.leroy@email.fr"];
   const thomas = users["thomas.bernard@email.fr"];
+  const karimUser = users["karim@kb-elec.fr"];
 
   // ─── 2. Communities ─────────────────────────────────────────
   const communitiesData = [
@@ -117,12 +120,14 @@ async function main() {
   console.log(`✅ ${membersCount} membres`);
 
   // ─── Clean existing data ──────────────────────────────────────
+  await prisma.reviewReply.deleteMany();
   await prisma.message.deleteMany();
   await prisma.conversation.deleteMany();
   await prisma.activity.deleteMany();
   await prisma.invitation.deleteMany();
   await prisma.reviewMedia.deleteMany();
   await prisma.review.deleteMany();
+  await prisma.artisanCommunity.deleteMany();
   await prisma.artisan.deleteMany();
   await prisma.equipment.deleteMany();
 
@@ -166,37 +171,90 @@ async function main() {
   }
   console.log(`✅ ${equipmentBellevueData.length} matériels (Quartier Bellevue)`);
 
-  // ─── 5. Artisans (Avenue Guillon) ───────────────────────────
+  // ─── 5. Artisans (global entities + ArtisanCommunity links) ─
+
+  // Artisans for Avenue Guillon
   const artisansGuillonData = [
-    { createdById: jp.id, communityId: guillon.id, name: "Michel Dupont", company: "Dupont Plomberie", category: "Plomberie", zone: "Maisons-Laffitte et environs", phone: "06 12 34 56 78", email: "contact@dupont-plomberie.fr", website: "https://www.dupont-plomberie.fr" },
-    { createdById: marie.id, communityId: guillon.id, name: "Karim Benali", company: "KB Électricité", category: "Électricité", zone: "Yvelines Nord", phone: "06 23 45 67 89", email: "karim@kb-elec.fr", website: "https://www.kb-elec.fr" },
-    { createdById: patrick.id, communityId: guillon.id, name: "Laurent Moreau", company: "Moreau & Fils", category: "Maçonnerie", zone: "Sartrouville - Maisons-Laffitte", phone: "06 34 56 78 90", email: "moreau.fils@orange.fr" },
-    { createdById: sophie.id, communityId: guillon.id, name: "Émilie Blanc", company: "Blanc Peinture Déco", category: "Peinture", zone: "Maisons-Laffitte", phone: "06 45 67 89 01", email: "emilie.blanc.peinture@gmail.com" },
-    { createdById: alain.id, communityId: guillon.id, name: "Pierre Lefèvre", company: "Lefèvre Menuiserie", category: "Menuiserie", zone: "Yvelines", phone: "06 56 78 90 12", email: "contact@lefevre-menuiserie.fr" },
-    { createdById: catherine.id, communityId: guillon.id, name: "Yann Kervella", company: "Kervella Paysage", category: "Paysagisme", zone: "Maisons-Laffitte et alentours", phone: "06 67 89 01 23", email: "yann@kervella-paysage.fr" },
-    { createdById: felix.id, communityId: guillon.id, name: "David Costa", company: "Costa Serrurerie", category: "Serrurerie", zone: "Secteur 78", phone: "06 78 90 12 34", email: "david.costa.serrurier@gmail.com" },
-    { createdById: marie.id, communityId: guillon.id, name: "Stéphane Roux", company: "Roux Chauffage", category: "Chauffage / Climatisation", zone: "Yvelines Nord", phone: "06 89 01 23 45", email: "s.roux@roux-chauffage.fr" },
+    { createdById: jp.id, name: "Michel Dupont", company: "Dupont Plomberie", category: "Plomberie", zone: "Maisons-Laffitte et environs", phone: "06 12 34 56 78", email: "contact@dupont-plomberie.fr", website: "https://www.dupont-plomberie.fr" },
+    { createdById: marie.id, name: "Karim Benali", company: "KB Électricité", category: "Électricité", zone: "Yvelines Nord", phone: "06 23 45 67 89", email: "karim@kb-elec.fr", website: "https://www.kb-elec.fr" },
+    { createdById: patrick.id, name: "Laurent Moreau", company: "Moreau & Fils", category: "Maçonnerie", zone: "Sartrouville - Maisons-Laffitte", phone: "06 34 56 78 90", email: "moreau.fils@orange.fr" },
+    { createdById: sophie.id, name: "Émilie Blanc", company: "Blanc Peinture Déco", category: "Peinture", zone: "Maisons-Laffitte", phone: "06 45 67 89 01", email: "emilie.blanc.peinture@gmail.com" },
+    { createdById: alain.id, name: "Pierre Lefèvre", company: "Lefèvre Menuiserie", category: "Menuiserie", zone: "Yvelines", phone: "06 56 78 90 12", email: "contact@lefevre-menuiserie.fr" },
+    { createdById: catherine.id, name: "Yann Kervella", company: "Kervella Paysage", category: "Paysagisme", zone: "Maisons-Laffitte et alentours", phone: "06 67 89 01 23", email: "yann@kervella-paysage.fr" },
+    { createdById: felix.id, name: "David Costa", company: "Costa Serrurerie", category: "Serrurerie", zone: "Secteur 78", phone: "06 78 90 12 34", email: "david.costa.serrurier@gmail.com" },
+    { createdById: marie.id, name: "Stéphane Roux", company: "Roux Chauffage", category: "Chauffage / Climatisation", zone: "Yvelines Nord", phone: "06 89 01 23 45", email: "s.roux@roux-chauffage.fr" },
   ];
 
-  // Create artisans one by one to get IDs for reviews
   const artisans: Record<string, { id: string }> = {};
   for (const a of artisansGuillonData) {
-    const artisan = await prisma.artisan.create({ data: a });
+    const artisan = await prisma.artisan.create({
+      data: {
+        name: a.name,
+        company: a.company,
+        category: a.category,
+        zone: a.zone,
+        phone: a.phone,
+        email: a.email,
+        website: a.website,
+        createdById: a.createdById,
+        communities: {
+          create: { communityId: guillon.id, addedById: a.createdById },
+        },
+      },
+    });
     artisans[a.name] = artisan;
   }
   console.log(`✅ ${artisansGuillonData.length} artisans (Avenue Guillon)`);
 
-  // ─── Artisans (Quartier Bellevue) ───────────────────────────
+  // Artisans for Quartier Bellevue
   const artisansBellevueData = [
-    { createdById: nicolas.id, communityId: bellevue.id, name: "François Martin", company: "Martin Couverture", category: "Couverture / Toiture", zone: "Bellevue - Maisons-Laffitte", phone: "06 11 22 33 44", email: "f.martin.couverture@gmail.com" },
-    { createdById: isabelle.id, communityId: bellevue.id, name: "Nadia Amrani", company: "Amrani Nettoyage Pro", category: "Nettoyage", zone: "Yvelines", phone: "06 22 33 44 55", email: "nadia@amrani-nettoyage.fr" },
+    { createdById: nicolas.id, name: "François Martin", company: "Martin Couverture", category: "Couverture / Toiture", zone: "Bellevue - Maisons-Laffitte", phone: "06 11 22 33 44", email: "f.martin.couverture@gmail.com" },
+    { createdById: isabelle.id, name: "Nadia Amrani", company: "Amrani Nettoyage Pro", category: "Nettoyage", zone: "Yvelines", phone: "06 22 33 44 55", email: "nadia@amrani-nettoyage.fr" },
   ];
 
   for (const a of artisansBellevueData) {
-    const artisan = await prisma.artisan.create({ data: a });
+    const artisan = await prisma.artisan.create({
+      data: {
+        name: a.name,
+        company: a.company,
+        category: a.category,
+        zone: a.zone,
+        phone: a.phone,
+        email: a.email,
+        createdById: a.createdById,
+        communities: {
+          create: { communityId: bellevue.id, addedById: a.createdById },
+        },
+      },
+    });
     artisans[a.name] = artisan;
   }
   console.log(`✅ ${artisansBellevueData.length} artisans (Quartier Bellevue)`);
+
+  // ─── Artisan in BOTH communities (multi-community test) ─────
+  // Karim Benali is also recommended in Bellevue by Sophie
+  await prisma.artisanCommunity.create({
+    data: {
+      artisanId: artisans["Karim Benali"].id,
+      communityId: bellevue.id,
+      addedById: sophie.id,
+    },
+  });
+  console.log(`✅ Karim Benali recommandé dans Avenue Guillon + Quartier Bellevue`);
+
+  // ─── Claimed artisan: Karim Benali ──────────────────────────
+  await prisma.artisan.update({
+    where: { id: artisans["Karim Benali"].id },
+    data: {
+      claimed: true,
+      claimedAt: new Date(),
+      ownerId: karimUser.id,
+      description: "Électricien qualifié avec 15 ans d'expérience. Spécialisé dans la mise aux normes, les installations neuves et le dépannage. Je me déplace dans tout le nord des Yvelines.",
+      certifications: ["Qualifelec", "RGE", "Habilitation BR"],
+      horaires: "Lun-Ven : 8h-18h\nSamedi : sur rendez-vous\nUrgences : 7j/7",
+    },
+  });
+  console.log(`✅ Karim Benali — fiche revendiquée avec profil enrichi`);
 
   // ─── 6. Reviews ─────────────────────────────────────────────
   const reviewsData = [
@@ -215,13 +273,13 @@ async function main() {
 
     // Émilie Blanc (Peinture) — 2 avis
     { artisanId: artisans["Émilie Blanc"].id, authorId: marie.id, rating: 5, comment: "Je recommande vivement, Émilie a un vrai sens des couleurs. Elle a refait notre salon et chambre en 3 jours.", visibility: Visibility.PUBLIC },
-    { artisanId: artisans["Émilie Blanc"].id, authorId: felix.id, rating: 5, comment: "Peinture extérieure des volets. Travail minutieux, finitions parfaites. Un peu au-dessus du marché côté tarif mais la qualité est là.", visibility: Visibility.PRIVATE },
+    { artisanId: artisans["Émilie Blanc"].id, authorId: felix.id, rating: 5, comment: "Peinture extérieure des volets. Travail minutieux, finitions parfaites. Un peu au-dessus du marché côté tarif mais la qualité est là.", visibility: Visibility.COMMUNITY },
 
     // Pierre Lefèvre (Menuiserie) — 1 avis
     { artisanId: artisans["Pierre Lefèvre"].id, authorId: alain.id, rating: 4, comment: "Fabrication et pose d'un portail en bois sur mesure. Beau travail artisanal. Délai respecté.", visibility: Visibility.PUBLIC },
 
     // Yann Kervella (Paysagisme) — 2 avis
-    { artisanId: artisans["Yann Kervella"].id, authorId: patrick.id, rating: 3, comment: "Correct mais un peu cher pour ce que c'était. Le résultat est propre cependant.", visibility: Visibility.PRIVATE },
+    { artisanId: artisans["Yann Kervella"].id, authorId: patrick.id, rating: 3, comment: "Correct mais un peu cher pour ce que c'était. Le résultat est propre cependant.", visibility: Visibility.COMMUNITY },
     { artisanId: artisans["Yann Kervella"].id, authorId: sophie.id, rating: 4, comment: "Taille des haies et entretien du jardin. Yann connaît bien les végétaux et donne de bons conseils.", visibility: Visibility.PUBLIC },
 
     // David Costa (Serrurerie) — 1 avis
@@ -229,7 +287,7 @@ async function main() {
 
     // Stéphane Roux (Chauffage) — 2 avis
     { artisanId: artisans["Stéphane Roux"].id, authorId: catherine.id, rating: 4, comment: "Entretien annuel de la chaudière fait rapidement et proprement. Contrat d'entretien intéressant.", visibility: Visibility.PUBLIC },
-    { artisanId: artisans["Stéphane Roux"].id, authorId: patrick.id, rating: 3, comment: "Installation d'une clim réversible. Ça fonctionne mais la pose des goulottes extérieures n'est pas très esthétique. À discuter avant les travaux.", visibility: Visibility.PRIVATE },
+    { artisanId: artisans["Stéphane Roux"].id, authorId: patrick.id, rating: 3, comment: "Installation d'une clim réversible. Ça fonctionne mais la pose des goulottes extérieures n'est pas très esthétique. À discuter avant les travaux.", visibility: Visibility.COMMUNITY },
 
     // François Martin (Couverture — Bellevue) — 1 avis
     { artisanId: artisans["François Martin"].id, authorId: sophie.id, rating: 4, comment: "Réparation de tuiles cassées après la tempête. Intervention rapide et sérieuse.", visibility: Visibility.PUBLIC },
@@ -245,8 +303,19 @@ async function main() {
   }
   console.log(`✅ ${reviewRecords.length} avis`);
 
+  // ─── 6b. Review Replies (Karim replies to his reviews) ──────
+  const karimReviews = reviewRecords.filter((r) => r.artisanId === artisans["Karim Benali"].id);
+  const repliesData = [
+    { reviewId: karimReviews[0].id, artisanId: artisans["Karim Benali"].id, authorId: karimUser.id, content: "Merci Patrick ! C'est un plaisir de travailler avec des clients qui comprennent l'importance d'un tableau aux normes. N'hésitez pas si vous avez d'autres projets." },
+    { reviewId: karimReviews[1].id, artisanId: artisans["Karim Benali"].id, authorId: karimUser.id, content: "Merci pour votre retour Alain. Les prises du garage sont dimensionnées pour supporter les outils de bricolage, n'hésitez pas à brancher vos appareils sans souci !" },
+  ];
+
+  for (const rr of repliesData) {
+    await prisma.reviewReply.create({ data: rr });
+  }
+  console.log(`✅ ${repliesData.length} réponses artisan`);
+
   // ─── 7. Activities ───────────────────────────────────────────
-  // Build a timeline over the last 30 days
   const now = Date.now();
   const DAY = 86400000;
   let dayOffset = 30;
@@ -257,15 +326,18 @@ async function main() {
     return d;
   }
 
-  // Helper to find artisan's communityId
-  const artisanCommunity: Record<string, string> = {};
-  for (const a of [...artisansGuillonData, ...artisansBellevueData]) {
-    artisanCommunity[a.name] = a.communityId;
+  // Build artisan → community mapping for activities
+  const artisanCommunityMap: Record<string, string> = {};
+  for (const a of artisansGuillonData) {
+    artisanCommunityMap[a.name] = guillon.id;
+  }
+  for (const a of artisansBellevueData) {
+    artisanCommunityMap[a.name] = bellevue.id;
   }
 
   const activityData: { type: ActivityType; communityId: string; actorId: string; equipmentId?: string; artisanId?: string; reviewId?: string; createdAt: Date }[] = [];
 
-  // Member joins (admins first as community creation, then members)
+  // Member joins
   for (const m of membersData) {
     activityData.push({ type: ActivityType.MEMBER_JOINED, communityId: m.communityId, actorId: m.userId, createdAt: activityDate() });
   }
@@ -277,7 +349,7 @@ async function main() {
 
   // Artisan additions
   for (const [name, data] of Object.entries(artisans)) {
-    const communityId = artisanCommunity[name];
+    const communityId = artisanCommunityMap[name];
     const artisanFullData = [...artisansGuillonData, ...artisansBellevueData].find((a) => a.name === name)!;
     activityData.push({ type: ActivityType.ARTISAN_ADDED, communityId, actorId: artisanFullData.createdById, artisanId: data.id, createdAt: activityDate() });
   }
@@ -285,7 +357,7 @@ async function main() {
   // Review additions
   for (const r of reviewRecords) {
     const artisanName = Object.entries(artisans).find(([, v]) => v.id === r.artisanId)?.[0];
-    const communityId = artisanName ? artisanCommunity[artisanName] : guillon.id;
+    const communityId = artisanName ? artisanCommunityMap[artisanName] : guillon.id;
     activityData.push({ type: ActivityType.REVIEW_ADDED, communityId, actorId: r.authorId, artisanId: r.artisanId, reviewId: r.id, createdAt: activityDate() });
   }
 
@@ -334,7 +406,7 @@ async function main() {
     return a < b ? [a, b] : [b, a];
   }
 
-  // Conversation 1: Félix ↔ JP (Avenue Guillon) — about equipment
+  // Conversation 1: Félix ↔ JP (Avenue Guillon)
   const [p1a, p2a] = normalizeParticipants(felix.id, jp.id);
   const conv1 = await prisma.conversation.create({
     data: { participant1Id: p1a, participant2Id: p2a, communityId: guillon.id },
@@ -352,7 +424,7 @@ async function main() {
     await prisma.message.create({ data: m });
   }
 
-  // Conversation 2: Félix ↔ Marie (Avenue Guillon) — about an artisan
+  // Conversation 2: Félix ↔ Marie (Avenue Guillon)
   const [p1b, p2b] = normalizeParticipants(felix.id, marie.id);
   const conv2 = await prisma.conversation.create({
     data: { participant1Id: p1b, participant2Id: p2b, communityId: guillon.id },
@@ -394,7 +466,9 @@ async function main() {
     prisma.communityMember.count(),
     prisma.equipment.count(),
     prisma.artisan.count(),
+    prisma.artisanCommunity.count(),
     prisma.review.count(),
+    prisma.reviewReply.count(),
     prisma.activity.count(),
     prisma.invitation.count(),
     prisma.conversation.count(),
@@ -402,16 +476,18 @@ async function main() {
   ]);
 
   console.log("\n📊 Résumé de la base :");
-  console.log(`   Utilisateurs  : ${counts[0]}`);
-  console.log(`   Communautés   : ${counts[1]}`);
-  console.log(`   Membres       : ${counts[2]}`);
-  console.log(`   Matériel      : ${counts[3]}`);
-  console.log(`   Artisans      : ${counts[4]}`);
-  console.log(`   Avis          : ${counts[5]}`);
-  console.log(`   Activités     : ${counts[6]}`);
-  console.log(`   Invitations   : ${counts[7]}`);
-  console.log(`   Conversations : ${counts[8]}`);
-  console.log(`   Messages      : ${counts[9]}`);
+  console.log(`   Utilisateurs       : ${counts[0]}`);
+  console.log(`   Communautés        : ${counts[1]}`);
+  console.log(`   Membres            : ${counts[2]}`);
+  console.log(`   Matériel           : ${counts[3]}`);
+  console.log(`   Artisans           : ${counts[4]}`);
+  console.log(`   Artisan↔Communauté : ${counts[5]}`);
+  console.log(`   Avis               : ${counts[6]}`);
+  console.log(`   Réponses artisans  : ${counts[7]}`);
+  console.log(`   Activités          : ${counts[8]}`);
+  console.log(`   Invitations        : ${counts[9]}`);
+  console.log(`   Conversations      : ${counts[10]}`);
+  console.log(`   Messages           : ${counts[11]}`);
   console.log("\n✨ Seed terminé !");
 }
 
