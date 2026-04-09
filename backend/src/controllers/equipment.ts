@@ -2,6 +2,7 @@ import type { Request, Response, NextFunction } from "express";
 import { z } from "zod";
 import { prisma } from "../utils/prisma.js";
 import { AppError } from "../middlewares/errorHandler.js";
+import { createActivity } from "../services/activity.js";
 
 const createEquipmentSchema = z.object({
   name: z.string().min(1, "Nom requis"),
@@ -24,6 +25,9 @@ export async function createEquipment(req: Request, res: Response, next: NextFun
       },
       include: { owner: { select: { id: true, firstName: true, lastName: true, photo: true } } },
     });
+
+    createActivity({ type: "EQUIPMENT_ADDED", communityId, actorId: req.userId!, equipmentId: equipment.id });
+
     res.status(201).json(equipment);
   } catch (err) {
     if (err instanceof z.ZodError) {
@@ -98,6 +102,8 @@ export async function deleteEquipment(req: Request, res: Response, next: NextFun
     if (equipment.ownerId !== req.userId && req.communityRole !== "ADMIN") {
       throw new AppError(403, "Non autorisé");
     }
+
+    createActivity({ type: "EQUIPMENT_REMOVED", communityId: equipment.communityId, actorId: req.userId!, equipmentId: equipment.id });
 
     await prisma.equipment.delete({ where: { id } });
     res.json({ message: "Matériel supprimé" });

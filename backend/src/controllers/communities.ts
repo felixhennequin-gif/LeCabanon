@@ -3,6 +3,7 @@ import crypto from "crypto";
 import { z } from "zod";
 import { prisma } from "../utils/prisma.js";
 import { AppError } from "../middlewares/errorHandler.js";
+import { createActivity } from "../services/activity.js";
 
 const createCommunitySchema = z.object({
   name: z.string().min(1, "Nom requis"),
@@ -63,6 +64,8 @@ export async function joinCommunity(req: Request, res: Response, next: NextFunct
     await prisma.communityMember.create({
       data: { userId: req.userId!, communityId: community.id, role: "MEMBER" },
     });
+
+    createActivity({ type: "MEMBER_JOINED", communityId: community.id, actorId: req.userId! });
 
     res.json(community);
   } catch (err) {

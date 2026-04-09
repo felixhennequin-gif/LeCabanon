@@ -2,6 +2,7 @@ import type { Request, Response, NextFunction } from "express";
 import { z } from "zod";
 import { prisma } from "../utils/prisma.js";
 import { AppError } from "../middlewares/errorHandler.js";
+import { createActivity } from "../services/activity.js";
 
 const createArtisanSchema = z.object({
   name: z.string().min(1, "Nom requis"),
@@ -35,6 +36,9 @@ export async function createArtisan(req: Request, res: Response, next: NextFunct
         communityId,
       },
     });
+
+    createActivity({ type: "ARTISAN_ADDED", communityId, actorId: req.userId!, artisanId: artisan.id });
+
     res.status(201).json(artisan);
   } catch (err) {
     if (err instanceof z.ZodError) {
@@ -148,6 +152,8 @@ export async function deleteArtisan(req: Request, res: Response, next: NextFunct
       throw new AppError(403, "Non autorisé");
     }
 
+    createActivity({ type: "ARTISAN_REMOVED", communityId: artisan.communityId, actorId: req.userId!, artisanId: artisan.id });
+
     await prisma.artisan.delete({ where: { id } });
     res.json({ message: "Artisan supprimé" });
   } catch (err) {
@@ -174,6 +180,9 @@ export async function createReview(req: Request, res: Response, next: NextFuncti
         author: { select: { id: true, firstName: true, lastName: true, photo: true } },
       },
     });
+
+    createActivity({ type: "REVIEW_ADDED", communityId: artisan.communityId, actorId: req.userId!, artisanId: artisan.id, reviewId: review.id });
+
     res.status(201).json(review);
   } catch (err) {
     if (err instanceof z.ZodError) {
