@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, Link } from "react-router-dom";
 import { api } from "../lib/api";
-import { Plus, ArrowLeft, Package } from "lucide-react";
+import { Plus, ArrowLeft, Package, User } from "lucide-react";
 
 const EQUIPMENT_CATEGORIES = [
   "Jardinage", "Bricolage", "Nettoyage", "Électroportatif",
@@ -19,23 +19,40 @@ interface EquipmentItem {
   createdAt: string;
 }
 
+interface OwnerInfo {
+  id: string;
+  firstName: string;
+  lastName: string;
+}
+
+interface EquipmentListResponse {
+  equipment: EquipmentItem[];
+  owners: OwnerInfo[];
+}
+
 export function EquipmentList() {
   const { communityId } = useParams<{ communityId: string }>();
   const [equipment, setEquipment] = useState<EquipmentItem[]>([]);
+  const [owners, setOwners] = useState<OwnerInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("");
+  const [ownerFilter, setOwnerFilter] = useState("");
   const [showForm, setShowForm] = useState(false);
 
   const loadEquipment = useCallback(async () => {
     setLoading(true);
     try {
-      const params = filter ? `?category=${encodeURIComponent(filter)}` : "";
-      const data = await api<EquipmentItem[]>(`/equipment/community/${communityId}${params}`);
-      setEquipment(data);
+      const params = new URLSearchParams();
+      if (filter) params.set("category", filter);
+      if (ownerFilter) params.set("ownerId", ownerFilter);
+      const qs = params.toString() ? `?${params}` : "";
+      const data = await api<EquipmentListResponse>(`/equipment/community/${communityId}${qs}`);
+      setEquipment(data.equipment);
+      setOwners(data.owners);
     } finally {
       setLoading(false);
     }
-  }, [communityId, filter]);
+  }, [communityId, filter, ownerFilter]);
 
   useEffect(() => {
     loadEquipment();
@@ -75,6 +92,23 @@ export function EquipmentList() {
           </button>
         ))}
       </div>
+
+      {/* Owner filter */}
+      {owners.length > 1 && (
+        <div className="flex items-center gap-2 mb-6">
+          <User className="w-4 h-4 text-gray-400 shrink-0" />
+          <select
+            value={ownerFilter}
+            onChange={(e) => setOwnerFilter(e.target.value)}
+            className="px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 dark:text-gray-100 outline-none focus:ring-2 focus:ring-primary-500"
+          >
+            <option value="">Tous les propriétaires</option>
+            {owners.map((o) => (
+              <option key={o.id} value={o.id}>{o.firstName} {o.lastName}</option>
+            ))}
+          </select>
+        </div>
+      )}
 
       {loading ? (
         <div className="flex justify-center py-12"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" /></div>

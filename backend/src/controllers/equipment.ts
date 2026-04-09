@@ -42,16 +42,29 @@ export async function listEquipment(req: Request, res: Response, next: NextFunct
   try {
     const communityId = req.params.communityId as string;
     const category = req.query.category as string | undefined;
+    const ownerId = req.query.ownerId as string | undefined;
 
     const where: Record<string, unknown> = { communityId };
     if (category) where.category = category;
+    if (ownerId) where.ownerId = ownerId;
 
-    const equipment = await prisma.equipment.findMany({
-      where,
-      include: { owner: { select: { id: true, firstName: true, lastName: true, photo: true } } },
-      orderBy: { createdAt: "desc" },
+    const [equipment, owners] = await Promise.all([
+      prisma.equipment.findMany({
+        where,
+        include: { owner: { select: { id: true, firstName: true, lastName: true, photo: true } } },
+        orderBy: { createdAt: "desc" },
+      }),
+      prisma.equipment.findMany({
+        where: { communityId },
+        select: { owner: { select: { id: true, firstName: true, lastName: true } } },
+        distinct: ["ownerId"],
+      }),
+    ]);
+
+    res.json({
+      equipment,
+      owners: owners.map((e) => e.owner),
     });
-    res.json(equipment);
   } catch (err) {
     next(err);
   }
