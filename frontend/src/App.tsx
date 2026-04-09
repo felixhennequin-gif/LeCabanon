@@ -11,6 +11,7 @@ import { ArtisanList } from "./pages/Artisans";
 import { ArtisanDetail } from "./pages/ArtisanDetail";
 import { Profile } from "./pages/Profile";
 import { UserProfile } from "./pages/UserProfile";
+import { Members } from "./pages/Members";
 import { CommunityAdmin } from "./pages/CommunityAdmin";
 import { InvitationLanding } from "./pages/InvitationLanding";
 
@@ -29,6 +30,7 @@ export default function App() {
             <Route path="/communities" element={<Communities />} />
             <Route path="/communities/:id" element={<CommunityDetail />} />
             <Route path="/communities/:id/admin" element={<CommunityAdmin />} />
+            <Route path="/communities/:communityId/members" element={<Members />} />
             <Route path="/communities/:communityId/equipment" element={<EquipmentList />} />
             <Route path="/communities/:communityId/artisans" element={<ArtisanList />} />
             <Route path="/artisans/:id" element={<ArtisanDetail />} />
