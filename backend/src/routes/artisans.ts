@@ -11,6 +11,7 @@ import {
   createReview,
   listReviews,
 } from "../controllers/artisans.js";
+import { claimArtisan, verifyClaim, updateArtisanProfile } from "../controllers/claim.js";
 
 export const artisanRouter = Router();
 
@@ -28,6 +29,11 @@ artisanRouter.get("/community/:communityId", requireMember(), listArtisans);
 artisanRouter.get("/:id", getArtisan);
 artisanRouter.patch("/:id", updateArtisan);
 artisanRouter.delete("/:id", deleteArtisan);
+
+// Claim
+artisanRouter.post("/:id/claim", claimArtisan);
+artisanRouter.post("/:id/verify-claim", verifyClaim);
+artisanRouter.patch("/:id/profile", updateArtisanProfile);
 
 // Reviews
 artisanRouter.post("/:id/reviews", createReview);
