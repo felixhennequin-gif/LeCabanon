@@ -36,3 +36,51 @@ userRouter.patch("/me", authenticate, async (req: Request, res: Response, next: 
     next(err);
   }
 });
+
+userRouter.get("/:id/profile", authenticate, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const targetId = req.params.id as string;
+
+    const targetUser = await prisma.user.findUnique({
+      where: { id: targetId },
+      select: { id: true, firstName: true, lastName: true, photo: true, createdAt: true },
+    });
+    if (!targetUser) {
+      res.status(404).json({ error: "Utilisateur introuvable" });
+      return;
+    }
+
+    // Get communities where both the viewer and the target are members
+    const viewerMemberships = await prisma.communityMember.findMany({
+      where: { userId: req.userId! },
+      select: { communityId: true },
+    });
+    const viewerCommunityIds = viewerMemberships.map((m) => m.communityId);
+
+    const equipment = await prisma.equipment.findMany({
+      where: {
+        ownerId: targetId,
+        communityId: { in: viewerCommunityIds },
+      },
+      include: {
+        community: { select: { id: true, name: true } },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    const reviews = await prisma.review.findMany({
+      where: {
+        authorId: targetId,
+        visibility: "PUBLIC",
+      },
+      include: {
+        artisan: { select: { id: true, name: true, company: true } },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    res.json({ ...targetUser, equipment, reviews });
+  } catch (err) {
+    next(err);
+  }
+});
