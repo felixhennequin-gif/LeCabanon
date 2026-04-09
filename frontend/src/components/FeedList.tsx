@@ -33,7 +33,7 @@ function Avatar({ firstName, lastName, id }: { firstName: string; lastName: stri
 
 function ActorLink({ actor }: { actor: Activity["actor"] }) {
   return (
-    <Link to={`/users/${actor.id}`} className="font-medium text-gray-900 no-underline hover:underline">
+    <Link to={`/users/${actor.id}`} className="font-medium text-gray-900 dark:text-gray-100 no-underline hover:underline">
       {actor.firstName} {actor.lastName}
     </Link>
   );
@@ -61,7 +61,7 @@ function ActivityCard({ activity }: { activity: Activity }) {
   const isRemoval = type === "EQUIPMENT_REMOVED" || type === "ARTISAN_REMOVED";
 
   return (
-    <div className={`flex gap-3 p-4 bg-white rounded-xl border border-gray-200 ${isRemoval ? "opacity-60" : ""}`}>
+    <div className={`flex gap-3 p-4 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 ${isRemoval ? "opacity-60" : ""}`}>
       <Avatar firstName={actor.firstName} lastName={actor.lastName} id={actor.id} />
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2">
@@ -226,7 +226,7 @@ export function FeedList({ communityId }: { communityId: string }) {
           <button
             onClick={handleLoadMore}
             disabled={loadingMore}
-            className="px-4 py-2 text-sm text-primary-600 border border-primary-200 rounded-lg hover:bg-primary-50 cursor-pointer disabled:opacity-50 bg-white"
+            className="px-4 py-2 text-sm text-primary-600 dark:text-primary-400 border border-primary-200 dark:border-primary-800 rounded-lg hover:bg-primary-50 dark:hover:bg-primary-900/30 cursor-pointer disabled:opacity-50 bg-white dark:bg-gray-900"
           >
             {loadingMore ? "Chargement..." : "Charger plus"}
           </button>

@@ -77,11 +77,11 @@ export function Members() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Rechercher un membre..."
-          className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+          className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-800 dark:text-gray-100"
         />
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 divide-y divide-gray-100">
+      <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 divide-y divide-gray-100 dark:divide-gray-800">
         {filtered.map((m) => (
           <div key={m.userId} className="flex items-center justify-between px-5 py-4">
             <div className="flex items-center gap-3">
@@ -92,8 +92,8 @@ export function Members() {
                 {m.user.firstName[0]}{m.user.lastName[0]}
               </Link>
               <div>
-                <p className="text-sm font-medium text-gray-900">
-                  <Link to={`/users/${m.user.id}`} className="text-gray-900 no-underline hover:underline">
+                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                  <Link to={`/users/${m.user.id}`} className="text-gray-900 dark:text-gray-100 no-underline hover:underline">
                     {m.user.firstName} {m.user.lastName}
                   </Link>
                   {m.role === "ADMIN" && <span className="ml-1.5 text-xs text-primary-600 bg-primary-50 px-1.5 py-0.5 rounded">Admin</span>}

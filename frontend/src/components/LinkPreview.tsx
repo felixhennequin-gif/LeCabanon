@@ -55,7 +55,7 @@ function LinkPreviewInner({ url }: { url: string }) {
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      className="block bg-gray-50 rounded-lg border border-gray-200 overflow-hidden hover:border-primary-300 transition-colors no-underline"
+      className="block bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden hover:border-primary-300 dark:hover:border-primary-600 transition-colors no-underline"
     >
       <div className="flex">
         {data.image && (
@@ -70,7 +70,7 @@ function LinkPreviewInner({ url }: { url: string }) {
         )}
         <div className="p-3 min-w-0 flex-1">
           {data.siteName && <p className="text-xs text-gray-400 mb-0.5">{data.siteName}</p>}
-          {data.title && <p className="text-sm font-medium text-gray-900 truncate">{data.title}</p>}
+          {data.title && <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{data.title}</p>}
           {data.description && (
             <p className="text-xs text-gray-500 mt-1 line-clamp-2">
               {data.description.length > 150 ? data.description.slice(0, 150) + "…" : data.description}

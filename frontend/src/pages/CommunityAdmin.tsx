@@ -155,23 +155,23 @@ export function CommunityAdmin() {
       <h1 className="text-2xl font-bold mb-8">Administration — {community.name}</h1>
 
       {/* Section 1: Edit info */}
-      <section className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+      <section className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
         <h2 className="text-lg font-semibold mb-4">Informations</h2>
         <form onSubmit={handleSubmit(onSave)} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Nom</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nom</label>
             <input
               {...register("name")}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-800 dark:text-gray-100"
             />
             {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
             <textarea
               {...register("description")}
               rows={3}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-800 dark:text-gray-100"
             />
           </div>
           <div className="flex items-center gap-3">
@@ -188,10 +188,10 @@ export function CommunityAdmin() {
       </section>
 
       {/* Section 2: Access code */}
-      <section className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+      <section className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
         <h2 className="text-lg font-semibold mb-4">Code d'accès</h2>
         <div className="flex items-center gap-3 mb-4">
-          <code className="bg-gray-100 px-3 py-1.5 rounded text-sm font-mono tracking-wider">
+          <code className="bg-gray-100 dark:bg-gray-800 px-3 py-1.5 rounded text-sm font-mono tracking-wider dark:text-gray-200">
             {showCode ? accessCode : "••••••••"}
           </code>
           <button
@@ -212,7 +212,7 @@ export function CommunityAdmin() {
       </section>
 
       {/* Section 3: Invitations */}
-      <section className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+      <section className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
         <h2 className="text-lg font-semibold mb-4">Invitations</h2>
 
         {/* Create invitation form */}
@@ -356,7 +356,7 @@ export function CommunityAdmin() {
       </section>
 
       {/* Section 4: Members */}
-      <section className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+      <section className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
         <h2 className="text-lg font-semibold mb-1">Membres</h2>
         <p className="text-sm text-gray-400 mb-4">{community._count.members} membre{community._count.members > 1 ? "s" : ""}</p>
         <div className="space-y-3">
@@ -367,7 +367,7 @@ export function CommunityAdmin() {
                   {m.user.firstName[0]}{m.user.lastName[0]}
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-900">
+                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                     {m.user.firstName} {m.user.lastName}
                     {m.role === "ADMIN" && <span className="ml-1.5 text-xs text-primary-600 bg-primary-50 px-1.5 py-0.5 rounded">Admin</span>}
                   </p>
@@ -402,7 +402,7 @@ export function CommunityAdmin() {
       {/* Delete confirmation modal */}
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowDeleteModal(false)}>
-          <div className="bg-white rounded-xl p-6 max-w-md w-full" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white dark:bg-gray-900 rounded-xl p-6 max-w-md w-full" onClick={(e) => e.stopPropagation()}>
             <h3 className="text-lg font-semibold text-red-700 mb-3">Supprimer la communauté</h3>
             <p className="text-sm text-gray-600 mb-4">
               Êtes-vous sûr ? Cette action supprimera définitivement la communauté, tout le matériel, les artisans, les avis et les messages. Cette action est irréversible.
@@ -414,7 +414,7 @@ export function CommunityAdmin() {
               type="text"
               value={deleteConfirmName}
               onChange={(e) => setDeleteConfirmName(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm mb-4 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
+              className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm mb-4 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 bg-white dark:bg-gray-800 dark:text-gray-100"
               placeholder={community.name}
             />
             <div className="flex justify-end gap-3">

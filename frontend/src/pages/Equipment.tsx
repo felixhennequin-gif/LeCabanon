@@ -70,7 +70,7 @@ export function EquipmentList() {
       <div className="flex flex-wrap gap-2 mb-6">
         <button
           onClick={() => setFilter("")}
-          className={`px-3 py-1 text-sm rounded-full cursor-pointer border ${!filter ? "bg-primary-600 text-white border-primary-600" : "bg-white text-gray-600 border-gray-300 hover:bg-gray-50"}`}
+          className={`px-3 py-1 text-sm rounded-full cursor-pointer border ${!filter ? "bg-primary-600 text-white border-primary-600" : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"}`}
         >
           Tout
         </button>
@@ -78,7 +78,7 @@ export function EquipmentList() {
           <button
             key={cat}
             onClick={() => setFilter(cat === filter ? "" : cat)}
-            className={`px-3 py-1 text-sm rounded-full cursor-pointer border ${filter === cat ? "bg-primary-600 text-white border-primary-600" : "bg-white text-gray-600 border-gray-300 hover:bg-gray-50"}`}
+            className={`px-3 py-1 text-sm rounded-full cursor-pointer border ${filter === cat ? "bg-primary-600 text-white border-primary-600" : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"}`}
           >
             {cat}
           </button>
@@ -96,8 +96,8 @@ export function EquipmentList() {
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {equipment.map((e) => (
-            <div key={e.id} className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-              <div className="h-40 bg-gray-100 flex items-center justify-center">
+            <div key={e.id} className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+              <div className="h-40 bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
                 {e.photos[0] ? (
                   <img src={e.photos[0]} alt={e.name} className="w-full h-full object-cover" />
                 ) : (
@@ -107,8 +107,8 @@ export function EquipmentList() {
               <div className="p-4">
                 <div className="flex items-start justify-between">
                   <div>
-                    <h3 className="font-semibold text-gray-900">{e.name}</h3>
-                    <span className="inline-block text-xs px-2 py-0.5 bg-primary-50 text-primary-700 rounded-full mt-1">{e.category}</span>
+                    <h3 className="font-semibold text-gray-900 dark:text-gray-100">{e.name}</h3>
+                    <span className="inline-block text-xs px-2 py-0.5 bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 rounded-full mt-1">{e.category}</span>
                   </div>
                   {(e.ownerId === user?.id) && (
                     <div className="flex gap-1">
@@ -118,8 +118,8 @@ export function EquipmentList() {
                     </div>
                   )}
                 </div>
-                {e.description && <p className="text-sm text-gray-500 mt-2 line-clamp-2">{e.description}</p>}
-                <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
+                {e.description && <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 line-clamp-2">{e.description}</p>}
+                <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100 dark:border-gray-800">
                   <Link to={`/users/${e.owner.id}`} className="flex items-center gap-2 no-underline hover:underline">
                     <div className="w-6 h-6 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center text-xs font-medium">
                       {e.owner.firstName[0]}{e.owner.lastName[0]}
@@ -188,26 +188,26 @@ function EquipmentForm({ communityId, onClose, onCreated }: { communityId: strin
       <form
         onClick={(e) => e.stopPropagation()}
         onSubmit={handleSubmit}
-        className="bg-white p-6 rounded-xl w-full max-w-md space-y-4"
+        className="bg-white dark:bg-gray-900 p-6 rounded-xl w-full max-w-md space-y-4"
       >
         <h2 className="text-lg font-bold">Ajouter du matériel</h2>
-        {error && <div className="bg-red-50 text-red-600 px-4 py-2 rounded-lg text-sm">{error}</div>}
+        {error && <div className="bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 px-4 py-2 rounded-lg text-sm">{error}</div>}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Nom</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nom</label>
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-primary-500"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg outline-none focus:ring-2 focus:ring-primary-500 bg-white dark:bg-gray-800 dark:text-gray-100"
             placeholder="Perceuse Bosch"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Catégorie</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Catégorie</label>
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-primary-500 bg-white"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg outline-none focus:ring-2 focus:ring-primary-500 bg-white dark:bg-gray-800 dark:text-gray-100"
           >
             {EQUIPMENT_CATEGORIES.map((cat) => (
               <option key={cat} value={cat}>{cat}</option>
@@ -215,17 +215,17 @@ function EquipmentForm({ communityId, onClose, onCreated }: { communityId: strin
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-primary-500"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg outline-none focus:ring-2 focus:ring-primary-500 bg-white dark:bg-gray-800 dark:text-gray-100"
             rows={3}
             placeholder="En bon état, avec ses embouts"
           />
         </div>
         <div className="flex gap-2 justify-end">
-          <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-gray-600 bg-white border border-gray-300 rounded-lg cursor-pointer">
+          <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer">
             Annuler
           </button>
           <button type="submit" disabled={loading} className="px-4 py-2 text-sm bg-primary-600 text-white rounded-lg disabled:opacity-50 cursor-pointer">

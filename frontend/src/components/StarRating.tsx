@@ -19,7 +19,7 @@ export function StarRating({ rating, onChange, size = 20 }: StarRatingProps) {
         >
           <Star
             size={size}
-            className={star <= rating ? "fill-warm-500 text-warm-500" : "text-gray-300"}
+            className={star <= rating ? "fill-warm-500 text-warm-500" : "text-gray-300 dark:text-gray-600"}
           />
         </button>
       ))}

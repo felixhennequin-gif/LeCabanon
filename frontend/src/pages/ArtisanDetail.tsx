@@ -109,7 +109,7 @@ export function ArtisanDetail() {
         <ArrowLeft className="w-4 h-4" /> Retour
       </button>
 
-      <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+      <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
         <div className="flex items-start justify-between">
           <div>
             <div className="flex items-center gap-2">
@@ -121,7 +121,7 @@ export function ArtisanDetail() {
               )}
             </div>
             {artisan.company && <p className="text-gray-500">{artisan.company}</p>}
-            <span className="inline-block text-xs px-2 py-0.5 bg-primary-50 text-primary-700 rounded-full mt-2">{artisan.category}</span>
+            <span className="inline-block text-xs px-2 py-0.5 bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 rounded-full mt-2">{artisan.category}</span>
           </div>
           <div className="flex items-center gap-2">
             <Link
@@ -146,7 +146,7 @@ export function ArtisanDetail() {
               <Link
                 key={ac.communityId}
                 to={`/communities/${ac.communityId}`}
-                className="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full no-underline hover:bg-gray-200"
+                className="text-xs px-2 py-0.5 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-full no-underline hover:bg-gray-200 dark:hover:bg-gray-700"
               >
                 {ac.community.name}
               </Link>
@@ -181,7 +181,7 @@ export function ArtisanDetail() {
 
         {/* Claimed profile info */}
         {artisan.claimed && (artisan.description || artisan.certifications.length > 0 || artisan.horaires) && (
-          <div className="mt-4 pt-4 border-t border-gray-100 space-y-3">
+          <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800 space-y-3">
             {artisan.description && (
               <p className="text-sm text-gray-600 whitespace-pre-line">{artisan.description}</p>
             )}
@@ -202,7 +202,7 @@ export function ArtisanDetail() {
           </div>
         )}
 
-        <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100">
+        <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
           <p className="text-xs text-gray-400">
             Ajouté par{" "}
             <Link to={`/users/${artisan.createdBy.id}`} className="text-gray-500 no-underline hover:underline">
@@ -274,14 +274,14 @@ export function ArtisanDetail() {
       ) : (
         <div className="space-y-4">
           {artisan.reviews.map((r) => (
-            <div key={r.id} className="bg-white p-4 rounded-xl border border-gray-200">
+            <div key={r.id} className="bg-white dark:bg-gray-900 p-4 rounded-xl border border-gray-200 dark:border-gray-700">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <Link to={`/users/${r.author.id}`} className="w-8 h-8 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center text-sm font-medium no-underline">
                     {r.author.firstName[0]}{r.author.lastName[0]}
                   </Link>
                   <div>
-                    <Link to={`/users/${r.author.id}`} className="text-sm font-medium text-gray-900 no-underline hover:underline">{r.author.firstName} {r.author.lastName}</Link>
+                    <Link to={`/users/${r.author.id}`} className="text-sm font-medium text-gray-900 dark:text-gray-100 no-underline hover:underline">{r.author.firstName} {r.author.lastName}</Link>
                     <StarRating rating={r.rating} size={14} />
                   </div>
                 </div>
@@ -382,12 +382,12 @@ function ReplyForm({ reviewId, onClose, onCreated }: { reviewId: string; onClose
       <textarea
         value={content}
         onChange={(e) => setContent(e.target.value)}
-        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary-500"
+        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary-500 bg-white dark:bg-gray-800 dark:text-gray-100"
         rows={3}
         placeholder="Votre réponse..."
       />
       <div className="flex gap-2 justify-end">
-        <button type="button" onClick={onClose} className="px-3 py-1.5 text-xs text-gray-600 bg-white border border-gray-300 rounded-lg cursor-pointer">Annuler</button>
+        <button type="button" onClick={onClose} className="px-3 py-1.5 text-xs text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer">Annuler</button>
         <button type="submit" disabled={loading} className="px-3 py-1.5 text-xs bg-primary-600 text-white rounded-lg disabled:opacity-50 cursor-pointer">{loading ? "..." : "Répondre"}</button>
       </div>
     </form>
@@ -423,20 +423,20 @@ function ReviewForm({ artisanId, communityId, onClose, onCreated }: { artisanId:
       <form
         onClick={(e) => e.stopPropagation()}
         onSubmit={handleSubmit}
-        className="bg-white p-6 rounded-xl w-full max-w-md space-y-4"
+        className="bg-white dark:bg-gray-900 p-6 rounded-xl w-full max-w-md space-y-4"
       >
         <h2 className="text-lg font-bold">Laisser un avis</h2>
         {error && <div className="bg-red-50 text-red-600 px-4 py-2 rounded-lg text-sm">{error}</div>}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Note</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Note</label>
           <StarRating rating={rating} onChange={setRating} size={28} />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Commentaire</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Commentaire</label>
           <textarea
             value={comment}
             onChange={(e) => setComment(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-primary-500"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg outline-none focus:ring-2 focus:ring-primary-500 bg-white dark:bg-gray-800 dark:text-gray-100"
             rows={4}
             placeholder="Travail soigné, ponctuel, je recommande..."
           />
@@ -456,7 +456,7 @@ function ReviewForm({ artisanId, communityId, onClose, onCreated }: { artisanId:
           </p>
         </div>
         <div className="flex gap-2 justify-end">
-          <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-gray-600 bg-white border border-gray-300 rounded-lg cursor-pointer">Annuler</button>
+          <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer">Annuler</button>
           <button type="submit" disabled={loading} className="px-4 py-2 text-sm bg-primary-600 text-white rounded-lg disabled:opacity-50 cursor-pointer">{loading ? "..." : "Publier"}</button>
         </div>
       </form>
@@ -496,41 +496,41 @@ function ProfileEditForm({ artisan, onClose, onSaved }: { artisan: ArtisanData; 
       <form
         onClick={(e) => e.stopPropagation()}
         onSubmit={handleSubmit}
-        className="bg-white p-6 rounded-xl w-full max-w-md space-y-4 max-h-[90vh] overflow-y-auto"
+        className="bg-white dark:bg-gray-900 p-6 rounded-xl w-full max-w-md space-y-4 max-h-[90vh] overflow-y-auto"
       >
         <h2 className="text-lg font-bold">Modifier mon profil</h2>
         {error && <div className="bg-red-50 text-red-600 px-4 py-2 rounded-lg text-sm">{error}</div>}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Description / Bio</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description / Bio</label>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-primary-500"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg outline-none focus:ring-2 focus:ring-primary-500 bg-white dark:bg-gray-800 dark:text-gray-100"
             rows={4}
             placeholder="Présentez votre activité, vos spécialités..."
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Certifications (séparées par des virgules)</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Certifications (séparées par des virgules)</label>
           <input
             value={certifications}
             onChange={(e) => setCertifications(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-primary-500"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg outline-none focus:ring-2 focus:ring-primary-500 bg-white dark:bg-gray-800 dark:text-gray-100"
             placeholder="RGE, Qualibat, Qualifelec..."
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Horaires</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Horaires</label>
           <textarea
             value={horaires}
             onChange={(e) => setHoraires(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-primary-500"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg outline-none focus:ring-2 focus:ring-primary-500 bg-white dark:bg-gray-800 dark:text-gray-100"
             rows={3}
             placeholder="Lun-Ven : 8h-18h&#10;Samedi : sur rendez-vous"
           />
         </div>
         <div className="flex gap-2 justify-end">
-          <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-gray-600 bg-white border border-gray-300 rounded-lg cursor-pointer">Annuler</button>
+          <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer">Annuler</button>
           <button type="submit" disabled={loading} className="px-4 py-2 text-sm bg-primary-600 text-white rounded-lg disabled:opacity-50 cursor-pointer">{loading ? "..." : "Enregistrer"}</button>
         </div>
       </form>

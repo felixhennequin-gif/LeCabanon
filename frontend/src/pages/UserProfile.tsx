@@ -71,7 +71,7 @@ export function UserProfile() {
       </button>
 
       {/* Header */}
-      <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+      <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
         <div className="flex items-center gap-4">
           <div className="w-16 h-16 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center text-xl font-bold">
             {profile.firstName[0]}{profile.lastName[0]}
@@ -96,8 +96,8 @@ export function UserProfile() {
               </Link>
               <div className="grid gap-3 sm:grid-cols-2">
                 {group.items.map((e) => (
-                  <div key={e.id} className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-                    <div className="h-28 bg-gray-100 flex items-center justify-center">
+                  <div key={e.id} className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+                    <div className="h-28 bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
                       {e.photos[0] ? (
                         <img src={e.photos[0]} alt={e.name} className="w-full h-full object-cover" />
                       ) : (
@@ -122,7 +122,7 @@ export function UserProfile() {
           <h2 className="text-lg font-bold mb-3">Avis postés</h2>
           <div className="space-y-3">
             {profile.reviews.map((r) => (
-              <div key={r.id} className="bg-white p-4 rounded-xl border border-gray-200">
+              <div key={r.id} className="bg-white dark:bg-gray-900 p-4 rounded-xl border border-gray-200 dark:border-gray-700">
                 <div className="flex items-center justify-between">
                   <Link to={`/artisans/${r.artisan.id}`} className="font-medium text-primary-600 no-underline hover:underline text-sm">
                     {r.artisan.company || r.artisan.name}

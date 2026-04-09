@@ -72,30 +72,30 @@ export function CommunityDetail() {
       <div className="hidden sm:grid gap-4 sm:grid-cols-3 mb-8">
         <Link
           to={`/communities/${id}/equipment`}
-          className="bg-white p-6 rounded-xl border border-gray-200 hover:border-primary-300 hover:shadow-sm transition-all no-underline text-center"
+          className="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-primary-300 dark:hover:border-primary-600 hover:shadow-sm transition-all no-underline text-center"
         >
           <Wrench className="w-8 h-8 text-primary-600 mx-auto mb-2" />
-          <h3 className="font-semibold text-gray-900">Matériel</h3>
+          <h3 className="font-semibold text-gray-900 dark:text-gray-100">Matériel</h3>
           <p className="text-2xl font-bold text-primary-600 mt-1">{community._count.equipment}</p>
           <p className="text-xs text-gray-400">objets à prêter</p>
         </Link>
 
         <Link
           to={`/communities/${id}/artisans`}
-          className="bg-white p-6 rounded-xl border border-gray-200 hover:border-primary-300 hover:shadow-sm transition-all no-underline text-center"
+          className="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-primary-300 dark:hover:border-primary-600 hover:shadow-sm transition-all no-underline text-center"
         >
           <HardHat className="w-8 h-8 text-primary-600 mx-auto mb-2" />
-          <h3 className="font-semibold text-gray-900">Artisans</h3>
+          <h3 className="font-semibold text-gray-900 dark:text-gray-100">Artisans</h3>
           <p className="text-2xl font-bold text-primary-600 mt-1">{community._count.artisans}</p>
           <p className="text-xs text-gray-400">artisans recommandés</p>
         </Link>
 
         <Link
           to={`/communities/${id}/members`}
-          className="bg-white p-6 rounded-xl border border-gray-200 hover:border-primary-300 hover:shadow-sm transition-all no-underline text-center"
+          className="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-primary-300 dark:hover:border-primary-600 hover:shadow-sm transition-all no-underline text-center"
         >
           <Users className="w-8 h-8 text-primary-600 mx-auto mb-2" />
-          <h3 className="font-semibold text-gray-900">Membres</h3>
+          <h3 className="font-semibold text-gray-900 dark:text-gray-100">Membres</h3>
           <p className="text-2xl font-bold text-primary-600 mt-1">{community._count.members}</p>
           <p className="text-xs text-gray-400">voisins</p>
         </Link>
