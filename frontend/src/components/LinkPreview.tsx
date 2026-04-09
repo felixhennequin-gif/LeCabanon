@@ -10,14 +10,12 @@ interface OgData {
   siteName: string | null;
 }
 
-export function LinkPreview({ url }: { url: string }) {
+function LinkPreviewInner({ url }: { url: string }) {
   const [data, setData] = useState<OgData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
-    setLoading(true);
-    setData(null);
     api<OgData>(`/opengraph?url=${encodeURIComponent(url)}`)
       .then((d) => { if (!cancelled) setData(d); })
       .catch(() => { if (!cancelled) setData({ url, title: null, description: null, image: null, siteName: null }); })
@@ -82,4 +80,9 @@ export function LinkPreview({ url }: { url: string }) {
       </div>
     </a>
   );
+}
+
+// Key wrapper ensures full remount when URL changes, avoiding setState-in-effect issues
+export function LinkPreview({ url }: { url: string }) {
+  return <LinkPreviewInner key={url} url={url} />;
 }
