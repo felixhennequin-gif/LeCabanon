@@ -15,6 +15,8 @@ import { Members } from "./pages/Members";
 import { CommunityAdmin } from "./pages/CommunityAdmin";
 import { InvitationLanding } from "./pages/InvitationLanding";
 import { Messages } from "./pages/Messages";
+import { ArtisanPublicProfile } from "./pages/ArtisanPublicProfile";
+import { VerifyClaim } from "./pages/VerifyClaim";
 
 export default function App() {
   return (
@@ -25,6 +27,7 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/invite/:token" element={<InvitationLanding />} />
+          <Route path="/artisans/:id/public" element={<ArtisanPublicProfile />} />
 
           {/* Protected routes */}
           <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
@@ -35,6 +38,7 @@ export default function App() {
             <Route path="/communities/:communityId/equipment" element={<EquipmentList />} />
             <Route path="/communities/:communityId/artisans" element={<ArtisanList />} />
             <Route path="/artisans/:id" element={<ArtisanDetail />} />
+            <Route path="/artisans/:id/verify-claim" element={<VerifyClaim />} />
             <Route path="/messages" element={<Messages />} />
             <Route path="/messages/:conversationId" element={<Messages />} />
             <Route path="/profile" element={<Profile />} />
