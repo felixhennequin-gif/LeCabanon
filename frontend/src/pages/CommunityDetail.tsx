@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { api } from "../lib/api";
 import { useAuth } from "../contexts/AuthContext";
-import { AccessCodeBadge } from "./Communities";
 import { FeedList } from "../components/FeedList";
 import { Wrench, HardHat, Users, Settings, Trash2 } from "lucide-react";
 
@@ -53,10 +52,6 @@ export function CommunityDetail() {
         <div>
           <h1 className="text-2xl font-bold">{community.name}</h1>
           {community.description && <p className="text-gray-500 mt-1">{community.description}</p>}
-          <div className="mt-2 flex items-center gap-3">
-            <span className="text-xs text-gray-400">Code d'accès :</span>
-            <AccessCodeBadge code={community.accessCode} />
-          </div>
         </div>
         {isAdmin && (
           <Link
