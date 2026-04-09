@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { api } from "../lib/api";
 import { useAuth } from "../contexts/AuthContext";
-import { ArrowLeft, Search, Trash2 } from "lucide-react";
+import { ArrowLeft, Search, Trash2, MessageCircle } from "lucide-react";
 
 interface Member {
   userId: string;
@@ -22,6 +22,7 @@ interface CommunityData {
 export function Members() {
   const { communityId } = useParams<{ communityId: string }>();
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [community, setCommunity] = useState<CommunityData | null>(null);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -102,14 +103,31 @@ export function Members() {
                 </p>
               </div>
             </div>
-            {isAdmin && m.userId !== user?.id && (
-              <button
-                onClick={() => handleRemove(m)}
-                className="text-gray-400 hover:text-red-500 bg-transparent border-none cursor-pointer"
-              >
-                <Trash2 className="w-4 h-4" />
-              </button>
-            )}
+            <div className="flex items-center gap-1">
+              {m.userId !== user?.id && (
+                <button
+                  onClick={async () => {
+                    const conv = await api<{ id: string }>("/conversations", {
+                      method: "POST",
+                      body: JSON.stringify({ recipientId: m.userId, communityId }),
+                    });
+                    navigate(`/messages/${conv.id}`);
+                  }}
+                  className="text-gray-400 hover:text-primary-600 bg-transparent border-none cursor-pointer p-1"
+                  title="Envoyer un message"
+                >
+                  <MessageCircle className="w-4 h-4" />
+                </button>
+              )}
+              {isAdmin && m.userId !== user?.id && (
+                <button
+                  onClick={() => handleRemove(m)}
+                  className="text-gray-400 hover:text-red-500 bg-transparent border-none cursor-pointer p-1"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              )}
+            </div>
           </div>
         ))}
         {filtered.length === 0 && (

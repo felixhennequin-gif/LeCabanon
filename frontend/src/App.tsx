@@ -14,6 +14,7 @@ import { UserProfile } from "./pages/UserProfile";
 import { Members } from "./pages/Members";
 import { CommunityAdmin } from "./pages/CommunityAdmin";
 import { InvitationLanding } from "./pages/InvitationLanding";
+import { Messages } from "./pages/Messages";
 
 export default function App() {
   return (
@@ -34,6 +35,8 @@ export default function App() {
             <Route path="/communities/:communityId/equipment" element={<EquipmentList />} />
             <Route path="/communities/:communityId/artisans" element={<ArtisanList />} />
             <Route path="/artisans/:id" element={<ArtisanDetail />} />
+            <Route path="/messages" element={<Messages />} />
+            <Route path="/messages/:conversationId" element={<Messages />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/users/:id" element={<UserProfile />} />
           </Route>

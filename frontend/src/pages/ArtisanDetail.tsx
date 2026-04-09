@@ -4,7 +4,7 @@ import { api } from "../lib/api";
 import { useAuth } from "../contexts/AuthContext";
 import { StarRating } from "../components/StarRating";
 import { LinkPreview } from "../components/LinkPreview";
-import { ArrowLeft, Phone, Mail, MapPin, Trash2 } from "lucide-react";
+import { ArrowLeft, Phone, Mail, MapPin, Trash2, MessageCircle } from "lucide-react";
 
 interface Review {
   id: string;
@@ -105,12 +105,29 @@ export function ArtisanDetail() {
           </div>
         )}
 
-        <p className="text-xs text-gray-400 mt-4">
-          Ajouté par{" "}
-          <Link to={`/users/${artisan.createdBy.id}`} className="text-gray-500 no-underline hover:underline">
-            {artisan.createdBy.firstName} {artisan.createdBy.lastName}
-          </Link>
-        </p>
+        <div className="flex items-center justify-between mt-4">
+          <p className="text-xs text-gray-400">
+            Ajouté par{" "}
+            <Link to={`/users/${artisan.createdBy.id}`} className="text-gray-500 no-underline hover:underline">
+              {artisan.createdBy.firstName} {artisan.createdBy.lastName}
+            </Link>
+          </p>
+          {artisan.createdById !== user?.id && (
+            <button
+              onClick={async () => {
+                const conv = await api<{ id: string }>("/conversations", {
+                  method: "POST",
+                  body: JSON.stringify({ recipientId: artisan.createdById, communityId: artisan.communityId }),
+                });
+                navigate(`/messages/${conv.id}`);
+              }}
+              className="inline-flex items-center gap-1 text-xs text-primary-600 hover:text-primary-700 bg-transparent border-none cursor-pointer"
+            >
+              <MessageCircle className="w-3.5 h-3.5" />
+              Contacter
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Reviews */}
