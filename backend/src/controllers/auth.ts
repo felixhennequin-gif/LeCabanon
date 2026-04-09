@@ -46,7 +46,7 @@ export async function register(req: Request, res: Response, next: NextFunction) 
     });
   } catch (err) {
     if (err instanceof z.ZodError) {
-      res.status(400).json({ error: err.errors[0].message });
+      res.status(400).json({ error: err.issues[0].message });
       return;
     }
     next(err);
@@ -77,7 +77,7 @@ export async function login(req: Request, res: Response, next: NextFunction) {
     });
   } catch (err) {
     if (err instanceof z.ZodError) {
-      res.status(400).json({ error: err.errors[0].message });
+      res.status(400).json({ error: err.issues[0].message });
       return;
     }
     next(err);

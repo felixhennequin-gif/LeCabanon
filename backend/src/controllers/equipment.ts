@@ -12,7 +12,7 @@ const createEquipmentSchema = z.object({
 export async function createEquipment(req: Request, res: Response, next: NextFunction) {
   try {
     const data = createEquipmentSchema.parse(req.body);
-    const { communityId } = req.params;
+    const communityId = req.params.communityId as string;
 
     const equipment = await prisma.equipment.create({
       data: {
@@ -27,7 +27,7 @@ export async function createEquipment(req: Request, res: Response, next: NextFun
     res.status(201).json(equipment);
   } catch (err) {
     if (err instanceof z.ZodError) {
-      res.status(400).json({ error: err.errors[0].message });
+      res.status(400).json({ error: err.issues[0].message });
       return;
     }
     next(err);
@@ -36,8 +36,8 @@ export async function createEquipment(req: Request, res: Response, next: NextFun
 
 export async function listEquipment(req: Request, res: Response, next: NextFunction) {
   try {
-    const { communityId } = req.params;
-    const { category } = req.query;
+    const communityId = req.params.communityId as string;
+    const category = req.query.category as string | undefined;
 
     const where: Record<string, unknown> = { communityId };
     if (category) where.category = category;
@@ -55,8 +55,9 @@ export async function listEquipment(req: Request, res: Response, next: NextFunct
 
 export async function getEquipment(req: Request, res: Response, next: NextFunction) {
   try {
+    const id = req.params.id as string;
     const equipment = await prisma.equipment.findUnique({
-      where: { id: req.params.id },
+      where: { id },
       include: { owner: { select: { id: true, firstName: true, lastName: true, photo: true } } },
     });
     if (!equipment) throw new AppError(404, "Matériel introuvable");
@@ -68,14 +69,15 @@ export async function getEquipment(req: Request, res: Response, next: NextFuncti
 
 export async function updateEquipment(req: Request, res: Response, next: NextFunction) {
   try {
-    const equipment = await prisma.equipment.findUnique({ where: { id: req.params.id } });
+    const id = req.params.id as string;
+    const equipment = await prisma.equipment.findUnique({ where: { id } });
     if (!equipment) throw new AppError(404, "Matériel introuvable");
     if (equipment.ownerId !== req.userId && req.communityRole !== "ADMIN") {
       throw new AppError(403, "Non autorisé");
     }
 
     const updated = await prisma.equipment.update({
-      where: { id: req.params.id },
+      where: { id },
       data: {
         name: req.body.name,
         description: req.body.description,
@@ -90,13 +92,14 @@ export async function updateEquipment(req: Request, res: Response, next: NextFun
 
 export async function deleteEquipment(req: Request, res: Response, next: NextFunction) {
   try {
-    const equipment = await prisma.equipment.findUnique({ where: { id: req.params.id } });
+    const id = req.params.id as string;
+    const equipment = await prisma.equipment.findUnique({ where: { id } });
     if (!equipment) throw new AppError(404, "Matériel introuvable");
     if (equipment.ownerId !== req.userId && req.communityRole !== "ADMIN") {
       throw new AppError(403, "Non autorisé");
     }
 
-    await prisma.equipment.delete({ where: { id: req.params.id } });
+    await prisma.equipment.delete({ where: { id } });
     res.json({ message: "Matériel supprimé" });
   } catch (err) {
     next(err);

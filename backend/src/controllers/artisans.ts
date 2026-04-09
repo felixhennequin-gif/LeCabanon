@@ -21,7 +21,7 @@ const createReviewSchema = z.object({
 export async function createArtisan(req: Request, res: Response, next: NextFunction) {
   try {
     const data = createArtisanSchema.parse(req.body);
-    const { communityId } = req.params;
+    const communityId = req.params.communityId as string;
 
     const artisan = await prisma.artisan.create({
       data: {
@@ -38,7 +38,7 @@ export async function createArtisan(req: Request, res: Response, next: NextFunct
     res.status(201).json(artisan);
   } catch (err) {
     if (err instanceof z.ZodError) {
-      res.status(400).json({ error: err.errors[0].message });
+      res.status(400).json({ error: err.issues[0].message });
       return;
     }
     next(err);
@@ -47,8 +47,8 @@ export async function createArtisan(req: Request, res: Response, next: NextFunct
 
 export async function listArtisans(req: Request, res: Response, next: NextFunction) {
   try {
-    const { communityId } = req.params;
-    const { category } = req.query;
+    const communityId = req.params.communityId as string;
+    const category = req.query.category as string | undefined;
 
     const where: Record<string, unknown> = { communityId };
     if (category) where.category = category;
@@ -80,8 +80,9 @@ export async function listArtisans(req: Request, res: Response, next: NextFuncti
 
 export async function getArtisan(req: Request, res: Response, next: NextFunction) {
   try {
+    const id = req.params.id as string;
     const artisan = await prisma.artisan.findUnique({
-      where: { id: req.params.id },
+      where: { id },
       include: {
         createdBy: { select: { id: true, firstName: true, lastName: true } },
         reviews: {
@@ -114,14 +115,15 @@ export async function getArtisan(req: Request, res: Response, next: NextFunction
 
 export async function updateArtisan(req: Request, res: Response, next: NextFunction) {
   try {
-    const artisan = await prisma.artisan.findUnique({ where: { id: req.params.id } });
+    const id = req.params.id as string;
+    const artisan = await prisma.artisan.findUnique({ where: { id } });
     if (!artisan) throw new AppError(404, "Artisan introuvable");
     if (artisan.createdById !== req.userId && req.communityRole !== "ADMIN") {
       throw new AppError(403, "Non autorisé");
     }
 
     const updated = await prisma.artisan.update({
-      where: { id: req.params.id },
+      where: { id },
       data: {
         name: req.body.name,
         company: req.body.company,
@@ -139,13 +141,14 @@ export async function updateArtisan(req: Request, res: Response, next: NextFunct
 
 export async function deleteArtisan(req: Request, res: Response, next: NextFunction) {
   try {
-    const artisan = await prisma.artisan.findUnique({ where: { id: req.params.id } });
+    const id = req.params.id as string;
+    const artisan = await prisma.artisan.findUnique({ where: { id } });
     if (!artisan) throw new AppError(404, "Artisan introuvable");
     if (artisan.createdById !== req.userId && req.communityRole !== "ADMIN") {
       throw new AppError(403, "Non autorisé");
     }
 
-    await prisma.artisan.delete({ where: { id: req.params.id } });
+    await prisma.artisan.delete({ where: { id } });
     res.json({ message: "Artisan supprimé" });
   } catch (err) {
     next(err);
@@ -154,8 +157,9 @@ export async function deleteArtisan(req: Request, res: Response, next: NextFunct
 
 export async function createReview(req: Request, res: Response, next: NextFunction) {
   try {
+    const id = req.params.id as string;
     const data = createReviewSchema.parse(req.body);
-    const artisan = await prisma.artisan.findUnique({ where: { id: req.params.id } });
+    const artisan = await prisma.artisan.findUnique({ where: { id } });
     if (!artisan) throw new AppError(404, "Artisan introuvable");
 
     const review = await prisma.review.create({
@@ -173,7 +177,7 @@ export async function createReview(req: Request, res: Response, next: NextFuncti
     res.status(201).json(review);
   } catch (err) {
     if (err instanceof z.ZodError) {
-      res.status(400).json({ error: err.errors[0].message });
+      res.status(400).json({ error: err.issues[0].message });
       return;
     }
     next(err);
@@ -182,8 +186,9 @@ export async function createReview(req: Request, res: Response, next: NextFuncti
 
 export async function listReviews(req: Request, res: Response, next: NextFunction) {
   try {
+    const artisanId = req.params.id as string;
     const reviews = await prisma.review.findMany({
-      where: { artisanId: req.params.id },
+      where: { artisanId },
       include: {
         author: { select: { id: true, firstName: true, lastName: true, photo: true } },
         media: true,

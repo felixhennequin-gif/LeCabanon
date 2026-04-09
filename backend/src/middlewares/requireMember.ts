@@ -12,7 +12,7 @@ declare global {
 export function requireMember(communityIdParam = "communityId") {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const communityId = req.params[communityIdParam];
+      const communityId = req.params[communityIdParam] as string;
       if (!communityId) {
         res.status(400).json({ error: "communityId manquant" });
         return;
