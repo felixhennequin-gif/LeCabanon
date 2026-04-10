@@ -6,9 +6,12 @@ function getStoredTheme(): Theme {
   return (localStorage.getItem("theme") as Theme) ?? "system";
 }
 
+function resolveIsDark(theme: Theme): boolean {
+  return theme === "dark" || (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+}
+
 function applyTheme(theme: Theme) {
-  const isDark = theme === "dark" || (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
-  document.documentElement.classList.toggle("dark", isDark);
+  document.documentElement.classList.toggle("dark", resolveIsDark(theme));
 }
 
 export function useTheme() {
@@ -20,7 +23,6 @@ export function useTheme() {
     applyTheme(t);
   }, []);
 
-  // Apply on mount + listen for system changes
   useEffect(() => {
     applyTheme(theme);
     const mq = window.matchMedia("(prefers-color-scheme: dark)");
@@ -30,12 +32,11 @@ export function useTheme() {
   }, [theme]);
 
   const toggle = useCallback(() => {
-    const current = getStoredTheme();
-    const isDark = current === "dark" || (current === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+    const isDark = resolveIsDark(getStoredTheme());
     setTheme(isDark ? "light" : "dark");
   }, [setTheme]);
 
-  const isDark = theme === "dark" || (theme === "system" && typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+  const isDark = resolveIsDark(theme);
 
   return { theme, setTheme, toggle, isDark };
 }

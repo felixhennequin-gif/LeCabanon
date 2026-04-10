@@ -147,16 +147,16 @@ export function CommunityAdmin() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <Link to={`/communities/${id}`} className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 mb-4 no-underline">
+      <Link to={`/communities/${id}`} className="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 mb-4 no-underline">
         <ArrowLeft className="w-4 h-4" />
         Retour à la communauté
       </Link>
 
-      <h1 className="text-2xl font-bold mb-8">Administration — {community.name}</h1>
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-8">Administration — {community.name}</h1>
 
       {/* Section 1: Edit info */}
       <section className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
-        <h2 className="text-lg font-semibold mb-4">Informations</h2>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Informations</h2>
         <form onSubmit={handleSubmit(onSave)} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nom</label>
@@ -189,14 +189,14 @@ export function CommunityAdmin() {
 
       {/* Section 2: Access code */}
       <section className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
-        <h2 className="text-lg font-semibold mb-4">Code d'accès</h2>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Code d'accès</h2>
         <div className="flex items-center gap-3 mb-4">
           <code className="bg-gray-100 dark:bg-gray-800 px-3 py-1.5 rounded text-sm font-mono tracking-wider dark:text-gray-200">
             {showCode ? accessCode : "••••••••"}
           </code>
           <button
             onClick={() => setShowCode(!showCode)}
-            className="text-gray-400 hover:text-gray-600 bg-transparent border-none cursor-pointer"
+            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 bg-transparent border-none cursor-pointer"
             title={showCode ? "Masquer" : "Révéler"}
           >
             {showCode ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -204,7 +204,7 @@ export function CommunityAdmin() {
         </div>
         <button
           onClick={handleRegenerateCode}
-          className="inline-flex items-center gap-1.5 text-sm text-primary-600 hover:text-primary-700 bg-transparent border border-primary-300 rounded-lg px-3 py-1.5 cursor-pointer"
+          className="inline-flex items-center gap-1.5 text-sm text-primary-600 hover:text-primary-700 bg-transparent border border-primary-300 dark:border-primary-700 rounded-lg px-3 py-1.5 cursor-pointer"
         >
           <RefreshCw className="w-4 h-4" />
           Regénérer le code
@@ -213,7 +213,7 @@ export function CommunityAdmin() {
 
       {/* Section 3: Invitations */}
       <section className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
-        <h2 className="text-lg font-semibold mb-4">Invitations</h2>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Invitations</h2>
 
         {/* Create invitation form */}
         <div className="flex flex-wrap items-end gap-3 mb-4">
@@ -222,7 +222,7 @@ export function CommunityAdmin() {
             <select
               value={inviteDuration}
               onChange={(e) => setInviteDuration(Number(e.target.value))}
-              className="border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white"
+              className="border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-800 dark:text-gray-100"
             >
               {DURATION_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -237,7 +237,7 @@ export function CommunityAdmin() {
               value={inviteMaxUses}
               onChange={(e) => setInviteMaxUses(e.target.value)}
               placeholder="Illimité"
-              className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-28"
+              className="border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm w-28 bg-white dark:bg-gray-800 dark:text-gray-100"
             />
           </div>
           <button
@@ -267,10 +267,10 @@ export function CommunityAdmin() {
 
         {/* Newly generated link */}
         {newInvite && (
-          <div className="bg-primary-50 border border-primary-200 rounded-lg p-4 mb-4">
+          <div className="bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-800 rounded-lg p-4 mb-4">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-primary-700">Lien d'invitation généré</span>
-              <button onClick={() => setNewInvite(null)} className="text-gray-400 hover:text-gray-600 bg-transparent border-none cursor-pointer">
+              <span className="text-sm font-medium text-primary-700 dark:text-primary-300">Lien d'invitation généré</span>
+              <button onClick={() => setNewInvite(null)} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 bg-transparent border-none cursor-pointer">
                 <XIcon className="w-4 h-4" />
               </button>
             </div>
@@ -278,7 +278,7 @@ export function CommunityAdmin() {
               <input
                 readOnly
                 value={newInvite.url}
-                className="flex-1 bg-white border border-gray-300 rounded-lg px-3 py-1.5 text-sm font-mono"
+                className="flex-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-1.5 text-sm font-mono dark:text-gray-100"
                 onFocus={(e) => e.target.select()}
               />
               <button
@@ -287,7 +287,7 @@ export function CommunityAdmin() {
                   setCopied(true);
                   setTimeout(() => setCopied(false), 2000);
                 }}
-                className="inline-flex items-center gap-1 px-3 py-1.5 text-sm border border-gray-300 rounded-lg bg-white hover:bg-gray-50 cursor-pointer"
+                className="inline-flex items-center gap-1 px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer"
               >
                 {copied ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4" />}
                 {copied ? "Copié" : "Copier"}
@@ -301,14 +301,14 @@ export function CommunityAdmin() {
                       url: newInvite.url,
                     });
                   }}
-                  className="inline-flex items-center gap-1 px-3 py-1.5 text-sm border border-gray-300 rounded-lg bg-white hover:bg-gray-50 cursor-pointer"
+                  className="inline-flex items-center gap-1 px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer"
                 >
                   <Share2 className="w-4 h-4" />
                   Partager
                 </button>
               )}
             </div>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-gray-500 dark:text-gray-400">
               Expire le {new Date(newInvite.expiresAt).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}
               {newInvite.maxUses ? ` — ${newInvite.maxUses} utilisation${newInvite.maxUses > 1 ? "s" : ""} max.` : " — utilisations illimitées"}
             </p>
@@ -318,12 +318,12 @@ export function CommunityAdmin() {
         {/* Existing invitations list */}
         {invitations.length > 0 && (
           <div className="space-y-2">
-            <h3 className="text-sm font-medium text-gray-700 mb-2">Invitations existantes</h3>
+            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Invitations existantes</h3>
             {invitations.map((inv) => {
               const status = !inv.active ? "Révoqué" : inv.expired ? "Expiré" : "Actif";
-              const statusColor = status === "Actif" ? "text-green-600 bg-green-50" : "text-gray-500 bg-gray-100";
+              const statusColor = status === "Actif" ? "text-green-600 bg-green-50 dark:bg-green-900/30 dark:text-green-400" : "text-gray-500 bg-gray-100 dark:bg-gray-800 dark:text-gray-400";
               return (
-                <div key={inv.id} className={`flex items-center justify-between p-3 rounded-lg border ${inv.expired ? "border-gray-200 opacity-60" : "border-gray-200"}`}>
+                <div key={inv.id} className={`flex items-center justify-between p-3 rounded-lg border ${inv.expired ? "border-gray-200 dark:border-gray-700 opacity-60" : "border-gray-200 dark:border-gray-700"}`}>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 mb-1">
                       <code className="text-xs font-mono text-gray-500 truncate">...{inv.token.slice(-8)}</code>
@@ -357,7 +357,7 @@ export function CommunityAdmin() {
 
       {/* Section 4: Members */}
       <section className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
-        <h2 className="text-lg font-semibold mb-1">Membres</h2>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1">Membres</h2>
         <p className="text-sm text-gray-400 mb-4">{community._count.members} membre{community._count.members > 1 ? "s" : ""}</p>
         <div className="space-y-3">
           {community.members.map((m) => (
@@ -388,9 +388,9 @@ export function CommunityAdmin() {
       </section>
 
       {/* Section 5: Danger zone */}
-      <section className="rounded-xl border-2 border-red-200 bg-red-50 p-6">
-        <h2 className="text-lg font-semibold text-red-700 mb-2">Zone dangereuse</h2>
-        <p className="text-sm text-red-600 mb-4">Ces actions sont irréversibles.</p>
+      <section className="rounded-xl border-2 border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 p-6">
+        <h2 className="text-lg font-semibold text-red-700 dark:text-red-400 mb-2">Zone dangereuse</h2>
+        <p className="text-sm text-red-600 dark:text-red-400 mb-4">Ces actions sont irréversibles.</p>
         <button
           onClick={() => setShowDeleteModal(true)}
           className="bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-700 cursor-pointer"
@@ -403,11 +403,11 @@ export function CommunityAdmin() {
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowDeleteModal(false)}>
           <div className="bg-white dark:bg-gray-900 rounded-xl p-6 max-w-md w-full" onClick={(e) => e.stopPropagation()}>
-            <h3 className="text-lg font-semibold text-red-700 mb-3">Supprimer la communauté</h3>
-            <p className="text-sm text-gray-600 mb-4">
+            <h3 className="text-lg font-semibold text-red-700 dark:text-red-400 mb-3">Supprimer la communauté</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
               Êtes-vous sûr ? Cette action supprimera définitivement la communauté, tout le matériel, les artisans, les avis et les messages. Cette action est irréversible.
             </p>
-            <p className="text-sm text-gray-600 mb-2">
+            <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">
               Tapez <strong>{community.name}</strong> pour confirmer :
             </p>
             <input
@@ -420,7 +420,7 @@ export function CommunityAdmin() {
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => { setShowDeleteModal(false); setDeleteConfirmName(""); }}
-                className="px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer bg-white"
+                className="px-4 py-2 text-sm text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer bg-white dark:bg-gray-800"
               >
                 Annuler
               </button>

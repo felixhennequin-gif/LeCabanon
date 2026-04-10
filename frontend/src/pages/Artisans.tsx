@@ -53,7 +53,7 @@ export function ArtisanList() {
       </Link>
 
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-bold">Artisans recommandés</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Artisans recommandés</h1>
         <button
           onClick={() => setShowForm(true)}
           className="flex items-center gap-1.5 px-4 py-2 text-sm bg-primary-600 text-white rounded-lg hover:bg-primary-700 cursor-pointer"
@@ -163,7 +163,7 @@ function ArtisanForm({ communityId, onClose, onCreated }: { communityId: string;
         onSubmit={handleSubmit}
         className="bg-white dark:bg-gray-900 p-6 rounded-xl w-full max-w-md space-y-4 max-h-[90vh] overflow-y-auto"
       >
-        <h2 className="text-lg font-bold">Recommander un artisan</h2>
+        <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">Recommander un artisan</h2>
         {error && <div className="bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 px-4 py-2 rounded-lg text-sm">{error}</div>}
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nom</label>
@@ -175,7 +175,7 @@ function ArtisanForm({ communityId, onClose, onCreated }: { communityId: string;
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Catégorie</label>
-          <select value={form.category} onChange={(e) => update("category", e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-primary-500 bg-white">
+          <select value={form.category} onChange={(e) => update("category", e.target.value)} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg outline-none focus:ring-2 focus:ring-primary-500 bg-white dark:bg-gray-800 dark:text-gray-100">
             {ARTISAN_CATEGORIES.map((cat) => <option key={cat} value={cat}>{cat}</option>)}
           </select>
         </div>

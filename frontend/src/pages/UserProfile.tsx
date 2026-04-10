@@ -77,7 +77,7 @@ export function UserProfile() {
             {profile.firstName[0]}{profile.lastName[0]}
           </div>
           <div>
-            <h1 className="text-2xl font-bold">{profile.firstName} {profile.lastName}</h1>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{profile.firstName} {profile.lastName}</h1>
             <p className="text-sm text-gray-400">
               Membre depuis {new Date(profile.createdAt).toLocaleDateString("fr-FR", { month: "long", year: "numeric" })}
             </p>
@@ -88,7 +88,7 @@ export function UserProfile() {
       {/* Equipment */}
       {profile.equipment.length > 0 && (
         <div className="mb-6">
-          <h2 className="text-lg font-bold mb-3">Matériel à prêter</h2>
+          <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-3">Matériel à prêter</h2>
           {Object.values(equipmentByCommunity).map((group) => (
             <div key={group.id} className="mb-4">
               <Link to={`/communities/${group.id}`} className="text-sm text-gray-400 no-underline hover:underline mb-2 block">
@@ -105,8 +105,8 @@ export function UserProfile() {
                       )}
                     </div>
                     <div className="p-3">
-                      <h3 className="font-medium text-sm text-gray-900">{e.name}</h3>
-                      <span className="text-xs px-1.5 py-0.5 bg-primary-50 text-primary-700 rounded-full">{e.category}</span>
+                      <h3 className="font-medium text-sm text-gray-900 dark:text-gray-100">{e.name}</h3>
+                      <span className="text-xs px-1.5 py-0.5 bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 rounded-full">{e.category}</span>
                     </div>
                   </div>
                 ))}
@@ -119,7 +119,7 @@ export function UserProfile() {
       {/* Reviews */}
       {profile.reviews.length > 0 && (
         <div>
-          <h2 className="text-lg font-bold mb-3">Avis postés</h2>
+          <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-3">Avis postés</h2>
           <div className="space-y-3">
             {profile.reviews.map((r) => (
               <div key={r.id} className="bg-white dark:bg-gray-900 p-4 rounded-xl border border-gray-200 dark:border-gray-700">
@@ -129,7 +129,7 @@ export function UserProfile() {
                   </Link>
                   <StarRating rating={r.rating} size={14} />
                 </div>
-                {r.comment && <p className="text-sm text-gray-600 mt-2">{r.comment}</p>}
+                {r.comment && <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">{r.comment}</p>}
                 <p className="text-xs text-gray-400 mt-2">
                   {new Date(r.createdAt).toLocaleDateString("fr-FR")}
                 </p>

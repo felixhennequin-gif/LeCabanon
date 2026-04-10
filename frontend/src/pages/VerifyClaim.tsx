@@ -33,8 +33,8 @@ function VerifyClaimInner({ id, token }: { id: string; token: string }) {
       <div className="max-w-md mx-auto mt-12 text-center">
         <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-8">
           <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
-          <h1 className="text-xl font-bold mb-2">Vérification échouée</h1>
-          <p className="text-sm text-gray-500 mb-6">{error}</p>
+          <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">Vérification échouée</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">{error}</p>
           <button
             onClick={() => navigate(`/artisans/${id}`)}
             className="px-6 py-2 bg-primary-600 text-white rounded-lg text-sm cursor-pointer"
@@ -48,10 +48,10 @@ function VerifyClaimInner({ id, token }: { id: string; token: string }) {
 
   return (
     <div className="max-w-md mx-auto mt-12 text-center">
-      <div className="bg-white rounded-xl border border-gray-200 p-8">
+      <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-8">
         <BadgeCheck className="w-12 h-12 text-green-500 mx-auto mb-4" />
-        <h1 className="text-xl font-bold mb-2">Fiche revendiquée !</h1>
-        <p className="text-sm text-gray-500 mb-6">
+        <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">Fiche revendiquée !</h1>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
           Vous pouvez maintenant personnaliser votre profil et répondre aux avis.
         </p>
         <button
@@ -75,8 +75,8 @@ export function VerifyClaim() {
       <div className="max-w-md mx-auto mt-12 text-center">
         <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-8">
           <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
-          <h1 className="text-xl font-bold mb-2">Lien invalide</h1>
-          <p className="text-sm text-gray-500">Ce lien de vérification est invalide.</p>
+          <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">Lien invalide</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Ce lien de vérification est invalide.</p>
         </div>
       </div>
     );
