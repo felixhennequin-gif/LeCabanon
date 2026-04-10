@@ -32,7 +32,7 @@ export function InvitationLanding() {
 
   if (loading || authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" />
       </div>
     );
@@ -40,11 +40,11 @@ export function InvitationLanding() {
 
   if (error || !info) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950 px-4">
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 px-4">
         <div className="w-full max-w-md text-center">
           <AlertTriangle className="w-12 h-12 text-amber-500 mx-auto mb-4" />
-          <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">Invitation invalide</h1>
-          <p className="text-gray-500 mb-6">{error || "Ce lien d'invitation a expiré ou n'est plus valide."}</p>
+          <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-2">Invitation invalide</h1>
+          <p className="text-slate-500 mb-6">{error || "Ce lien d'invitation a expiré ou n'est plus valide."}</p>
           <Link to="/communities" className="inline-block bg-primary-600 text-white px-6 py-2.5 rounded-lg font-medium hover:bg-primary-700 no-underline">
             Retour à l'accueil
           </Link>
@@ -67,19 +67,19 @@ export function InvitationLanding() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-6">
           <Warehouse className="w-12 h-12 text-primary-600 mx-auto mb-3" />
-          <p className="text-sm text-gray-500 dark:text-gray-400">Vous êtes invité à rejoindre</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">Vous êtes invité à rejoindre</p>
         </div>
 
-        <div className="bg-white dark:bg-gray-900 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 text-center">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">{info.communityName}</h1>
+        <div className="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 text-center">
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">{info.communityName}</h1>
           {info.communityDescription && (
-            <p className="text-gray-500 text-sm mb-4">{info.communityDescription}</p>
+            <p className="text-slate-500 text-sm mb-4">{info.communityDescription}</p>
           )}
-          <div className="flex items-center justify-center gap-1.5 text-xs text-gray-400 mb-6">
+          <div className="flex items-center justify-center gap-1.5 text-xs text-slate-400 mb-6">
             <Users className="w-3.5 h-3.5" />
             Invitation de {info.createdByName}
           </div>

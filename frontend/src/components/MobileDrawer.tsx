@@ -39,11 +39,11 @@ export function MobileDrawer({ isOpen, onClose, communityId, communityCounts, is
 
       {/* Panel */}
       <div
-        className={`fixed top-0 right-0 bottom-0 w-72 bg-white dark:bg-gray-900 z-50 shadow-xl transform transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "translate-x-full"}`}
+        className={`fixed top-0 right-0 bottom-0 w-72 bg-white dark:bg-slate-900 z-50 shadow-xl transform transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "translate-x-full"}`}
       >
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+        <div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-700">
           <span className="font-bold text-primary-700 dark:text-primary-400">Menu</span>
-          <button onClick={onClose} className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 bg-transparent border-none cursor-pointer">
+          <button onClick={onClose} className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 bg-transparent border-none cursor-pointer">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -52,19 +52,19 @@ export function MobileDrawer({ isOpen, onClose, communityId, communityCounts, is
           {/* Community section */}
           {communityId && communityCounts && (
             <>
-              <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-3 mb-1">Communauté</p>
+              <p className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider px-3 mb-1">Communauté</p>
               <DrawerLink to={`/communities/${communityId}/equipment`} icon={<Wrench className="w-5 h-5" />} label="Matériel" badge={communityCounts.equipment} onClose={onClose} />
               <DrawerLink to={`/communities/${communityId}/artisans`} icon={<HardHat className="w-5 h-5" />} label="Artisans" badge={communityCounts.artisans} onClose={onClose} />
               <DrawerLink to={`/communities/${communityId}/members`} icon={<Users className="w-5 h-5" />} label="Membres" badge={communityCounts.members} onClose={onClose} />
               {isAdmin && (
                 <DrawerLink to={`/communities/${communityId}/admin`} icon={<Settings className="w-5 h-5" />} label="Administration" onClose={onClose} />
               )}
-              <div className="border-t border-gray-200 dark:border-gray-700 my-3" />
+              <div className="border-t border-slate-200 dark:border-slate-700 my-3" />
             </>
           )}
 
           {/* Global section */}
-          <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-3 mb-1">Navigation</p>
+          <p className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider px-3 mb-1">Navigation</p>
           <DrawerLink to="/communities" icon={<Home className="w-5 h-5" />} label="Communautés" onClose={onClose} />
           <DrawerLink to="/messages" icon={<MessageCircle className="w-5 h-5" />} label="Messages" onClose={onClose} />
           <DrawerLink to="/profile" icon={<User className="w-5 h-5" />} label={user?.firstName ?? "Profil"} onClose={onClose} />
@@ -91,12 +91,12 @@ function DrawerLink({ to, icon, label, badge, onClose }: { to: string; icon: Rea
     <Link
       to={to}
       onClick={onClose}
-      className="flex items-center gap-3 px-3 py-2.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg no-underline"
+      className="flex items-center gap-3 px-3 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg no-underline"
     >
-      <span className="text-gray-400 dark:text-gray-500">{icon}</span>
+      <span className="text-slate-400 dark:text-slate-500">{icon}</span>
       <span className="flex-1">{label}</span>
       {badge !== undefined && (
-        <span className="text-xs text-gray-400 dark:text-gray-500">{badge}</span>
+        <span className="text-xs text-slate-400 dark:text-slate-500">{badge}</span>
       )}
     </Link>
   );

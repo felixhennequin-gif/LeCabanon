@@ -234,8 +234,8 @@ export function Messages() {
 
   function StatusIcon({ status }: { status: string }) {
     if (status === "READ") return <CheckCheck className="w-3.5 h-3.5 text-primary-500" />;
-    if (status === "DELIVERED") return <CheckCheck className="w-3.5 h-3.5 text-gray-400" />;
-    return <Check className="w-3.5 h-3.5 text-gray-400" />;
+    if (status === "DELIVERED") return <CheckCheck className="w-3.5 h-3.5 text-slate-400" />;
+    return <Check className="w-3.5 h-3.5 text-slate-400" />;
   }
 
   // Mobile: show list or conversation
@@ -243,16 +243,16 @@ export function Messages() {
   const showChat = !!conversationId;
 
   return (
-    <div className="flex h-[calc(100vh-5rem)] -my-6 -mx-4 sm:mx-0 sm:my-0 sm:h-[calc(100vh-7rem)] bg-white dark:bg-gray-900 sm:rounded-xl sm:border sm:border-gray-200 dark:sm:border-gray-700 overflow-hidden">
+    <div className="flex h-[calc(100vh-5rem)] -my-6 -mx-4 sm:mx-0 sm:my-0 sm:h-[calc(100vh-7rem)] bg-white dark:bg-slate-900 sm:rounded-xl sm:border sm:border-slate-200 dark:sm:border-slate-700 overflow-hidden">
       {/* Conversation list */}
-      <div className={`w-full sm:w-80 sm:border-r sm:border-gray-200 dark:sm:border-gray-700 flex flex-col shrink-0 ${showChat ? "hidden sm:flex" : "flex"}`}>
-        <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+      <div className={`w-full sm:w-80 sm:border-r sm:border-slate-200 dark:sm:border-slate-700 flex flex-col shrink-0 ${showChat ? "hidden sm:flex" : "flex"}`}>
+        <div className="p-4 border-b border-slate-200 dark:border-slate-700">
           <h2 className="text-lg font-bold">Messages</h2>
         </div>
         {loading ? (
           <div className="flex justify-center py-12"><div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary-600" /></div>
         ) : conversations.length === 0 ? (
-          <div className="flex-1 flex items-center justify-center text-sm text-gray-400 px-4 text-center">
+          <div className="flex-1 flex items-center justify-center text-sm text-slate-400 px-4 text-center">
             Aucune conversation. Contactez un voisin depuis la page matériel ou membres !
           </div>
         ) : (
@@ -261,7 +261,7 @@ export function Messages() {
               <button
                 key={c.id}
                 onClick={() => navigate(`/messages/${c.id}`)}
-                className={`w-full flex items-center gap-3 px-4 py-3 text-left border-none cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 ${c.id === conversationId ? "bg-primary-50 dark:bg-primary-900/30" : "bg-transparent"}`}
+                className={`w-full flex items-center gap-3 px-4 py-3 text-left border-none cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 ${c.id === conversationId ? "bg-primary-50 dark:bg-primary-900/30" : "bg-transparent"}`}
               >
                 <div className="relative shrink-0">
                   <div className="w-10 h-10 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center text-sm font-medium">
@@ -271,11 +271,11 @@ export function Messages() {
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{c.other.firstName} {c.other.lastName}</span>
-                    {c.lastMessage && <span className="text-xs text-gray-400 shrink-0 ml-2">{formatDate(c.lastMessage.createdAt)}</span>}
+                    <span className="text-sm font-medium text-slate-900 dark:text-slate-100 truncate">{c.other.firstName} {c.other.lastName}</span>
+                    {c.lastMessage && <span className="text-xs text-slate-400 shrink-0 ml-2">{formatDate(c.lastMessage.createdAt)}</span>}
                   </div>
                   <div className="flex items-center justify-between mt-0.5">
-                    <p className="text-xs text-gray-500 truncate">
+                    <p className="text-xs text-slate-500 truncate">
                       {c.lastMessage
                         ? (c.lastMessage.senderId === user?.id ? "Vous : " : "") + (c.lastMessage.content.length > 50 ? c.lastMessage.content.slice(0, 50) + "…" : c.lastMessage.content)
                         : "Nouvelle conversation"
@@ -287,7 +287,7 @@ export function Messages() {
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-gray-400 mt-0.5">{c.community.name}</p>
+                  <p className="text-xs text-slate-400 mt-0.5">{c.community.name}</p>
                 </div>
               </button>
             ))}
@@ -298,14 +298,14 @@ export function Messages() {
       {/* Chat area */}
       <div className={`flex-1 flex flex-col min-w-0 ${showList ? "hidden sm:flex" : "flex"}`}>
         {!conversationId ? (
-          <div className="flex-1 flex items-center justify-center text-sm text-gray-400">
+          <div className="flex-1 flex items-center justify-center text-sm text-slate-400">
             Sélectionnez une conversation
           </div>
         ) : (
           <>
             {/* Chat header */}
-            <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700 flex items-center gap-3">
-              <button onClick={() => navigate("/messages")} className="sm:hidden text-gray-500 bg-transparent border-none cursor-pointer p-0">
+            <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-700 flex items-center gap-3">
+              <button onClick={() => navigate("/messages")} className="sm:hidden text-slate-500 bg-transparent border-none cursor-pointer p-0">
                 <ArrowLeft className="w-5 h-5" />
               </button>
               {activeConv && (
@@ -317,10 +317,10 @@ export function Messages() {
                     {activeConv.online && <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-white" />}
                   </div>
                   <div>
-                    <Link to={`/users/${activeConv.other.id}`} className="text-sm font-medium text-gray-900 dark:text-gray-100 no-underline hover:underline">
+                    <Link to={`/users/${activeConv.other.id}`} className="text-sm font-medium text-slate-900 dark:text-slate-100 no-underline hover:underline">
                       {activeConv.other.firstName} {activeConv.other.lastName}
                     </Link>
-                    <p className="text-xs text-gray-400">
+                    <p className="text-xs text-slate-400">
                       {typingUserId ? "En train d'écrire..." : activeConv.online ? "En ligne" : activeConv.community.name}
                     </p>
                   </div>
@@ -348,15 +348,15 @@ export function Messages() {
               {msgLoading ? (
                 <div className="flex justify-center py-8"><div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary-600" /></div>
               ) : messages.length === 0 ? (
-                <p className="text-center text-sm text-gray-400 py-8">Envoyez votre premier message !</p>
+                <p className="text-center text-sm text-slate-400 py-8">Envoyez votre premier message !</p>
               ) : (
                 messages.map((m) => {
                   const isMine = m.senderId === user?.id;
                   return (
                     <div key={m.id} className={`flex ${isMine ? "justify-end" : "justify-start"}`}>
-                      <div className={`max-w-[75%] px-3 py-2 rounded-2xl ${isMine ? "bg-primary-600 text-white rounded-br-sm" : "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-bl-sm"}`}>
+                      <div className={`max-w-[75%] px-3 py-2 rounded-2xl ${isMine ? "bg-primary-600 text-white rounded-br-sm" : "bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-bl-sm"}`}>
                         <p className="text-sm whitespace-pre-wrap break-words">{m.content}</p>
-                        <div className={`flex items-center gap-1 justify-end mt-0.5 ${isMine ? "text-primary-200" : "text-gray-400"}`}>
+                        <div className={`flex items-center gap-1 justify-end mt-0.5 ${isMine ? "text-primary-200" : "text-slate-400"}`}>
                           <span className="text-xs">{formatTime(m.createdAt)}</span>
                           {isMine && <StatusIcon status={m.status} />}
                         </div>
@@ -369,7 +369,7 @@ export function Messages() {
             </div>
 
             {/* Input */}
-            <div className="px-4 py-3 border-t border-gray-200 dark:border-gray-700">
+            <div className="px-4 py-3 border-t border-slate-200 dark:border-slate-700">
               <form
                 onSubmit={(e) => { e.preventDefault(); handleSend(); }}
                 className="flex items-center gap-2"
@@ -379,7 +379,7 @@ export function Messages() {
                   value={input}
                   onChange={(e) => handleInputChange(e.target.value)}
                   placeholder="Écrire un message..."
-                  className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-800 dark:text-gray-100"
+                  className="flex-1 px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-slate-800 dark:text-slate-100"
                 />
                 <button
                   type="submit"

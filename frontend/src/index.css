@@ -3,6 +3,7 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
+  /* ===== PRIMARY — Vert cabanon ===== */
   --color-primary-50: #f0fdf4;
   --color-primary-100: #dcfce7;
   --color-primary-200: #bbf7d0;
@@ -14,14 +15,28 @@
   --color-primary-800: #166534;
   --color-primary-900: #14532d;
 
+  /* ===== ACCENT — Terre cuite ===== */
+  --color-accent-50: #fff7ed;
+  --color-accent-100: #ffedd5;
+  --color-accent-200: #fed7aa;
+  --color-accent-300: #fdba74;
+  --color-accent-400: #fb923c;
+  --color-accent-500: #f97316;
+  --color-accent-600: #ea580c;
+  --color-accent-700: #c2410c;
+  --color-accent-800: #9a3412;
+  --color-accent-900: #7c2d12;
+
+  /* ===== WARM — Étoiles / notation ===== */
   --color-warm-50: #fefce8;
   --color-warm-100: #fef9c3;
+  --color-warm-400: #facc15;
   --color-warm-500: #eab308;
   --color-warm-600: #ca8a04;
 }
 
 body {
-  @apply bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-gray-100 antialiased;
+  @apply bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 antialiased;
   font-family: "Inter", system-ui, -apple-system, sans-serif;
   margin: 0;
 }

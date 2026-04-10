@@ -39,7 +39,7 @@ export function Members() {
     return <div className="flex justify-center py-12"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" /></div>;
   }
 
-  if (!community) return <div className="text-center py-12 text-gray-500">Communauté introuvable</div>;
+  if (!community) return <div className="text-center py-12 text-slate-500">Communauté introuvable</div>;
 
   const isAdmin = community.role === "ADMIN";
   const filtered = community.members.filter((m) => {
@@ -60,28 +60,28 @@ export function Members() {
 
   return (
     <div>
-      <Link to={`/communities/${communityId}`} className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 mb-4 no-underline">
+      <Link to={`/communities/${communityId}`} className="inline-flex items-center gap-1 text-sm text-slate-500 hover:text-slate-700 mb-4 no-underline">
         <ArrowLeft className="w-4 h-4" /> Retour
       </Link>
 
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-2xl font-bold">Membres — {community.name}</h1>
-        <span className="text-sm text-gray-400">{community._count.members} membre{community._count.members > 1 ? "s" : ""}</span>
+        <span className="text-sm text-slate-400">{community._count.members} membre{community._count.members > 1 ? "s" : ""}</span>
       </div>
 
       {/* Search */}
       <div className="relative mb-6">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
         <input
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Rechercher un membre..."
-          className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-800 dark:text-gray-100"
+          className="w-full pl-10 pr-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-slate-800 dark:text-slate-100"
         />
       </div>
 
-      <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 divide-y divide-gray-100 dark:divide-gray-800">
+      <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 divide-y divide-slate-100 dark:divide-slate-800">
         {filtered.map((m) => (
           <div key={m.userId} className="flex items-center justify-between px-5 py-4">
             <div className="flex items-center gap-3">
@@ -92,13 +92,13 @@ export function Members() {
                 {m.user.firstName[0]}{m.user.lastName[0]}
               </Link>
               <div>
-                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                  <Link to={`/users/${m.user.id}`} className="text-gray-900 dark:text-gray-100 no-underline hover:underline">
+                <p className="text-sm font-medium text-slate-900 dark:text-slate-100">
+                  <Link to={`/users/${m.user.id}`} className="text-slate-900 dark:text-slate-100 no-underline hover:underline">
                     {m.user.firstName} {m.user.lastName}
                   </Link>
                   {m.role === "ADMIN" && <span className="ml-1.5 text-xs text-primary-600 bg-primary-50 px-1.5 py-0.5 rounded">Admin</span>}
                 </p>
-                <p className="text-xs text-gray-400">
+                <p className="text-xs text-slate-400">
                   Membre depuis {new Date(m.joinedAt).toLocaleDateString("fr-FR", { month: "long", year: "numeric" })}
                 </p>
               </div>
@@ -113,7 +113,7 @@ export function Members() {
                     });
                     navigate(`/messages/${conv.id}`);
                   }}
-                  className="text-gray-400 hover:text-primary-600 bg-transparent border-none cursor-pointer p-1"
+                  className="text-slate-400 hover:text-primary-600 bg-transparent border-none cursor-pointer p-1"
                   title="Envoyer un message"
                 >
                   <MessageCircle className="w-4 h-4" />
@@ -122,7 +122,7 @@ export function Members() {
               {isAdmin && m.userId !== user?.id && (
                 <button
                   onClick={() => handleRemove(m)}
-                  className="text-gray-400 hover:text-red-500 bg-transparent border-none cursor-pointer p-1"
+                  className="text-slate-400 hover:text-red-500 bg-transparent border-none cursor-pointer p-1"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
@@ -131,7 +131,7 @@ export function Members() {
           </div>
         ))}
         {filtered.length === 0 && (
-          <p className="text-center py-8 text-sm text-gray-400">Aucun membre trouvé</p>
+          <p className="text-center py-8 text-sm text-slate-400">Aucun membre trouvé</p>
         )}
       </div>
     </div>
