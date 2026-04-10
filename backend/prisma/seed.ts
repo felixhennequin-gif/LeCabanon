@@ -42,6 +42,7 @@ async function main() {
     { email: "nicolas.garnier@email.fr", firstName: "Nicolas", lastName: "Garnier" },
     { email: "isabelle.leroy@email.fr", firstName: "Isabelle", lastName: "Leroy" },
     { email: "thomas.bernard@email.fr", firstName: "Thomas", lastName: "Bernard" },
+    { email: "jacques.urugen@email.fr", firstName: "Jacques", lastName: "Urugen" },
     // Artisan user (will claim a fiche)
     { email: "karim@kb-elec.fr", firstName: "Karim", lastName: "Benali" },
   ];
@@ -64,6 +65,7 @@ async function main() {
   const nicolas = users["nicolas.garnier@email.fr"];
   const isabelle = users["isabelle.leroy@email.fr"];
   const thomas = users["thomas.bernard@email.fr"];
+  const jacques = users["jacques.urugen@email.fr"];
   const karimUser = users["karim@kb-elec.fr"];
 
   // ─── 2. Communities ─────────────────────────────────────────
@@ -109,6 +111,7 @@ async function main() {
     { userId: sophie.id, communityId: guillon.id, role: MemberRole.MEMBER },
     { userId: alain.id, communityId: guillon.id, role: MemberRole.MEMBER },
     { userId: catherine.id, communityId: guillon.id, role: MemberRole.MEMBER },
+    { userId: jacques.id, communityId: guillon.id, role: MemberRole.MEMBER },
     // Quartier Bellevue
     { userId: sophie.id, communityId: bellevue.id, role: MemberRole.ADMIN },
     { userId: nicolas.id, communityId: bellevue.id, role: MemberRole.MEMBER },
@@ -139,6 +142,12 @@ async function main() {
     { ownerId: catherine.id, communityId: guillon.id, name: "Barnums pliants 3x3m (x2)", category: "Cuisine / Réception", description: "Deux barnums blancs avec parois latérales. Parfaits pour les événements en extérieur" },
     { ownerId: felix.id, communityId: guillon.id, name: "Cric hydraulique + chandelles", category: "Automobile", description: "Pour changement de roues ou petite mécanique. Supporte 2 tonnes" },
     { ownerId: felix.id, communityId: guillon.id, name: "Diable de déménagement", category: "Déménagement", description: "Charge max 200kg. Roues gonflables. Idéal pour électroménager" },
+    { ownerId: jacques.id, communityId: guillon.id, name: "Perceuse à percussion", category: "Électroportatif", description: "Perceuse à percussion pour perçage béton et maçonnerie" },
+    { ownerId: jacques.id, communityId: guillon.id, name: "Perforateur + burin", category: "Électroportatif", description: "Perforateur avec fonction burin pour travaux de démolition légère" },
+    { ownerId: jacques.id, communityId: guillon.id, name: "Scie sabre", category: "Électroportatif", description: "Scie sabre pour découpe bois, métal et PVC" },
+    { ownerId: jacques.id, communityId: guillon.id, name: "Scie sauteuse", category: "Électroportatif", description: "Scie sauteuse pour découpes courbes et droites" },
+    { ownerId: jacques.id, communityId: guillon.id, name: "Ponceuse excentrique", category: "Électroportatif", description: "Ponceuse excentrique pour finitions bois et peinture" },
+    { ownerId: jacques.id, communityId: guillon.id, name: "Kärcher", category: "Nettoyage", description: "Nettoyeur haute pression pour terrasses, façades et véhicules" },
   ];
 
   const equipmentRecords: { id: string; name: string; ownerId: string; communityId: string }[] = [];
@@ -174,6 +183,17 @@ async function main() {
     { createdById: catherine.id, name: "Yann Kervella", company: "Kervella Paysage", category: "Paysagisme", zone: "Maisons-Laffitte et alentours", phone: "06 67 89 01 23", email: "yann@kervella-paysage.fr" },
     { createdById: felix.id, name: "David Costa", company: "Costa Serrurerie", category: "Serrurerie", zone: "Secteur 78", phone: "06 78 90 12 34", email: "david.costa.serrurier@gmail.com" },
     { createdById: marie.id, name: "Stéphane Roux", company: "Roux Chauffage", category: "Chauffage / Climatisation", zone: "Yvelines Nord", phone: "06 89 01 23 45", email: "s.roux@roux-chauffage.fr" },
+    { createdById: jacques.id, name: "Nicolas Cheneau", company: "SARL NC & CO", category: "Maçonnerie", zone: "Nantes et environs", phone: "07 68 94 38 38", email: "n.cheneau@ncco.fr" },
+    { createdById: jacques.id, name: "Arki-Dea", company: "Arki-Dea", category: "Maçonnerie", zone: "Nantes", phone: "06 16 38 73 81", email: "" },
+    { createdById: jacques.id, name: "Chauvet Elec", company: "Chauvet Elec", category: "Électricité", zone: "Nantes", phone: "02 40 29 38 35", email: "chauvet-elec@orange.fr" },
+    { createdById: jacques.id, name: "ACE Electro", company: "ACE Electro", category: "Électricité", zone: "St Mars de Coutais (44)", phone: "02 28 21 07 05", email: "ace.44@ace-electro.fr" },
+    { createdById: jacques.id, name: "CB CADJ", company: "CB CADJ", category: "Menuiserie", zone: "Savenay (44)", phone: "02 40 58 10 82", email: "contact@cbcadj.fr" },
+    { createdById: jacques.id, name: "Batard SARL", company: "Batard", category: "Maçonnerie", zone: "La Planche (44)", phone: "02 40 31 91 60", email: "batard.sarl@wanadoo.fr" },
+    { createdById: jacques.id, name: "3CSM Plomberie", company: "3CSM Plomberie", category: "Plomberie", zone: "Port Saint Père (44)", phone: "09 63 59 86 19", email: "depannage@3csm-plomberie.fr" },
+    { createdById: jacques.id, name: "Cameleon", company: "Entreprise Cameleon", category: "Peinture", zone: "Les Sorinières (44)", phone: "02 53 97 10 80", email: "entreprise.cameleon@gmail.com" },
+    { createdById: jacques.id, name: "Laloi", company: "Laloi", category: "Peinture", zone: "Les Sorinières (44)", phone: "02 53 97 10 80", email: "contact.laloi@gmail.com" },
+    { createdById: jacques.id, name: "Talet SARL", company: "Talet", category: "Couverture / Toiture", zone: "Coueron (44)", phone: "02 40 57 18 01", email: "sarl.talet@free.fr" },
+    { createdById: jacques.id, name: "Lift Face", company: "Lift Face", category: "Peinture", zone: "Montaigu (85)", phone: "02 51 06 42 82", email: "contact@liftface.fr" },
   ];
 
   const artisans: Record<string, { id: string }> = {};
@@ -285,6 +305,12 @@ async function main() {
 
     // Nadia Amrani (Nettoyage — Bellevue) — 1 avis
     { artisanId: artisans["Nadia Amrani"].id, authorId: isabelle.id, rating: 5, comment: "Nettoyage complet après travaux dans l'appartement. Résultat impeccable, on aurait dit du neuf !", visibility: Visibility.PUBLIC },
+
+    // Avis de Jacques sur ses propres recommandations
+    { artisanId: artisans["Chauvet Elec"].id, authorId: jacques.id, rating: 5, comment: "Électricien sérieux et compétent. A refait toute l'installation de ma maison. Je recommande les yeux fermés.", visibility: Visibility.PUBLIC },
+    { artisanId: artisans["3CSM Plomberie"].id, authorId: jacques.id, rating: 4, comment: "Dépannage rapide pour une fuite au sous-sol. Bon rapport qualité-prix.", visibility: Visibility.PUBLIC },
+    { artisanId: artisans["Talet SARL"].id, authorId: jacques.id, rating: 5, comment: "Excellente entreprise pour la couverture. Refonte complète de ma toiture, travail impeccable et dans les délais.", visibility: Visibility.PUBLIC },
+    { artisanId: artisans["Cameleon"].id, authorId: jacques.id, rating: 4, comment: "Peinture intérieure de 4 pièces. Finitions soignées, équipe agréable.", visibility: Visibility.PUBLIC },
   ];
 
   const reviewRecords: { id: string; artisanId: string; authorId: string }[] = [];
