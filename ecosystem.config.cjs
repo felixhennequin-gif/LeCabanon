@@ -2,7 +2,7 @@ module.exports = {
   apps: [
     {
       name: 'lecabanon-api',
-      script: 'dist/server.js',
+      script: 'dist/src/server.js',
       cwd: './backend',
       env: {
         NODE_ENV: 'production',

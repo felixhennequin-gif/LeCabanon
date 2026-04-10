@@ -47,7 +47,11 @@ npx tsx prisma/seed.ts
 echo ""
 cd "$APP_DIR"
 if command -v pm2 &>/dev/null; then
-  pm2 restart lecabanon-api 2>/dev/null || pm2 start ecosystem.config.cjs 2>/dev/null
+  if pm2 list 2>/dev/null | grep -q lecabanon-api; then
+    pm2 restart lecabanon-api
+  else
+    pm2 start ecosystem.config.cjs
+  fi
   echo ""
   echo "🚀 LeCabanon démarré via pm2"
   echo "   → pm2 logs lecabanon-api"
