@@ -201,6 +201,7 @@ export async function getArtisanPublic(req: Request, res: Response, next: NextFu
       company: artisan.company,
       category: artisan.category,
       zone: artisan.zone,
+      phone: artisan.claimed ? artisan.phone : null,
       website: artisan.website,
       description: artisan.description,
       certifications: artisan.certifications,

@@ -44,6 +44,14 @@ export function Messages() {
 
   const activeConv = conversations.find((c) => c.id === conversationId);
 
+  // Pre-fill input with equipment context
+  useEffect(() => {
+    if (equipmentContext && conversationId && !input) {
+      setInput(`Bonjour, je vous contacte à propos de : ${equipmentContext}\n`);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [conversationId, equipmentContext]);
+
   const loadConversations = useCallback(async () => {
     try {
       const data = await api<ConversationSummary[]>("/conversations");
@@ -320,6 +328,16 @@ export function Messages() {
               )}
             </div>
 
+            {/* Equipment context banner */}
+            {equipmentContext && messages.length === 0 && !msgLoading && (
+              <div className="px-4 py-2 bg-primary-50 dark:bg-primary-900/20 border-b border-primary-200 dark:border-primary-800 flex items-center gap-2">
+                <Package className="w-4 h-4 text-primary-600 dark:text-primary-400 shrink-0" />
+                <p className="text-xs text-primary-700 dark:text-primary-300">
+                  À propos de <strong>{equipmentContext}</strong>
+                </p>
+              </div>
+            )}
+
             {/* Messages */}
             <div ref={messagesContainerRef} className="flex-1 overflow-y-auto px-4 py-3 space-y-2">
               {nextCursor && (
@@ -349,16 +367,6 @@ export function Messages() {
               )}
               <div ref={messagesEndRef} />
             </div>
-
-            {/* Equipment context banner */}
-            {equipmentContext && (
-              <div className="px-4 py-2 bg-primary-50 dark:bg-primary-900/20 border-t border-primary-200 dark:border-primary-800 flex items-center gap-2">
-                <Package className="w-4 h-4 text-primary-600 dark:text-primary-400 shrink-0" />
-                <p className="text-xs text-primary-700 dark:text-primary-300">
-                  À propos de <strong>{equipmentContext}</strong>
-                </p>
-              </div>
-            )}
 
             {/* Input */}
             <div className="px-4 py-3 border-t border-gray-200 dark:border-gray-700">
