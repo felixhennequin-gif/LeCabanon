@@ -3,6 +3,7 @@ import crypto from "crypto";
 import { z } from "zod";
 import { prisma } from "../utils/prisma.js";
 import { AppError } from "../middlewares/errorHandler.js";
+import { createActivity } from "../services/activity.js";
 
 const createCommunitySchema = z.object({
   name: z.string().min(1, "Nom requis"),
@@ -64,6 +65,8 @@ export async function joinCommunity(req: Request, res: Response, next: NextFunct
       data: { userId: req.userId!, communityId: community.id, role: "MEMBER" },
     });
 
+    createActivity({ type: "MEMBER_JOINED", communityId: community.id, actorId: req.userId! });
+
     res.json(community);
   } catch (err) {
     if (err instanceof z.ZodError) {
@@ -114,11 +117,18 @@ export async function getCommunity(req: Request, res: Response, next: NextFuncti
         members: {
           include: { user: { select: { id: true, firstName: true, lastName: true, email: true, photo: true } } },
         },
-        _count: { select: { members: true, equipment: true, artisans: true } },
+        _count: { select: { members: true, equipment: true, artisanCommunities: true } },
       },
     });
 
-    res.json({ ...community, role: membership.role });
+    res.json({
+      ...community,
+      role: membership.role,
+      _count: {
+        ...community!._count,
+        artisans: community!._count.artisanCommunities,
+      },
+    });
   } catch (err) {
     next(err);
   }
@@ -141,6 +151,43 @@ export async function updateCommunity(req: Request, res: Response, next: NextFun
 
     const community = await prisma.community.update({ where: { id }, data: updateData });
     res.json(community);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function deleteCommunity(req: Request, res: Response, next: NextFunction) {
+  try {
+    const id = req.params.id as string;
+    const membership = await prisma.communityMember.findUnique({
+      where: { userId_communityId: { userId: req.userId!, communityId: id } },
+    });
+    if (!membership || membership.role !== "ADMIN") {
+      throw new AppError(403, "Seul un admin peut supprimer la communauté");
+    }
+
+    await prisma.community.delete({ where: { id } });
+    res.status(204).end();
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function regenerateCode(req: Request, res: Response, next: NextFunction) {
+  try {
+    const id = req.params.id as string;
+    const membership = await prisma.communityMember.findUnique({
+      where: { userId_communityId: { userId: req.userId!, communityId: id } },
+    });
+    if (!membership || membership.role !== "ADMIN") {
+      throw new AppError(403, "Seul un admin peut regénérer le code d'accès");
+    }
+
+    const community = await prisma.community.update({
+      where: { id },
+      data: { accessCode: generateAccessCode() },
+    });
+    res.json({ accessCode: community.accessCode });
   } catch (err) {
     next(err);
   }

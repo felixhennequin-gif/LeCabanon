@@ -1,9 +1,17 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { api } from "../lib/api";
 import { useAuth } from "../contexts/AuthContext";
 import { StarRating } from "../components/StarRating";
-import { ArrowLeft, Phone, Mail, MapPin, Trash2 } from "lucide-react";
+import { LinkPreview } from "../components/LinkPreview";
+import { ArrowLeft, Phone, Mail, MapPin, Trash2, MessageCircle, BadgeCheck, ExternalLink, Award, Clock, Edit3 } from "lucide-react";
+
+interface ReviewReply {
+  id: string;
+  content: string;
+  createdAt: string;
+  author: { id: string; firstName: string; lastName: string };
+}
 
 interface Review {
   id: string;
@@ -13,6 +21,12 @@ interface Review {
   createdAt: string;
   authorId: string;
   author: { id: string; firstName: string; lastName: string; photo?: string | null };
+  replies: ReviewReply[];
+}
+
+interface ArtisanCommunity {
+  communityId: string;
+  community: { id: string; name: string };
 }
 
 interface ArtisanData {
@@ -23,10 +37,17 @@ interface ArtisanData {
   zone?: string;
   phone?: string;
   email?: string;
+  website?: string;
+  description?: string;
+  certifications: string[];
+  horaires?: string;
+  ownPhotos: string[];
+  claimed: boolean;
+  ownerId?: string | null;
   createdById: string;
-  communityId: string;
   avgRating: number | null;
   reviews: Review[];
+  communities: ArtisanCommunity[];
   createdBy: { id: string; firstName: string; lastName: string };
 }
 
@@ -37,6 +58,14 @@ export function ArtisanDetail() {
   const [artisan, setArtisan] = useState<ArtisanData | null>(null);
   const [loading, setLoading] = useState(true);
   const [showReviewForm, setShowReviewForm] = useState(false);
+  const [showProfileEdit, setShowProfileEdit] = useState(false);
+  const [claimLoading, setClaimLoading] = useState(false);
+  const [claimMessage, setClaimMessage] = useState("");
+  const [replyingTo, setReplyingTo] = useState<string | null>(null);
+
+  function reload() {
+    if (id) api<ArtisanData>(`/artisans/${id}`).then(setArtisan);
+  }
 
   useEffect(() => {
     if (id) {
@@ -49,7 +78,20 @@ export function ArtisanDetail() {
   async function handleDelete() {
     if (!artisan || !confirm("Supprimer cet artisan ?")) return;
     await api(`/artisans/${artisan.id}`, { method: "DELETE" });
-    navigate(`/communities/${artisan.communityId}/artisans`);
+    navigate(-1);
+  }
+
+  async function handleClaim() {
+    if (!artisan) return;
+    setClaimLoading(true);
+    try {
+      const res = await api<{ message: string }>(`/artisans/${artisan.id}/claim`, { method: "POST" });
+      setClaimMessage(res.message);
+    } catch (err) {
+      setClaimMessage(err instanceof Error ? err.message : "Erreur");
+    } finally {
+      setClaimLoading(false);
+    }
   }
 
   if (loading) {
@@ -58,25 +100,59 @@ export function ArtisanDetail() {
 
   if (!artisan) return <div className="text-center py-12 text-gray-500">Artisan introuvable</div>;
 
+  const isOwner = artisan.ownerId === user?.id;
+  const firstCommunityId = artisan.communities[0]?.communityId;
+
   return (
     <div>
       <button onClick={() => navigate(-1)} className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 mb-4 bg-transparent border-none cursor-pointer p-0">
         <ArrowLeft className="w-4 h-4" /> Retour
       </button>
 
-      <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+      <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-6">
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-2xl font-bold">{artisan.name}</h1>
+            <div className="flex items-center gap-2">
+              <h1 className="text-2xl font-bold">{artisan.name}</h1>
+              {artisan.claimed && (
+                <span className="inline-flex items-center gap-1 text-xs text-green-700 bg-green-50 px-2 py-0.5 rounded-full">
+                  <BadgeCheck className="w-3.5 h-3.5" /> Vérifié
+                </span>
+              )}
+            </div>
             {artisan.company && <p className="text-gray-500">{artisan.company}</p>}
-            <span className="inline-block text-xs px-2 py-0.5 bg-primary-50 text-primary-700 rounded-full mt-2">{artisan.category}</span>
+            <span className="inline-block text-xs px-2 py-0.5 bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 rounded-full mt-2">{artisan.category}</span>
           </div>
-          {artisan.createdById === user?.id && (
-            <button onClick={handleDelete} className="text-gray-400 hover:text-red-500 bg-transparent border-none cursor-pointer">
-              <Trash2 className="w-5 h-5" />
-            </button>
-          )}
+          <div className="flex items-center gap-2">
+            <Link
+              to={`/artisans/${artisan.id}/public`}
+              className="text-gray-400 hover:text-primary-600 no-underline"
+              title="Voir la page publique"
+            >
+              <ExternalLink className="w-5 h-5" />
+            </Link>
+            {artisan.createdById === user?.id && (
+              <button onClick={handleDelete} className="text-gray-400 hover:text-red-500 bg-transparent border-none cursor-pointer">
+                <Trash2 className="w-5 h-5" />
+              </button>
+            )}
+          </div>
         </div>
+
+        {/* Communities badges */}
+        {artisan.communities.length > 0 && (
+          <div className="flex flex-wrap gap-1.5 mt-3">
+            {artisan.communities.map((ac) => (
+              <Link
+                key={ac.communityId}
+                to={`/communities/${ac.communityId}`}
+                className="text-xs px-2 py-0.5 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-full no-underline hover:bg-gray-200 dark:hover:bg-gray-700"
+              >
+                {ac.community.name}
+              </Link>
+            ))}
+          </div>
+        )}
 
         <div className="flex items-center gap-2 mt-4">
           <StarRating rating={artisan.avgRating ?? 0} size={20} />
@@ -97,10 +173,90 @@ export function ArtisanDetail() {
           )}
         </div>
 
-        <p className="text-xs text-gray-400 mt-4">
-          Ajouté par {artisan.createdBy.firstName} {artisan.createdBy.lastName}
-        </p>
+        {artisan.website && (
+          <div className="mt-4">
+            <LinkPreview url={artisan.website} />
+          </div>
+        )}
+
+        {/* Claimed profile info */}
+        {artisan.claimed && (artisan.description || artisan.certifications.length > 0 || artisan.horaires) && (
+          <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800 space-y-3">
+            {artisan.description && (
+              <p className="text-sm text-gray-600 whitespace-pre-line">{artisan.description}</p>
+            )}
+            {artisan.certifications.length > 0 && (
+              <div className="flex items-center gap-2 flex-wrap">
+                <Award className="w-4 h-4 text-amber-500" />
+                {artisan.certifications.map((c, i) => (
+                  <span key={i} className="text-xs px-2 py-0.5 bg-amber-50 text-amber-700 rounded-full">{c}</span>
+                ))}
+              </div>
+            )}
+            {artisan.horaires && (
+              <p className="text-sm text-gray-600 flex items-start gap-1.5">
+                <Clock className="w-4 h-4 text-gray-400 mt-0.5 shrink-0" />
+                <span className="whitespace-pre-line">{artisan.horaires}</span>
+              </p>
+            )}
+          </div>
+        )}
+
+        <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
+          <p className="text-xs text-gray-400">
+            Ajouté par{" "}
+            <Link to={`/users/${artisan.createdBy.id}`} className="text-gray-500 no-underline hover:underline">
+              {artisan.createdBy.firstName} {artisan.createdBy.lastName}
+            </Link>
+          </p>
+          <div className="flex items-center gap-2">
+            {isOwner && (
+              <button
+                onClick={() => setShowProfileEdit(true)}
+                className="inline-flex items-center gap-1 text-xs text-primary-600 hover:text-primary-700 bg-transparent border-none cursor-pointer"
+              >
+                <Edit3 className="w-3.5 h-3.5" />
+                Modifier mon profil
+              </button>
+            )}
+            {artisan.createdById !== user?.id && firstCommunityId && (
+              <button
+                onClick={async () => {
+                  const conv = await api<{ id: string }>("/conversations", {
+                    method: "POST",
+                    body: JSON.stringify({ recipientId: artisan.createdById, communityId: firstCommunityId }),
+                  });
+                  navigate(`/messages/${conv.id}`);
+                }}
+                className="inline-flex items-center gap-1 text-xs text-primary-600 hover:text-primary-700 bg-transparent border-none cursor-pointer"
+              >
+                <MessageCircle className="w-3.5 h-3.5" />
+                Contacter
+              </button>
+            )}
+          </div>
+        </div>
       </div>
+
+      {/* Claim CTA */}
+      {!artisan.claimed && artisan.email && (
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6">
+          <p className="text-sm text-amber-800 mb-2">
+            Vous êtes <strong>{artisan.name}</strong> ? Revendiquez cette fiche pour gérer votre profil et répondre aux avis.
+          </p>
+          {claimMessage ? (
+            <p className="text-sm text-amber-700">{claimMessage}</p>
+          ) : (
+            <button
+              onClick={handleClaim}
+              disabled={claimLoading}
+              className="px-4 py-1.5 text-sm bg-amber-600 text-white rounded-lg hover:bg-amber-700 cursor-pointer disabled:opacity-50"
+            >
+              {claimLoading ? "..." : "Revendiquer cette fiche"}
+            </button>
+          )}
+        </div>
+      )}
 
       {/* Reviews */}
       <div className="flex items-center justify-between mb-4">
@@ -118,14 +274,14 @@ export function ArtisanDetail() {
       ) : (
         <div className="space-y-4">
           {artisan.reviews.map((r) => (
-            <div key={r.id} className="bg-white p-4 rounded-xl border border-gray-200">
+            <div key={r.id} className="bg-white dark:bg-gray-900 p-4 rounded-xl border border-gray-200 dark:border-gray-700">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center text-sm font-medium">
+                  <Link to={`/users/${r.author.id}`} className="w-8 h-8 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center text-sm font-medium no-underline">
                     {r.author.firstName[0]}{r.author.lastName[0]}
-                  </div>
+                  </Link>
                   <div>
-                    <p className="text-sm font-medium text-gray-900">{r.author.firstName} {r.author.lastName}</p>
+                    <Link to={`/users/${r.author.id}`} className="text-sm font-medium text-gray-900 dark:text-gray-100 no-underline hover:underline">{r.author.firstName} {r.author.lastName}</Link>
                     <StarRating rating={r.rating} size={14} />
                   </div>
                 </div>
@@ -133,12 +289,43 @@ export function ArtisanDetail() {
                   <span className="text-xs text-gray-400">
                     {new Date(r.createdAt).toLocaleDateString("fr-FR")}
                   </span>
-                  {r.visibility === "PRIVATE" && (
-                    <span className="block text-xs text-warm-600 mt-0.5">Privé</span>
+                  {r.visibility === "COMMUNITY" && (
+                    <span className="block text-xs text-amber-600 mt-0.5">Communauté</span>
                   )}
                 </div>
               </div>
               {r.comment && <p className="text-sm text-gray-600 mt-3">{r.comment}</p>}
+
+              {/* Replies */}
+              {r.replies.length > 0 && (
+                <div className="mt-3 bg-primary-50 rounded-lg p-3 border-l-2 border-primary-300">
+                  <p className="text-xs font-semibold text-primary-700 mb-1">Réponse de l'artisan</p>
+                  <p className="text-sm text-gray-700">{r.replies[0].content}</p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    {new Date(r.replies[0].createdAt).toLocaleDateString("fr-FR")}
+                  </p>
+                </div>
+              )}
+
+              {/* Reply button for owner */}
+              {isOwner && r.replies.length === 0 && (
+                <>
+                  {replyingTo === r.id ? (
+                    <ReplyForm
+                      reviewId={r.id}
+                      onClose={() => setReplyingTo(null)}
+                      onCreated={() => { setReplyingTo(null); reload(); }}
+                    />
+                  ) : (
+                    <button
+                      onClick={() => setReplyingTo(r.id)}
+                      className="mt-2 text-xs text-primary-600 hover:text-primary-700 bg-transparent border-none cursor-pointer"
+                    >
+                      Répondre
+                    </button>
+                  )}
+                </>
+              )}
             </div>
           ))}
         </div>
@@ -147,21 +334,70 @@ export function ArtisanDetail() {
       {showReviewForm && (
         <ReviewForm
           artisanId={artisan.id}
+          communityId={firstCommunityId ?? ""}
           onClose={() => setShowReviewForm(false)}
           onCreated={() => {
-            api<ArtisanData>(`/artisans/${id}`).then(setArtisan);
+            reload();
             setShowReviewForm(false);
           }}
+        />
+      )}
+
+      {showProfileEdit && (
+        <ProfileEditForm
+          artisan={artisan}
+          onClose={() => setShowProfileEdit(false)}
+          onSaved={() => { reload(); setShowProfileEdit(false); }}
         />
       )}
     </div>
   );
 }
 
-function ReviewForm({ artisanId, onClose, onCreated }: { artisanId: string; onClose: () => void; onCreated: () => void }) {
+function ReplyForm({ reviewId, onClose, onCreated }: { reviewId: string; onClose: () => void; onCreated: () => void }) {
+  const [content, setContent] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!content.trim()) return;
+    setLoading(true);
+    try {
+      await api(`/artisans/reviews/${reviewId}/reply`, {
+        method: "POST",
+        body: JSON.stringify({ content }),
+      });
+      onCreated();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erreur");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="mt-3 space-y-2">
+      {error && <p className="text-xs text-red-500">{error}</p>}
+      <textarea
+        value={content}
+        onChange={(e) => setContent(e.target.value)}
+        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary-500 bg-white dark:bg-gray-800 dark:text-gray-100"
+        rows={3}
+        placeholder="Votre réponse..."
+      />
+      <div className="flex gap-2 justify-end">
+        <button type="button" onClick={onClose} className="px-3 py-1.5 text-xs text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer">Annuler</button>
+        <button type="submit" disabled={loading} className="px-3 py-1.5 text-xs bg-primary-600 text-white rounded-lg disabled:opacity-50 cursor-pointer">{loading ? "..." : "Répondre"}</button>
+      </div>
+    </form>
+  );
+}
+
+function ReviewForm({ artisanId, communityId, onClose, onCreated }: { artisanId: string; communityId: string; onClose: () => void; onCreated: () => void }) {
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
-  const [visibility, setVisibility] = useState<"PUBLIC" | "PRIVATE">("PUBLIC");
+  const [visibility, setVisibility] = useState<"PUBLIC" | "COMMUNITY">("PUBLIC");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -172,7 +408,7 @@ function ReviewForm({ artisanId, onClose, onCreated }: { artisanId: string; onCl
     try {
       await api(`/artisans/${artisanId}/reviews`, {
         method: "POST",
-        body: JSON.stringify({ rating, comment, visibility }),
+        body: JSON.stringify({ rating, comment, visibility, communityId }),
       });
       onCreated();
     } catch (err) {
@@ -187,20 +423,20 @@ function ReviewForm({ artisanId, onClose, onCreated }: { artisanId: string; onCl
       <form
         onClick={(e) => e.stopPropagation()}
         onSubmit={handleSubmit}
-        className="bg-white p-6 rounded-xl w-full max-w-md space-y-4"
+        className="bg-white dark:bg-gray-900 p-6 rounded-xl w-full max-w-md space-y-4"
       >
         <h2 className="text-lg font-bold">Laisser un avis</h2>
         {error && <div className="bg-red-50 text-red-600 px-4 py-2 rounded-lg text-sm">{error}</div>}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Note</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Note</label>
           <StarRating rating={rating} onChange={setRating} size={28} />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Commentaire</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Commentaire</label>
           <textarea
             value={comment}
             onChange={(e) => setComment(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-primary-500"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg outline-none focus:ring-2 focus:ring-primary-500 bg-white dark:bg-gray-800 dark:text-gray-100"
             rows={4}
             placeholder="Travail soigné, ponctuel, je recommande..."
           />
@@ -209,16 +445,93 @@ function ReviewForm({ artisanId, onClose, onCreated }: { artisanId: string; onCl
           <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
             <input
               type="checkbox"
-              checked={visibility === "PRIVATE"}
-              onChange={(e) => setVisibility(e.target.checked ? "PRIVATE" : "PUBLIC")}
+              checked={visibility === "COMMUNITY"}
+              onChange={(e) => setVisibility(e.target.checked ? "COMMUNITY" : "PUBLIC")}
               className="accent-primary-600"
             />
-            Avis privé (visible uniquement par vous)
+            Communauté — visible uniquement par les membres
           </label>
+          <p className="text-xs text-gray-400 mt-1 ml-6">
+            {visibility === "PUBLIC" ? "Visible par tous, y compris sur la page publique" : "Visible uniquement par les membres de vos communautés"}
+          </p>
         </div>
         <div className="flex gap-2 justify-end">
-          <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-gray-600 bg-white border border-gray-300 rounded-lg cursor-pointer">Annuler</button>
+          <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer">Annuler</button>
           <button type="submit" disabled={loading} className="px-4 py-2 text-sm bg-primary-600 text-white rounded-lg disabled:opacity-50 cursor-pointer">{loading ? "..." : "Publier"}</button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
+function ProfileEditForm({ artisan, onClose, onSaved }: { artisan: ArtisanData; onClose: () => void; onSaved: () => void }) {
+  const [description, setDescription] = useState(artisan.description ?? "");
+  const [certifications, setCertifications] = useState(artisan.certifications.join(", "));
+  const [horaires, setHoraires] = useState(artisan.horaires ?? "");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await api(`/artisans/${artisan.id}/profile`, {
+        method: "PATCH",
+        body: JSON.stringify({
+          description: description || undefined,
+          certifications: certifications ? certifications.split(",").map((c) => c.trim()).filter(Boolean) : [],
+          horaires: horaires || undefined,
+        }),
+      });
+      onSaved();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erreur");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
+      <form
+        onClick={(e) => e.stopPropagation()}
+        onSubmit={handleSubmit}
+        className="bg-white dark:bg-gray-900 p-6 rounded-xl w-full max-w-md space-y-4 max-h-[90vh] overflow-y-auto"
+      >
+        <h2 className="text-lg font-bold">Modifier mon profil</h2>
+        {error && <div className="bg-red-50 text-red-600 px-4 py-2 rounded-lg text-sm">{error}</div>}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description / Bio</label>
+          <textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg outline-none focus:ring-2 focus:ring-primary-500 bg-white dark:bg-gray-800 dark:text-gray-100"
+            rows={4}
+            placeholder="Présentez votre activité, vos spécialités..."
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Certifications (séparées par des virgules)</label>
+          <input
+            value={certifications}
+            onChange={(e) => setCertifications(e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg outline-none focus:ring-2 focus:ring-primary-500 bg-white dark:bg-gray-800 dark:text-gray-100"
+            placeholder="RGE, Qualibat, Qualifelec..."
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Horaires</label>
+          <textarea
+            value={horaires}
+            onChange={(e) => setHoraires(e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg outline-none focus:ring-2 focus:ring-primary-500 bg-white dark:bg-gray-800 dark:text-gray-100"
+            rows={3}
+            placeholder="Lun-Ven : 8h-18h&#10;Samedi : sur rendez-vous"
+          />
+        </div>
+        <div className="flex gap-2 justify-end">
+          <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer">Annuler</button>
+          <button type="submit" disabled={loading} className="px-4 py-2 text-sm bg-primary-600 text-white rounded-lg disabled:opacity-50 cursor-pointer">{loading ? "..." : "Enregistrer"}</button>
         </div>
       </form>
     </div>

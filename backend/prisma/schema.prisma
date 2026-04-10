@@ -18,11 +18,19 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  memberships      CommunityMember[]
-  createdCommunities Community[]    @relation("CreatedCommunities")
-  equipment        Equipment[]
-  createdArtisans  Artisan[]
-  reviews          Review[]
+  memberships           CommunityMember[]
+  createdCommunities   Community[]    @relation("CreatedCommunities")
+  equipment            Equipment[]
+  createdArtisans      Artisan[]      @relation("ArtisanCreator")
+  ownedArtisan         Artisan?       @relation("ArtisanOwner")
+  artisanCommunities   ArtisanCommunity[] @relation("ArtisanCommunityAdder")
+  reviews              Review[]
+  reviewReplies        ReviewReply[]
+  activities           Activity[]
+  invitations          Invitation[]
+  conversations1       Conversation[] @relation("ConversationParticipant1")
+  conversations2       Conversation[] @relation("ConversationParticipant2")
+  messages             Message[]
 }
 
 model Community {
@@ -36,9 +44,12 @@ model Community {
   createdById String
   createdBy   User   @relation("CreatedCommunities", fields: [createdById], references: [id])
 
-  members   CommunityMember[]
-  equipment Equipment[]
-  artisans  Artisan[]
+  members            CommunityMember[]
+  equipment          Equipment[]
+  artisanCommunities ArtisanCommunity[]
+  activities         Activity[]
+  invitations        Invitation[]
+  conversations      Conversation[]
 }
 
 model CommunityMember {
@@ -71,25 +82,56 @@ model Equipment {
   owner       User      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   communityId String
   community   Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+
+  activities Activity[]
 }
 
 model Artisan {
-  id        String   @id @default(cuid())
-  name      String
-  company   String?
-  category  String
-  zone      String?
-  phone     String?
-  email     String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id             String   @id @default(cuid())
+  name           String
+  company        String?
+  category       String
+  zone           String?
+  phone          String?
+  email          String?  @unique
+  website        String?
 
-  createdById String
-  createdBy   User      @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  // Champs ajoutés par l'artisan après revendication
+  description    String?
+  certifications String[] @default([])
+  horaires       String?
+  ownPhotos      String[] @default([])
+
+  // Revendication
+  claimed        Boolean  @default(false)
+  claimedAt      DateTime?
+  claimToken     String?
+  claimRequestedById String?
+  ownerId        String?  @unique
+  owner          User?    @relation("ArtisanOwner", fields: [ownerId], references: [id], onDelete: SetNull)
+
+  createdById    String
+  createdBy      User     @relation("ArtisanCreator", fields: [createdById], references: [id], onDelete: Cascade)
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  communities    ArtisanCommunity[]
+  reviews        Review[]
+  activities     Activity[]
+  reviewReplies  ReviewReply[]
+}
+
+model ArtisanCommunity {
+  artisanId   String
+  artisan     Artisan   @relation(fields: [artisanId], references: [id], onDelete: Cascade)
   communityId String
   community   Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  addedById   String
+  addedBy     User      @relation("ArtisanCommunityAdder", fields: [addedById], references: [id], onDelete: Cascade)
+  addedAt     DateTime  @default(now())
 
-  reviews Review[]
+  @@id([artisanId, communityId])
 }
 
 model Review {
@@ -105,12 +147,28 @@ model Review {
   authorId  String
   author    User    @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
-  media ReviewMedia[]
+  media      ReviewMedia[]
+  activities Activity[]
+  replies    ReviewReply[]
+}
+
+model ReviewReply {
+  id        String   @id @default(cuid())
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  reviewId  String
+  review    Review   @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  artisanId String
+  artisan   Artisan  @relation(fields: [artisanId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
 }
 
 enum Visibility {
   PUBLIC
-  PRIVATE
+  COMMUNITY
 }
 
 model ReviewMedia {
@@ -124,4 +182,89 @@ model ReviewMedia {
 enum MediaType {
   IMAGE
   VIDEO
+}
+
+model Activity {
+  id          String       @id @default(cuid())
+  type        ActivityType
+  communityId String
+  community   Community    @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  actorId     String
+  actor       User         @relation(fields: [actorId], references: [id], onDelete: Cascade)
+
+  equipmentId String?
+  equipment   Equipment?   @relation(fields: [equipmentId], references: [id], onDelete: SetNull)
+  artisanId   String?
+  artisan     Artisan?     @relation(fields: [artisanId], references: [id], onDelete: SetNull)
+  reviewId    String?
+  review      Review?      @relation(fields: [reviewId], references: [id], onDelete: SetNull)
+
+  createdAt   DateTime     @default(now())
+
+  @@index([communityId, createdAt(sort: Desc)])
+}
+
+model Invitation {
+  id          String   @id @default(cuid())
+  token       String   @unique @default(cuid())
+  communityId String
+  community   Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  createdById String
+  createdBy   User     @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  expiresAt   DateTime
+  maxUses     Int?
+  uses        Int      @default(0)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  @@index([token])
+}
+
+model Conversation {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  participant1Id String
+  participant1   User   @relation("ConversationParticipant1", fields: [participant1Id], references: [id], onDelete: Cascade)
+  participant2Id String
+  participant2   User   @relation("ConversationParticipant2", fields: [participant2Id], references: [id], onDelete: Cascade)
+
+  communityId String
+  community   Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+
+  messages Message[]
+
+  @@unique([participant1Id, participant2Id, communityId])
+  @@index([participant1Id])
+  @@index([participant2Id])
+}
+
+model Message {
+  id             String        @id @default(cuid())
+  content        String
+  status         MessageStatus @default(SENT)
+  createdAt      DateTime      @default(now())
+
+  senderId       String
+  sender         User          @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  conversationId String
+  conversation   Conversation  @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId, createdAt])
+}
+
+enum MessageStatus {
+  SENT
+  DELIVERED
+  READ
+}
+
+enum ActivityType {
+  MEMBER_JOINED
+  EQUIPMENT_ADDED
+  EQUIPMENT_REMOVED
+  ARTISAN_ADDED
+  ARTISAN_REMOVED
+  REVIEW_ADDED
 }

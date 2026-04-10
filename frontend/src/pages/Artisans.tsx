@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useParams, Link } from "react-router-dom";
 import { api } from "../lib/api";
 import { StarRating } from "../components/StarRating";
-import { Plus, ArrowLeft, HardHat, Phone, MapPin } from "lucide-react";
+import { Plus, ArrowLeft, HardHat, Phone, MapPin, Globe, BadgeCheck } from "lucide-react";
 
 const ARTISAN_CATEGORIES = [
   "Plomberie", "Électricité", "Maçonnerie", "Peinture", "Menuiserie",
@@ -17,7 +17,9 @@ interface ArtisanItem {
   zone?: string;
   phone?: string;
   email?: string;
+  website?: string;
   createdById: string;
+  claimed: boolean;
   avgRating: number | null;
   reviewCount: number;
 }
@@ -51,7 +53,7 @@ export function ArtisanList() {
       </Link>
 
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-bold">Artisans recommandés</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Artisans recommandés</h1>
         <button
           onClick={() => setShowForm(true)}
           className="flex items-center gap-1.5 px-4 py-2 text-sm bg-primary-600 text-white rounded-lg hover:bg-primary-700 cursor-pointer"
@@ -64,7 +66,7 @@ export function ArtisanList() {
       <div className="flex flex-wrap gap-2 mb-6">
         <button
           onClick={() => setFilter("")}
-          className={`px-3 py-1 text-sm rounded-full cursor-pointer border ${!filter ? "bg-primary-600 text-white border-primary-600" : "bg-white text-gray-600 border-gray-300 hover:bg-gray-50"}`}
+          className={`px-3 py-1 text-sm rounded-full cursor-pointer border ${!filter ? "bg-primary-600 text-white border-primary-600" : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"}`}
         >
           Tout
         </button>
@@ -72,7 +74,7 @@ export function ArtisanList() {
           <button
             key={cat}
             onClick={() => setFilter(cat === filter ? "" : cat)}
-            className={`px-3 py-1 text-sm rounded-full cursor-pointer border ${filter === cat ? "bg-primary-600 text-white border-primary-600" : "bg-white text-gray-600 border-gray-300 hover:bg-gray-50"}`}
+            className={`px-3 py-1 text-sm rounded-full cursor-pointer border ${filter === cat ? "bg-primary-600 text-white border-primary-600" : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700"}`}
           >
             {cat}
           </button>
@@ -93,18 +95,22 @@ export function ArtisanList() {
             <Link
               key={a.id}
               to={`/artisans/${a.id}`}
-              className="bg-white p-5 rounded-xl border border-gray-200 hover:border-primary-300 hover:shadow-sm transition-all no-underline"
+              className="bg-white dark:bg-gray-900 p-5 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-primary-300 dark:hover:border-primary-600 hover:shadow-sm transition-all no-underline"
             >
               <div className="flex items-start justify-between">
                 <div>
-                  <h3 className="font-semibold text-gray-900">{a.name}</h3>
+                  <h3 className="font-semibold text-gray-900 dark:text-gray-100">
+                    {a.name}
+                    {a.claimed && <BadgeCheck className="inline w-3.5 h-3.5 text-green-500 ml-1 -mt-0.5" />}
+                    {a.website && <Globe className="inline w-3.5 h-3.5 text-gray-400 ml-1.5 -mt-0.5" />}
+                  </h3>
                   {a.company && <p className="text-sm text-gray-500">{a.company}</p>}
                 </div>
-                <span className="text-xs px-2 py-0.5 bg-primary-50 text-primary-700 rounded-full">{a.category}</span>
+                <span className="text-xs px-2 py-0.5 bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 rounded-full">{a.category}</span>
               </div>
               <div className="flex items-center gap-2 mt-3">
                 <StarRating rating={a.avgRating ?? 0} size={16} />
-                <span className="text-xs text-gray-400">
+                <span className="text-xs text-gray-400 dark:text-gray-500">
                   {a.reviewCount} avis
                 </span>
               </div>
@@ -125,7 +131,7 @@ export function ArtisanList() {
 }
 
 function ArtisanForm({ communityId, onClose, onCreated }: { communityId: string; onClose: () => void; onCreated: () => void }) {
-  const [form, setForm] = useState({ name: "", company: "", category: ARTISAN_CATEGORIES[0], zone: "", phone: "", email: "" });
+  const [form, setForm] = useState({ name: "", company: "", category: ARTISAN_CATEGORIES[0], zone: "", phone: "", email: "", website: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -155,40 +161,44 @@ function ArtisanForm({ communityId, onClose, onCreated }: { communityId: string;
       <form
         onClick={(e) => e.stopPropagation()}
         onSubmit={handleSubmit}
-        className="bg-white p-6 rounded-xl w-full max-w-md space-y-4 max-h-[90vh] overflow-y-auto"
+        className="bg-white dark:bg-gray-900 p-6 rounded-xl w-full max-w-md space-y-4 max-h-[90vh] overflow-y-auto"
       >
-        <h2 className="text-lg font-bold">Recommander un artisan</h2>
-        {error && <div className="bg-red-50 text-red-600 px-4 py-2 rounded-lg text-sm">{error}</div>}
+        <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">Recommander un artisan</h2>
+        {error && <div className="bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 px-4 py-2 rounded-lg text-sm">{error}</div>}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Nom</label>
-          <input value={form.name} onChange={(e) => update("name", e.target.value)} required className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-primary-500" />
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nom</label>
+          <input value={form.name} onChange={(e) => update("name", e.target.value)} required className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg outline-none focus:ring-2 focus:ring-primary-500 bg-white dark:bg-gray-800 dark:text-gray-100" />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Entreprise (optionnel)</label>
-          <input value={form.company} onChange={(e) => update("company", e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-primary-500" />
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Entreprise (optionnel)</label>
+          <input value={form.company} onChange={(e) => update("company", e.target.value)} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg outline-none focus:ring-2 focus:ring-primary-500 bg-white dark:bg-gray-800 dark:text-gray-100" />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Catégorie</label>
-          <select value={form.category} onChange={(e) => update("category", e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-primary-500 bg-white">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Catégorie</label>
+          <select value={form.category} onChange={(e) => update("category", e.target.value)} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg outline-none focus:ring-2 focus:ring-primary-500 bg-white dark:bg-gray-800 dark:text-gray-100">
             {ARTISAN_CATEGORIES.map((cat) => <option key={cat} value={cat}>{cat}</option>)}
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Zone (optionnel)</label>
-          <input value={form.zone} onChange={(e) => update("zone", e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-primary-500" placeholder="Maisons-Laffitte et environs" />
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Zone (optionnel)</label>
+          <input value={form.zone} onChange={(e) => update("zone", e.target.value)} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg outline-none focus:ring-2 focus:ring-primary-500 bg-white dark:bg-gray-800 dark:text-gray-100" placeholder="Maisons-Laffitte et environs" />
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Téléphone</label>
-            <input value={form.phone} onChange={(e) => update("phone", e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-primary-500" />
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Téléphone</label>
+            <input value={form.phone} onChange={(e) => update("phone", e.target.value)} className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg outline-none focus:ring-2 focus:ring-primary-500 bg-white dark:bg-gray-800 dark:text-gray-100" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-            <input value={form.email} onChange={(e) => update("email", e.target.value)} type="email" className="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-primary-500" />
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
+            <input value={form.email} onChange={(e) => update("email", e.target.value)} type="email" className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg outline-none focus:ring-2 focus:ring-primary-500 bg-white dark:bg-gray-800 dark:text-gray-100" />
           </div>
         </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Site web (optionnel)</label>
+          <input value={form.website} onChange={(e) => update("website", e.target.value)} type="url" className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg outline-none focus:ring-2 focus:ring-primary-500 bg-white dark:bg-gray-800 dark:text-gray-100" placeholder="https://www.artisan-exemple.fr" />
+        </div>
         <div className="flex gap-2 justify-end">
-          <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-gray-600 bg-white border border-gray-300 rounded-lg cursor-pointer">Annuler</button>
+          <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer">Annuler</button>
           <button type="submit" disabled={loading} className="px-4 py-2 text-sm bg-primary-600 text-white rounded-lg disabled:opacity-50 cursor-pointer">{loading ? "..." : "Ajouter"}</button>
         </div>
       </form>
