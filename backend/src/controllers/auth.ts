@@ -40,7 +40,7 @@ export async function register(req: Request, res: Response, next: NextFunction) 
     const refreshToken = generateRefreshToken(user.id);
 
     res.status(201).json({
-      user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName },
+      user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, photo: user.photo, bio: user.bio },
       accessToken,
       refreshToken,
     });
@@ -71,7 +71,7 @@ export async function login(req: Request, res: Response, next: NextFunction) {
     const refreshToken = generateRefreshToken(user.id);
 
     res.json({
-      user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, photo: user.photo },
+      user: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName, photo: user.photo, bio: user.bio },
       accessToken,
       refreshToken,
     });
@@ -110,7 +110,7 @@ export async function getMe(req: Request, res: Response, next: NextFunction) {
   try {
     const user = await prisma.user.findUnique({
       where: { id: req.userId },
-      select: { id: true, email: true, firstName: true, lastName: true, photo: true, createdAt: true },
+      select: { id: true, email: true, firstName: true, lastName: true, photo: true, bio: true, createdAt: true },
     });
     if (!user) {
       throw new AppError(404, "Utilisateur introuvable");

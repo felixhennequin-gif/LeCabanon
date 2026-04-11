@@ -1,18 +1,25 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api } from "../lib/api";
 import { useAuth } from "../contexts/AuthContext";
 import { useLocalizedNavigate } from "../hooks/useLocalizedNavigate";
 import { LocalizedLink } from "../components/LocalizedLink";
-import { ArrowLeft, Package, MessageCircle, Trash2 } from "lucide-react";
+import { Avatar } from "../components/Avatar";
+import { ArrowLeft, Package, MessageCircle, Trash2, Plus, Loader2, X } from "lucide-react";
+
+interface EquipmentPhoto {
+  id: string;
+  url: string;
+  order: number;
+}
 
 interface EquipmentData {
   id: string;
   name: string;
   description?: string;
   category: string;
-  photos: string[];
+  photos: EquipmentPhoto[];
   communityId: string;
   ownerId: string;
   owner: { id: string; firstName: string; lastName: string; photo?: string | null };
@@ -27,11 +34,17 @@ export function EquipmentDetail() {
   const navigate = useLocalizedNavigate();
   const [equipment, setEquipment] = useState<EquipmentData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [activePhoto, setActivePhoto] = useState(0);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (id) {
       api<EquipmentData>(`/equipment/${id}`)
-        .then(setEquipment)
+        .then((data) => {
+          setEquipment(data);
+          setActivePhoto(0);
+        })
         .finally(() => setLoading(false));
     }
   }, [id]);
@@ -53,6 +66,35 @@ export function EquipmentDetail() {
     });
   }
 
+  async function handlePhotoUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    if (!equipment || !e.target.files?.length) return;
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      for (const file of e.target.files) {
+        formData.append("photos", file);
+      }
+      const newPhotos = await api<EquipmentPhoto[]>(`/equipment/${equipment.id}/photos`, {
+        method: "POST",
+        body: formData,
+      });
+      setEquipment({ ...equipment, photos: [...equipment.photos, ...newPhotos] });
+    } catch {
+      // error handled silently
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  }
+
+  async function handlePhotoDelete(photoId: string) {
+    if (!equipment) return;
+    await api(`/equipment/${equipment.id}/photos/${photoId}`, { method: "DELETE" });
+    const updated = equipment.photos.filter((p) => p.id !== photoId);
+    setEquipment({ ...equipment, photos: updated });
+    if (activePhoto >= updated.length) setActivePhoto(Math.max(0, updated.length - 1));
+  }
+
   if (loading) {
     return <div className="flex justify-center py-12"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" /></div>;
   }
@@ -60,6 +102,7 @@ export function EquipmentDetail() {
   if (!equipment) return <div className="text-center py-12 text-[var(--color-text-secondary)]">{t("equipment.not_found")}</div>;
 
   const isOwner = equipment.ownerId === user?.id;
+  const mainPhoto = equipment.photos[activePhoto];
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -67,13 +110,79 @@ export function EquipmentDetail() {
         <ArrowLeft className="w-4 h-4" strokeWidth={1.5} /> {tc("actions.back")}
       </button>
 
-      <div className="h-56 sm:h-72 bg-[var(--color-input)] rounded-[var(--radius-card)] overflow-hidden mb-6 flex items-center justify-center">
-        {equipment.photos[0] ? (
-          <img src={equipment.photos[0]} alt={equipment.name} className="w-full h-full object-cover" />
+      <div className="h-56 sm:h-72 bg-[var(--color-input)] rounded-[var(--radius-card)] overflow-hidden mb-3 flex items-center justify-center relative">
+        {mainPhoto ? (
+          <img src={mainPhoto.url} alt={equipment.name} className="w-full h-full object-cover" />
         ) : (
           <Package className="w-16 h-16 text-[var(--color-text-tertiary)]" strokeWidth={1.5} />
         )}
       </div>
+
+      {(equipment.photos.length > 1 || isOwner) && (
+        <div className="flex items-center gap-2 mb-6 flex-wrap">
+          {equipment.photos.map((p, i) => (
+            <div key={p.id} className="relative group">
+              <button
+                type="button"
+                onClick={() => setActivePhoto(i)}
+                className={`w-16 h-16 rounded-[var(--radius-input)] overflow-hidden border-2 cursor-pointer p-0 ${i === activePhoto ? "border-primary-600" : "border-[var(--color-border)]"}`}
+              >
+                <img src={p.url} alt="" className="w-full h-full object-cover" />
+              </button>
+              {isOwner && (
+                <button
+                  type="button"
+                  onClick={() => handlePhotoDelete(p.id)}
+                  className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-[var(--color-error)] text-[var(--color-page)] rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 cursor-pointer border-none transition-opacity"
+                >
+                  <X className="w-3 h-3" strokeWidth={2} />
+                </button>
+              )}
+            </div>
+          ))}
+          {isOwner && equipment.photos.length < 5 && (
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploading}
+              className="w-16 h-16 rounded-[var(--radius-input)] border-2 border-dashed border-[var(--color-border-strong)] flex items-center justify-center cursor-pointer bg-transparent text-[var(--color-text-tertiary)] hover:border-primary-400 hover:text-primary-600"
+            >
+              {uploading ? <Loader2 className="w-5 h-5 animate-spin" strokeWidth={1.5} /> : <Plus className="w-5 h-5" strokeWidth={1.5} />}
+            </button>
+          )}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={handlePhotoUpload}
+            className="hidden"
+          />
+        </div>
+      )}
+
+      {isOwner && equipment.photos.length === 0 && (
+        <div className="mb-6">
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploading}
+            className="flex items-center gap-2 px-4 py-2 text-sm border border-dashed border-[var(--color-border-strong)] rounded-[var(--radius-button)] text-[var(--color-text-secondary)] hover:border-primary-400 hover:text-primary-600 bg-transparent cursor-pointer"
+          >
+            {uploading ? <Loader2 className="w-4 h-4 animate-spin" strokeWidth={1.5} /> : <Plus className="w-4 h-4" strokeWidth={1.5} />}
+            {t("photos.add")}
+          </button>
+          <p className="text-xs text-[var(--color-text-tertiary)] mt-1">{t("photos.formats")}</p>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={handlePhotoUpload}
+            className="hidden"
+          />
+        </div>
+      )}
 
       <div className="bg-[var(--color-card)] rounded-[var(--radius-card)] border border-[var(--color-border)] p-6 mb-6">
         <div className="flex items-start justify-between">
@@ -96,9 +205,7 @@ export function EquipmentDetail() {
 
         <div className="flex items-center justify-between mt-6 pt-4 border-t border-[var(--color-border)]">
           <LocalizedLink to={`/app/users/${equipment.owner.id}`} className="flex items-center gap-3 no-underline hover:underline">
-            <div className="w-10 h-10 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center text-sm font-medium">
-              {equipment.owner.firstName[0]}{equipment.owner.lastName[0]}
-            </div>
+            <Avatar src={equipment.owner.photo} name={`${equipment.owner.firstName} ${equipment.owner.lastName}`} size="md" />
             <div>
               <p className="text-sm font-medium text-[var(--color-text-primary)]">{equipment.owner.firstName} {equipment.owner.lastName}</p>
               <p className="text-xs text-[var(--color-text-tertiary)]">{t("equipment.owner")}</p>

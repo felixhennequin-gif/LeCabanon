@@ -6,6 +6,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { useLocalizedNavigate } from "../hooks/useLocalizedNavigate";
 import { LocalizedLink } from "../components/LocalizedLink";
 import { StarRating } from "../components/StarRating";
+import { Avatar } from "../components/Avatar";
 import { Package, ArrowLeft } from "lucide-react";
 
 interface UserEquipment {
@@ -13,7 +14,7 @@ interface UserEquipment {
   name: string;
   category: string;
   description?: string | null;
-  photos: string[];
+  photos: { id: string; url: string }[];
   community: { id: string; name: string };
 }
 
@@ -30,6 +31,7 @@ interface UserProfileData {
   firstName: string;
   lastName: string;
   photo?: string | null;
+  bio?: string | null;
   createdAt: string;
   equipment: UserEquipment[];
   reviews: UserReview[];
@@ -76,9 +78,7 @@ export function UserProfile() {
 
       <div className="bg-[var(--color-card)] rounded-[var(--radius-card)] border border-[var(--color-border)] p-6 mb-6">
         <div className="flex items-center gap-4">
-          <div className="w-16 h-16 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center text-xl font-bold">
-            {profile.firstName[0]}{profile.lastName[0]}
-          </div>
+          <Avatar src={profile.photo} name={`${profile.firstName} ${profile.lastName}`} size="lg" />
           <div>
             <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">{profile.firstName} {profile.lastName}</h1>
             <p className="text-sm text-[var(--color-text-tertiary)]">
@@ -86,6 +86,9 @@ export function UserProfile() {
             </p>
           </div>
         </div>
+        {profile.bio && (
+          <p className="text-sm text-[var(--color-text-secondary)] mt-4 whitespace-pre-line">{profile.bio}</p>
+        )}
       </div>
 
       {profile.equipment.length > 0 && (
@@ -100,8 +103,8 @@ export function UserProfile() {
                 {group.items.map((e) => (
                   <div key={e.id} className="bg-[var(--color-card)] rounded-[var(--radius-card)] border border-[var(--color-border)] overflow-hidden">
                     <div className="h-28 bg-[var(--color-input)] flex items-center justify-center">
-                      {e.photos[0] ? (
-                        <img src={e.photos[0]} alt={e.name} className="w-full h-full object-cover" />
+                      {e.photos[0]?.url ? (
+                        <img src={e.photos[0].url} alt={e.name} className="w-full h-full object-cover" />
                       ) : (
                         <Package className="w-8 h-8 text-[var(--color-text-tertiary)]" strokeWidth={1.5} />
                       )}

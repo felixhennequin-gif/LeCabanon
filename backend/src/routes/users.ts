@@ -1,5 +1,7 @@
 import { Router } from "express";
 import { authenticate } from "../middlewares/authenticate.js";
+import { upload } from "../middlewares/upload.js";
+import { processAndSaveImage, deleteImage } from "../utils/image.js";
 import { prisma } from "../utils/prisma.js";
 import type { Request, Response, NextFunction } from "express";
 import { z } from "zod";
@@ -9,13 +11,14 @@ export const userRouter = Router();
 const updateProfileSchema = z.object({
   firstName: z.string().min(1).optional(),
   lastName: z.string().min(1).optional(),
+  bio: z.string().max(500).optional(),
 });
 
 userRouter.get("/me", authenticate, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const user = await prisma.user.findUnique({
       where: { id: req.userId },
-      select: { id: true, email: true, firstName: true, lastName: true, photo: true, createdAt: true },
+      select: { id: true, email: true, firstName: true, lastName: true, photo: true, bio: true, createdAt: true },
     });
     res.json(user);
   } catch (err) {
@@ -29,7 +32,7 @@ userRouter.patch("/me", authenticate, async (req: Request, res: Response, next: 
     const user = await prisma.user.update({
       where: { id: req.userId },
       data,
-      select: { id: true, email: true, firstName: true, lastName: true, photo: true },
+      select: { id: true, email: true, firstName: true, lastName: true, photo: true, bio: true },
     });
     res.json(user);
   } catch (err) {
@@ -37,20 +40,60 @@ userRouter.patch("/me", authenticate, async (req: Request, res: Response, next: 
   }
 });
 
+userRouter.post(
+  "/me/avatar",
+  authenticate,
+  upload.single("avatar"),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      if (!req.file) {
+        res.status(400).json({ error: "Aucun fichier fourni" });
+        return;
+      }
+
+      const currentUser = await prisma.user.findUnique({
+        where: { id: req.userId },
+        select: { photo: true },
+      });
+
+      if (currentUser?.photo) {
+        await deleteImage(currentUser.photo);
+      }
+
+      const photoUrl = await processAndSaveImage({
+        buffer: req.file.buffer,
+        folder: "avatars",
+        maxWidth: 400,
+        maxHeight: 400,
+        quality: 80,
+      });
+
+      const user = await prisma.user.update({
+        where: { id: req.userId },
+        data: { photo: photoUrl },
+        select: { id: true, email: true, firstName: true, lastName: true, photo: true, bio: true },
+      });
+
+      res.json(user);
+    } catch (err) {
+      next(err);
+    }
+  },
+);
+
 userRouter.get("/:id/profile", authenticate, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const targetId = req.params.id as string;
 
     const targetUser = await prisma.user.findUnique({
       where: { id: targetId },
-      select: { id: true, firstName: true, lastName: true, photo: true, createdAt: true },
+      select: { id: true, firstName: true, lastName: true, photo: true, bio: true, createdAt: true },
     });
     if (!targetUser) {
       res.status(404).json({ error: "Utilisateur introuvable" });
       return;
     }
 
-    // Get communities where both the viewer and the target are members
     const viewerMemberships = await prisma.communityMember.findMany({
       where: { userId: req.userId! },
       select: { communityId: true },
@@ -64,6 +107,7 @@ userRouter.get("/:id/profile", authenticate, async (req: Request, res: Response,
       },
       include: {
         community: { select: { id: true, name: true } },
+        photos: { orderBy: { order: "asc" } },
       },
       orderBy: { createdAt: "desc" },
     });

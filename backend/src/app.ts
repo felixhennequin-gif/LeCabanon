@@ -25,6 +25,9 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 
+// Serve uploaded files
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
+
 // Routes
 app.use("/api/auth", authRouter);
 app.use("/api/users", userRouter);

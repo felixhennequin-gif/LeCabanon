@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -6,7 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { api } from "../lib/api";
 import { useAuth } from "../contexts/AuthContext";
 import { LocalizedLink } from "../components/LocalizedLink";
-import { Check, Package } from "lucide-react";
+import { Avatar } from "../components/Avatar";
+import { Check, Package, Camera, Loader2 } from "lucide-react";
 
 export function Profile() {
   const { t } = useTranslation("app");
@@ -15,17 +16,25 @@ export function Profile() {
   const [communities, setCommunities] = useState<CommunityWithEquipment[]>([]);
   const [loading, setLoading] = useState(true);
   const [saved, setSaved] = useState(false);
+  const [avatarUploading, setAvatarUploading] = useState(false);
+  const [avatarError, setAvatarError] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const profileSchema = z.object({
     firstName: z.string().min(1, t("profile.firstname_required")),
     lastName: z.string().min(1, t("profile.lastname_required")),
+    bio: z.string().max(500).optional(),
   });
 
   type ProfileForm = z.infer<typeof profileSchema>;
 
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<ProfileForm>({
     resolver: zodResolver(profileSchema),
-    defaultValues: { firstName: user?.firstName ?? "", lastName: user?.lastName ?? "" },
+    defaultValues: {
+      firstName: user?.firstName ?? "",
+      lastName: user?.lastName ?? "",
+      bio: user?.bio ?? "",
+    },
   });
 
   useEffect(() => {
@@ -35,7 +44,9 @@ export function Profile() {
         const withEquipment = await Promise.all(
           comms.map(async (c) => {
             const eq = await api<EquipmentItem[]>(`/equipment/community/${c.id}`);
-            const myEquipment = eq.filter((e) => e.ownerId === user?.id);
+            const myEquipment = (eq as unknown as { equipment: EquipmentItem[] }).equipment
+              ? (eq as unknown as { equipment: EquipmentItem[] }).equipment.filter((e) => e.ownerId === user?.id)
+              : (eq as EquipmentItem[]).filter((e) => e.ownerId === user?.id);
             return { ...c, equipment: myEquipment };
           }),
         );
@@ -48,13 +59,34 @@ export function Profile() {
   }, [user?.id]);
 
   async function onSubmit(data: ProfileForm) {
-    const updated = await api<{ id: string; firstName: string; lastName: string }>("/users/me", {
+    const updated = await api<{ id: string; firstName: string; lastName: string; photo?: string | null; bio?: string | null }>("/users/me", {
       method: "PATCH",
       body: JSON.stringify(data),
     });
     updateUser(updated);
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
+  }
+
+  async function handleAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setAvatarError("");
+    setAvatarUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("avatar", file);
+      const updated = await api<{ id: string; firstName: string; lastName: string; photo?: string | null; bio?: string | null }>("/users/me/avatar", {
+        method: "POST",
+        body: formData,
+      });
+      updateUser(updated);
+    } catch (err) {
+      setAvatarError(err instanceof Error ? err.message : t("profile.avatar_error"));
+    } finally {
+      setAvatarUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
   }
 
   if (!user) return null;
@@ -65,14 +97,49 @@ export function Profile() {
 
       <form onSubmit={handleSubmit(onSubmit)} className="bg-[var(--color-card)] rounded-[var(--radius-card)] border border-[var(--color-border)] p-6 mb-6">
         <div className="flex items-center gap-4 mb-6">
-          <div className="w-16 h-16 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center text-xl font-bold">
-            {user.firstName[0]}{user.lastName[0]}
+          <div className="relative group">
+            <Avatar
+              src={user.photo}
+              name={`${user.firstName} ${user.lastName}`}
+              size="lg"
+            />
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={avatarUploading}
+              className="absolute inset-0 rounded-full bg-[var(--color-overlay)] opacity-0 group-hover:opacity-100 flex items-center justify-center cursor-pointer border-none transition-opacity"
+            >
+              {avatarUploading ? (
+                <Loader2 className="w-5 h-5 text-[var(--color-page)] animate-spin" strokeWidth={1.5} />
+              ) : (
+                <Camera className="w-5 h-5 text-[var(--color-page)]" strokeWidth={1.5} />
+              )}
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleAvatarChange}
+              className="hidden"
+            />
           </div>
           <div>
             <p className="font-semibold text-lg">{user.firstName} {user.lastName}</p>
             <p className="text-sm text-[var(--color-text-secondary)]">{user.email}</p>
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={avatarUploading}
+              className="text-xs text-primary-600 hover:text-primary-700 bg-transparent border-none cursor-pointer p-0 mt-1"
+            >
+              {avatarUploading ? t("profile.avatar_uploading") : t("profile.change_photo")}
+            </button>
           </div>
         </div>
+
+        {avatarError && (
+          <div className="bg-[var(--color-error-light)] text-[var(--color-error)] px-4 py-2 rounded-[var(--radius-input)] text-sm mb-4">{avatarError}</div>
+        )}
 
         <div className="grid sm:grid-cols-2 gap-4 mb-4">
           <div>
@@ -100,6 +167,16 @@ export function Profile() {
             disabled
             className="w-full px-3 py-2 border border-[var(--color-border)] rounded-[var(--radius-input)] bg-[var(--color-page)] text-[var(--color-text-tertiary)]"
           />
+        </div>
+
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">{t("profile.bio")}</label>
+          <textarea
+            {...register("bio")}
+            className="w-full px-3 py-2 border border-[var(--color-border-strong)] rounded-[var(--radius-input)] outline-none focus:ring-2 focus:ring-primary-400 bg-[var(--color-input)] text-[var(--color-text-primary)] min-h-[120px]"
+            placeholder={t("profile.bio_placeholder")}
+          />
+          <p className="text-xs text-[var(--color-text-tertiary)] mt-1">{t("profile.bio_max")}</p>
         </div>
 
         <div className="flex items-center gap-3">

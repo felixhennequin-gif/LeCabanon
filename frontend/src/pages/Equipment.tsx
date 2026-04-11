@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api } from "../lib/api";
 import { LocalizedLink } from "../components/LocalizedLink";
+import { Avatar } from "../components/Avatar";
 import { Plus, ArrowLeft, Package, User } from "lucide-react";
 
 const EQUIPMENT_CATEGORIES = [
@@ -10,12 +11,17 @@ const EQUIPMENT_CATEGORIES = [
   "Echelles & echafaudages", "Automobile", "Demenagement", "Cuisine / Reception",
 ];
 
+interface EquipmentPhoto {
+  id: string;
+  url: string;
+}
+
 interface EquipmentItem {
   id: string;
   name: string;
   description?: string;
   category: string;
-  photos: string[];
+  photos: EquipmentPhoto[];
   ownerId: string;
   owner: { id: string; firstName: string; lastName: string; photo?: string | null };
   createdAt: string;
@@ -125,8 +131,8 @@ export function EquipmentList() {
           {equipment.map((e) => (
             <LocalizedLink key={e.id} to={`/app/equipment/${e.id}`} className="bg-[var(--color-card)] rounded-[var(--radius-card)] border border-[var(--color-border)] overflow-hidden no-underline hover:border-primary-400 hover:shadow-sm transition-all">
               <div className="h-40 bg-[var(--color-input)] flex items-center justify-center">
-                {e.photos[0] ? (
-                  <img src={e.photos[0]} alt={e.name} className="w-full h-full object-cover" />
+                {e.photos[0]?.url ? (
+                  <img src={e.photos[0].url} alt={e.name} className="w-full h-full object-cover" />
                 ) : (
                   <Package className="w-10 h-10 text-[var(--color-text-tertiary)]" strokeWidth={1.5} />
                 )}
@@ -139,9 +145,7 @@ export function EquipmentList() {
                 {e.description && <p className="text-sm text-[var(--color-text-secondary)] mt-2 line-clamp-2">{e.description}</p>}
                 <div className="flex items-center mt-3 pt-3 border-t border-[var(--color-border)]">
                   <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center text-xs font-medium">
-                      {e.owner.firstName[0]}{e.owner.lastName[0]}
-                    </div>
+                    <Avatar src={e.owner.photo} name={`${e.owner.firstName} ${e.owner.lastName}`} size="xs" />
                     <span className="text-xs text-[var(--color-text-secondary)]">{e.owner.firstName} {e.owner.lastName}</span>
                   </div>
                 </div>
