@@ -116,7 +116,7 @@ export function LandingPage() {
             </LocalizedLink>
             <button
               onClick={scrollToFeatures}
-              className="px-6 py-3 text-[var(--color-text-secondary)] border border-[var(--color-border-strong)] rounded-[var(--radius-button)] hover:bg-[var(--color-hover)] text-sm font-medium cursor-pointer bg-transparent transition-colors"
+              className="px-6 py-3 text-primary-600 border border-primary-600 rounded-[var(--radius-button)] hover:bg-primary-50 text-sm font-medium cursor-pointer bg-transparent transition-colors"
             >
               {t("hero.cta_secondary")}
             </button>

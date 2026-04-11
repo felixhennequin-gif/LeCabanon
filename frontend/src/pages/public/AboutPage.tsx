@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { LocalizedLink } from "../../components/LocalizedLink";
 import { useInView } from "../../hooks/useInView";
 import { Mail } from "lucide-react";
 
@@ -95,9 +96,15 @@ export function AboutPage() {
             <h2 className="text-2xl font-bold text-[var(--color-text-primary)] mb-3">
               {t("about.contact_title")}
             </h2>
-            <p className="text-[var(--color-text-secondary)]">
+            <p className="text-[var(--color-text-secondary)] mb-6">
               {t("about.contact_text")}
             </p>
+            <LocalizedLink
+              to="/contact"
+              className="inline-block px-6 py-2.5 border border-primary-600 text-primary-600 rounded-[var(--radius-button)] font-medium hover:bg-primary-50 no-underline text-sm transition-colors"
+            >
+              {t("about.contact_link")}
+            </LocalizedLink>
           </Section>
         </div>
       </section>

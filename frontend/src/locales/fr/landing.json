@@ -7,6 +7,8 @@
   },
   "features": {
     "title": "Tout ce dont votre quartier a besoin",
+    "page_title": "Fonctionnalités",
+    "page_subtitle": "Découvrez tout ce que LeCabanon apporte à votre communauté de voisins.",
     "equipment": {
       "title": "Matériel partagé",
       "description": "Listez et empruntez les outils de vos voisins. Perceuse, karcher, remorque — tout est à portée de main.",
@@ -130,7 +132,8 @@
     "creator_text": "LeCabanon est développé par Félix Hennequin, développeur web à Nantes.",
     "creator_initials": "FH",
     "contact_title": "Contact",
-    "contact_text": "Une question ? Une suggestion ? N'hésitez pas à nous contacter."
+    "contact_text": "Une question ? Une suggestion ? N'hésitez pas à nous contacter.",
+    "contact_link": "Nous contacter"
   },
   "cta": {
     "title": "Prêt à rejoindre vos voisins ?",

@@ -56,10 +56,10 @@ export function FeaturesPage() {
       <section className="max-w-[1120px] mx-auto px-4 py-16 md:py-20 text-center">
         <Section>
           <h1 className="text-3xl md:text-4xl font-bold text-[var(--color-text-primary)]">
-            {t("features.title")}
+            {t("features.page_title")}
           </h1>
           <p className="mt-4 text-[var(--color-text-secondary)] max-w-lg mx-auto">
-            {t("hero.subtitle")}
+            {t("features.page_subtitle")}
           </p>
         </Section>
       </section>
