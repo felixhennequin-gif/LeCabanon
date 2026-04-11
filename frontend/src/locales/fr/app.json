@@ -165,6 +165,7 @@
     "first_message": "Envoyez votre premier message !",
     "load_older": "Charger les messages precedents",
     "equipment_context": "A propos de <strong>{{name}}</strong>",
+    "equipment_context_label": "A propos de :",
     "equipment_prefill": "Bonjour, je vous contacte a propos de : {{name}}\n",
     "send_message_title": "Envoyer un message"
   },

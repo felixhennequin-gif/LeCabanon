@@ -48,7 +48,9 @@ export function EquipmentDetail() {
       method: "POST",
       body: JSON.stringify({ recipientId: equipment.ownerId, communityId: equipment.communityId }),
     });
-    navigate(`/app/messages/${conv.id}?context=equipment&equipmentName=${encodeURIComponent(equipment.name)}`);
+    navigate(`/app/messages/${conv.id}`, {
+      state: { equipmentContext: { id: equipment.id, name: equipment.name } },
+    });
   }
 
   if (loading) {

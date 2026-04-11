@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api } from "../lib/api";
 import { useAuth } from "../contexts/AuthContext";
 import { useLocalizedNavigate } from "../hooks/useLocalizedNavigate";
 import { LocalizedLink } from "../components/LocalizedLink";
-import { ArrowLeft, Send, Check, CheckCheck, Package } from "lucide-react";
+import { ArrowLeft, Send, Check, CheckCheck, Wrench, X } from "lucide-react";
 
 interface ConversationSummary {
   id: string;
@@ -31,9 +31,11 @@ export function Messages() {
   const { t: tc } = useTranslation("common");
   const { conversationId } = useParams<{ conversationId?: string }>();
   const navigate = useLocalizedNavigate();
-  const [searchParams] = useSearchParams();
+  const location = useLocation();
   const { user } = useAuth();
-  const equipmentContext = searchParams.get("context") === "equipment" ? searchParams.get("equipmentName") : null;
+  const [equipmentCtx, setEquipmentCtx] = useState<{ id: string; name: string } | null>(
+    (location.state as { equipmentContext?: { id: string; name: string } } | null)?.equipmentContext ?? null,
+  );
   const [conversations, setConversations] = useState<ConversationSummary[]>([]);
   const [messages, setMessages] = useState<MessageData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -48,13 +50,6 @@ export function Messages() {
   const lastTypingEmit = useRef(0);
 
   const activeConv = conversations.find((c) => c.id === conversationId);
-
-  useEffect(() => {
-    if (equipmentContext && conversationId && !input) {
-      setInput(t("messages.equipment_prefill", { name: equipmentContext }));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [conversationId, equipmentContext]);
 
   const loadConversations = useCallback(async () => {
     try {
@@ -169,6 +164,10 @@ export function Messages() {
     const content = input.trim();
     setInput("");
     setSending(true);
+    if (equipmentCtx) {
+      setEquipmentCtx(null);
+      window.history.replaceState({}, '');
+    }
 
     const optimisticMsg: MessageData = {
       id: "pending",
@@ -321,13 +320,6 @@ export function Messages() {
               )}
             </div>
 
-            {equipmentContext && messages.length === 0 && !msgLoading && (
-              <div className="px-4 py-2 bg-primary-50 border-b border-primary-200 flex items-center gap-2">
-                <Package className="w-4 h-4 text-primary-600 shrink-0" strokeWidth={1.5} />
-                <p className="text-xs text-primary-700" dangerouslySetInnerHTML={{ __html: t("messages.equipment_context", { name: equipmentContext }) }} />
-              </div>
-            )}
-
             <div ref={messagesContainerRef} className="flex-1 overflow-y-auto px-4 py-3 space-y-2">
               {nextCursor && (
                 <button onClick={loadOlderMessages} className="w-full text-xs text-primary-600 py-2 bg-transparent border-none cursor-pointer hover:underline">
@@ -358,6 +350,24 @@ export function Messages() {
             </div>
 
             <div className="px-4 py-3 border-t border-[var(--color-border)]">
+              {equipmentCtx && (
+                <div
+                  className="flex items-center gap-2 mb-2 px-3 py-2 bg-[var(--color-primary-50)] text-[var(--color-primary-800)] rounded-[var(--radius-input)]"
+                  style={{ borderLeft: '3px solid var(--color-primary-400)' }}
+                >
+                  <Wrench className="w-4 h-4 shrink-0" strokeWidth={1.5} />
+                  <span className="flex-1 text-[13px]">
+                    {t("messages.equipment_context_label")} <strong>{equipmentCtx.name}</strong>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => { setEquipmentCtx(null); window.history.replaceState({}, ''); }}
+                    className="p-0.5 text-[var(--color-primary-600)] bg-transparent border-none cursor-pointer flex"
+                  >
+                    <X className="w-3.5 h-3.5" strokeWidth={1.5} />
+                  </button>
+                </div>
+              )}
               <form
                 onSubmit={(e) => { e.preventDefault(); handleSend(); }}
                 className="flex items-center gap-2"
