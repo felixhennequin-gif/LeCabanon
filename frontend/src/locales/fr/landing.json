@@ -1,50 +1,140 @@
 {
   "hero": {
     "title": "Partagez entre voisins.",
-    "subtitle": "Empruntez du materiel, recommandez vos artisans de confiance. Votre communaute locale, simplement.",
-    "cta_primary": "Rejoindre ma communaute",
+    "subtitle": "Empruntez du matériel, recommandez vos artisans de confiance. Votre communauté locale, simplement.",
+    "cta_primary": "Rejoindre ma communauté",
     "cta_secondary": "En savoir plus"
   },
   "features": {
     "title": "Tout ce dont votre quartier a besoin",
     "equipment": {
-      "title": "Materiel partage",
-      "description": "Listez et empruntez les outils de vos voisins. Perceuse, karcher, remorque \u2014 tout est a portee de main."
+      "title": "Matériel partagé",
+      "description": "Listez et empruntez les outils de vos voisins. Perceuse, karcher, remorque — tout est à portée de main.",
+      "detail_title": "Partagez votre outillage",
+      "detail_description": "Votre perceuse dort dans le garage ? Mettez-la à disposition de vos voisins. Besoin d'un karcher pour le week-end ? Consultez le catalogue de votre communauté. Le partage de matériel, c'est moins de dépenses inutiles et plus de liens entre voisins.",
+      "detail_features": [
+        "Catalogue de matériel par communauté",
+        "Filtrage par catégorie et par propriétaire",
+        "Fiche détaillée avec description et disponibilité",
+        "Contact direct via la messagerie intégrée"
+      ]
     },
     "artisans": {
       "title": "Artisans de confiance",
-      "description": "Recommandations verifiees par votre communaute. Fini les recherches hasardeuses."
+      "description": "Recommandations vérifiées par votre communauté. Fini les recherches hasardeuses.",
+      "detail_title": "Recommandez vos artisans",
+      "detail_description": "Les meilleures adresses se partagent de bouche à oreille. Avec LeCabanon, recommandez les artisans qui ont fait du bon travail chez vous et consultez les avis de vos voisins avant de faire appel à quelqu'un.",
+      "detail_features": [
+        "Recommandations vérifiées par la communauté",
+        "Avis détaillés avec notes et commentaires",
+        "Fiche artisan publique partageable",
+        "L'artisan peut revendiquer sa fiche et répondre aux avis"
+      ]
     },
     "messaging": {
       "title": "Messagerie directe",
-      "description": "Echangez en temps reel avec vos voisins. Simple, rapide, sans quitter l\u2019app."
+      "description": "Échangez en temps réel avec vos voisins. Simple, rapide, sans quitter l'app.",
+      "detail_title": "Discutez en direct",
+      "detail_description": "Besoin d'emprunter la tondeuse du voisin ? Envoyez-lui un message directement depuis la fiche matériel. La messagerie intégrée vous permet de coordonner les prêts et échanges sans quitter l'application.",
+      "detail_features": [
+        "Messagerie temps réel entre membres",
+        "Contact direct depuis les fiches matériel",
+        "Historique des conversations",
+        "Notifications de nouveaux messages"
+      ]
+    },
+    "preview_placeholder": "Aperçu bientôt disponible"
+  },
+  "howItWorks": {
+    "title": "Simple comme bonjour",
+    "step1": {
+      "title": "Rejoignez votre communauté",
+      "description": "Entrez le code de votre quartier ou créez votre communauté."
+    },
+    "step2": {
+      "title": "Partagez et empruntez",
+      "description": "Listez votre matériel, trouvez ce dont vous avez besoin."
+    },
+    "step3": {
+      "title": "Recommandez vos artisans",
+      "description": "Partagez vos bonnes adresses, consultez les avis vérifiés."
     }
+  },
+  "stats": {
+    "households": "foyers",
+    "households_count": "30+",
+    "tools": "outils partagés",
+    "tools_count": "50+",
+    "artisans": "artisans recommandés",
+    "artisans_count": "10+",
+    "source": "Données de la communauté Avenue Guillon"
   },
   "pricing": {
     "title": "Tarifs",
-    "subtitle": "LeCabanon est pense pour les communautes locales.",
+    "subtitle": "LeCabanon est pensé pour les communautés locales.",
     "free": {
-      "name": "Communaute",
-      "price": "Gratuit",
+      "badge": "Gratuit",
+      "name": "Communauté",
+      "price": "0€",
+      "period": "/mois",
       "description": "Pour les quartiers et impasses",
       "features": [
-        "Jusqu\u2019a 50 membres",
-        "Materiel illimite",
-        "Artisans illimites",
-        "Messagerie temps reel"
-      ]
+        "Jusqu'à 50 membres",
+        "Matériel illimité",
+        "Artisans illimités",
+        "Messagerie temps réel",
+        "Avis et recommandations",
+        "Page artisan publique"
+      ],
+      "cta": "Commencer"
     },
-    "coming_soon": "Plus de plans a venir"
+    "pro": {
+      "badge": "Bientôt",
+      "name": "Pro",
+      "description": "Plus de plans à venir pour les grandes communautés.",
+      "contact": "Contactez-nous pour en savoir plus"
+    },
+    "faq": {
+      "title": "Questions fréquentes",
+      "items": [
+        {
+          "question": "LeCabanon est-il vraiment gratuit ?",
+          "answer": "Oui, pour les communautés jusqu'à 50 membres. Nous croyons que le partage local ne devrait pas avoir de barrière financière. Des plans payants arriveront pour les très grandes communautés avec des besoins spécifiques."
+        },
+        {
+          "question": "Puis-je créer plusieurs communautés ?",
+          "answer": "Oui, chaque communauté a son propre code d'accès. Vous pouvez créer une communauté pour votre impasse, une pour votre quartier, et rejoindre celles de vos amis."
+        },
+        {
+          "question": "Mes données sont-elles sécurisées ?",
+          "answer": "Vos données restent sur notre serveur en France. Nous ne vendons rien à des tiers. L'accès à chaque communauté est protégé par un code, et seuls les membres peuvent voir le contenu."
+        },
+        {
+          "question": "Comment fonctionne la recommandation d'artisans ?",
+          "answer": "Chaque membre peut recommander un artisan en laissant un avis avec une note et un commentaire. Les artisans les mieux notés remontent naturellement. L'artisan peut aussi revendiquer sa fiche pour enrichir son profil."
+        }
+      ]
+    }
   },
   "about": {
-    "title": "A propos",
-    "story": "LeCabanon est ne d\u2019un besoin simple : dans une impasse d\u2019une trentaine de foyers, savoir qui a une perceuse et recommander un bon plombier.",
-    "vision_title": "Notre vision",
-    "vision": "Nous croyons que les meilleures recommandations viennent de ceux qu\u2019on connait. LeCabanon rend le partage entre voisins aussi simple qu\u2019un message."
+    "title": "À propos",
+    "subtitle": "L'histoire d'un besoin simple devenu une application.",
+    "story_title": "L'histoire",
+    "story_p1": "Tout est parti d'une impasse. Une trentaine de foyers, une bonne ambiance de voisinage, et une question récurrente sur le groupe WhatsApp : « Quelqu'un a une perceuse à colonne ? » ou « Vous connaissez un bon plombier ? »",
+    "story_p2": "On a commencé avec un Google Sheet. Puis le fichier est devenu ingérable. Personne ne savait qui avait quoi, les recommandations d'artisans se perdaient dans les conversations. Il fallait un outil dédié, simple, fait pour ça.",
+    "story_p3": "LeCabanon est né de ce besoin concret. Pas de pitch deck, pas de levée de fonds — juste un développeur qui en avait marre de chercher dans les vieux messages.",
+    "vision_title": "La vision",
+    "vision_p1": "Le partage entre voisins existe depuis toujours. LeCabanon le rend juste un peu plus organisé. L'idée n'est pas de créer un réseau social de plus, mais un outil utilitaire : savoir qui a quoi, qui recommande qui.",
+    "vision_p2": "Aujourd'hui, l'application fonctionne pour une impasse. Demain, elle pourra servir à n'importe quel quartier, résidence ou village. Le modèle est le même partout : des voisins qui s'entraident.",
+    "creator_title": "Qui est derrière",
+    "creator_text": "LeCabanon est développé par Félix Hennequin, développeur web à Nantes.",
+    "creator_initials": "FH",
+    "contact_title": "Contact",
+    "contact_text": "Une question ? Une suggestion ? N'hésitez pas à nous contacter."
   },
   "cta": {
-    "title": "Pret a commencer ?",
-    "subtitle": "Rejoignez votre communaute de voisins ou creez la votre.",
-    "button": "Creer un compte gratuitement"
+    "title": "Prêt à rejoindre vos voisins ?",
+    "subtitle": "Créez votre communauté en 2 minutes.",
+    "button": "Commencer gratuitement"
   }
 }
