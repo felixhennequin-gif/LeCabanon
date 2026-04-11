@@ -152,7 +152,7 @@ export function LandingPage() {
                 <div className="w-12 h-12 mx-auto mb-4 bg-primary-50 text-primary-600 rounded-full flex items-center justify-center text-[28px] font-bold">
                   {step.number}
                 </div>
-                <div className="w-10 h-10 mx-auto mb-3 text-[var(--color-text-tertiary)]">
+                <div className="w-10 h-10 mx-auto mb-3 text-[var(--color-text-tertiary)] flex items-center justify-center">
                   {step.icon}
                 </div>
                 <h3 className="text-lg font-semibold text-[var(--color-text-primary)] mb-2">
