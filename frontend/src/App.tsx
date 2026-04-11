@@ -1,7 +1,12 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useParams } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import { LanguageRouter } from "./components/LanguageRouter";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+
+function LangCatchAllRedirect() {
+  const { lang = "fr" } = useParams<{ lang: string }>();
+  return <Navigate to={`/${lang}/app`} replace />;
+}
 
 // Layouts
 import { PublicLayout } from "./layouts/PublicLayout";
@@ -81,7 +86,7 @@ export default function App() {
             </Route>
 
             {/* Catch-all within lang — redirect to app */}
-            <Route path="*" element={<Navigate to="app" replace />} />
+            <Route path="*" element={<LangCatchAllRedirect />} />
           </Route>
         </Routes>
       </AuthProvider>

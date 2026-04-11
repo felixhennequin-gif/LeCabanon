@@ -6,12 +6,17 @@ export function useLocalizedNavigate() {
   const { lang = 'fr' } = useParams<{ lang: string }>();
 
   return useCallback(
-    (path: string | number, options?: { replace?: boolean }) => {
+    (path: string | number, options?: { replace?: boolean; state?: unknown }) => {
       if (typeof path === 'number') {
         navigate(path);
         return;
       }
-      const localizedPath = path.startsWith('/') ? `/${lang}${path}` : path;
+      const localizedPath =
+        path.startsWith(`/${lang}/`) || path === `/${lang}`
+          ? path
+          : path.startsWith('/')
+            ? `/${lang}${path}`
+            : path;
       navigate(localizedPath, options);
     },
     [navigate, lang],

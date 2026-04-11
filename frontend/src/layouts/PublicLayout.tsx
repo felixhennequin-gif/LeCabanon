@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Outlet, useParams } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { LocalizedLink } from "../components/LocalizedLink";
 import { LanguageSelector } from "../components/LanguageSelector";
@@ -8,7 +8,6 @@ import { Warehouse, Menu, X, Sun, Moon } from "lucide-react";
 
 export function PublicLayout() {
   const { t } = useTranslation("common");
-  const { lang = "fr" } = useParams<{ lang: string }>();
   const { toggle, isDark } = useTheme();
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -194,28 +193,28 @@ export function PublicLayout() {
               </h4>
               <ul className="space-y-2 list-none p-0 m-0">
                 <li>
-                  <a
-                    href={`/${lang}/mentions-legales`}
+                  <LocalizedLink
+                    to="/mentions-legales"
                     className="text-sm text-[var(--color-text-tertiary)] hover:text-[var(--color-text-secondary)] no-underline transition-colors"
                   >
                     {t("footer.legal")}
-                  </a>
+                  </LocalizedLink>
                 </li>
                 <li>
-                  <a
-                    href={`/${lang}/cgu`}
+                  <LocalizedLink
+                    to="/cgu"
                     className="text-sm text-[var(--color-text-tertiary)] hover:text-[var(--color-text-secondary)] no-underline transition-colors"
                   >
                     {t("footer.terms")}
-                  </a>
+                  </LocalizedLink>
                 </li>
                 <li>
-                  <a
-                    href={`/${lang}/contact`}
+                  <LocalizedLink
+                    to="/contact"
                     className="text-sm text-[var(--color-text-tertiary)] hover:text-[var(--color-text-secondary)] no-underline transition-colors"
                   >
                     {t("footer.contact")}
-                  </a>
+                  </LocalizedLink>
                 </li>
               </ul>
             </div>
