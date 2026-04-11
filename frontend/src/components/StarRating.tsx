@@ -19,7 +19,8 @@ export function StarRating({ rating, onChange, size = 20 }: StarRatingProps) {
         >
           <Star
             size={size}
-            className={star <= rating ? "fill-warm-500 text-warm-500" : "text-slate-300 dark:text-slate-600"}
+            strokeWidth={1.5}
+            className={star <= rating ? "fill-warm-400 text-warm-400" : "text-[var(--color-text-tertiary)]"}
           />
         </button>
       ))}

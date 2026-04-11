@@ -98,42 +98,42 @@ export function ArtisanDetail() {
     return <div className="flex justify-center py-12"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" /></div>;
   }
 
-  if (!artisan) return <div className="text-center py-12 text-slate-500">Artisan introuvable</div>;
+  if (!artisan) return <div className="text-center py-12 text-[var(--color-text-secondary)]">Artisan introuvable</div>;
 
   const isOwner = artisan.ownerId === user?.id;
   const firstCommunityId = artisan.communities[0]?.communityId;
 
   return (
     <div>
-      <button onClick={() => navigate(-1)} className="inline-flex items-center gap-1 text-sm text-slate-500 hover:text-slate-700 mb-4 bg-transparent border-none cursor-pointer p-0">
-        <ArrowLeft className="w-4 h-4" /> Retour
+      <button onClick={() => navigate(-1)} className="inline-flex items-center gap-1 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] mb-4 bg-transparent border-none cursor-pointer p-0">
+        <ArrowLeft className="w-4 h-4" strokeWidth={1.5} /> Retour
       </button>
 
-      <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-6 mb-6">
+      <div className="bg-[var(--color-card)] rounded-[var(--radius-card)] border border-[var(--color-border)] p-6 mb-6">
         <div className="flex items-start justify-between">
           <div>
             <div className="flex items-center gap-2">
               <h1 className="text-2xl font-bold">{artisan.name}</h1>
               {artisan.claimed && (
-                <span className="inline-flex items-center gap-1 text-xs text-accent-700 dark:text-accent-400 bg-accent-50 dark:bg-accent-900/20 px-2 py-0.5 rounded-full">
-                  <BadgeCheck className="w-3.5 h-3.5" /> Vérifié
+                <span className="inline-flex items-center gap-1 text-xs text-accent-600 bg-accent-50 px-2 py-0.5 rounded-[var(--radius-pill)]">
+                  <BadgeCheck className="w-3.5 h-3.5" strokeWidth={1.5} /> Vérifié
                 </span>
               )}
             </div>
-            {artisan.company && <p className="text-slate-500">{artisan.company}</p>}
-            <span className="inline-block text-xs px-2 py-0.5 bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 rounded-full mt-2">{artisan.category}</span>
+            {artisan.company && <p className="text-[var(--color-text-secondary)]">{artisan.company}</p>}
+            <span className="inline-block text-xs px-2 py-0.5 bg-primary-50 text-primary-700 rounded-[var(--radius-pill)] mt-2">{artisan.category}</span>
           </div>
           <div className="flex items-center gap-2">
             <Link
               to={`/artisans/${artisan.id}/public`}
-              className="text-slate-400 hover:text-primary-600 no-underline"
+              className="text-[var(--color-text-tertiary)] hover:text-primary-600 no-underline"
               title="Voir la page publique"
             >
-              <ExternalLink className="w-5 h-5" />
+              <ExternalLink className="w-5 h-5" strokeWidth={1.5} />
             </Link>
             {artisan.createdById === user?.id && (
-              <button onClick={handleDelete} className="text-slate-400 hover:text-red-500 bg-transparent border-none cursor-pointer">
-                <Trash2 className="w-5 h-5" />
+              <button onClick={handleDelete} className="text-[var(--color-text-tertiary)] hover:text-[var(--color-error)] bg-transparent border-none cursor-pointer">
+                <Trash2 className="w-5 h-5" strokeWidth={1.5} />
               </button>
             )}
           </div>
@@ -146,7 +146,7 @@ export function ArtisanDetail() {
               <Link
                 key={ac.communityId}
                 to={`/communities/${ac.communityId}`}
-                className="text-xs px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-full no-underline hover:bg-slate-200 dark:hover:bg-slate-700"
+                className="text-xs px-2 py-0.5 bg-[var(--color-input)] text-[var(--color-text-secondary)] rounded-[var(--radius-pill)] no-underline hover:bg-[var(--color-hover)]"
               >
                 {ac.community.name}
               </Link>
@@ -156,19 +156,19 @@ export function ArtisanDetail() {
 
         <div className="flex items-center gap-2 mt-4">
           <StarRating rating={artisan.avgRating ?? 0} size={20} />
-          <span className="text-sm text-slate-500">({artisan.reviews.length} avis)</span>
+          <span className="text-sm text-[var(--color-text-secondary)]">({artisan.reviews.length} avis)</span>
         </div>
 
-        <div className="flex flex-wrap gap-4 mt-4 text-sm text-slate-600">
-          {artisan.zone && <span className="flex items-center gap-1.5"><MapPin className="w-4 h-4 text-slate-400" />{artisan.zone}</span>}
+        <div className="flex flex-wrap gap-4 mt-4 text-sm text-[var(--color-text-secondary)]">
+          {artisan.zone && <span className="flex items-center gap-1.5"><MapPin className="w-4 h-4 text-[var(--color-text-tertiary)]" strokeWidth={1.5} />{artisan.zone}</span>}
           {artisan.phone && (
             <a href={`tel:${artisan.phone}`} className="flex items-center gap-1.5 text-primary-600 no-underline hover:underline">
-              <Phone className="w-4 h-4" />{artisan.phone}
+              <Phone className="w-4 h-4" strokeWidth={1.5} />{artisan.phone}
             </a>
           )}
           {artisan.email && (
             <a href={`mailto:${artisan.email}`} className="flex items-center gap-1.5 text-primary-600 no-underline hover:underline">
-              <Mail className="w-4 h-4" />{artisan.email}
+              <Mail className="w-4 h-4" strokeWidth={1.5} />{artisan.email}
             </a>
           )}
         </div>
@@ -181,31 +181,31 @@ export function ArtisanDetail() {
 
         {/* Claimed profile info */}
         {artisan.claimed && (artisan.description || artisan.certifications.length > 0 || artisan.horaires) && (
-          <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 space-y-3">
+          <div className="mt-4 pt-4 border-t border-[var(--color-border)] space-y-3">
             {artisan.description && (
-              <p className="text-sm text-slate-600 whitespace-pre-line">{artisan.description}</p>
+              <p className="text-sm text-[var(--color-text-secondary)] whitespace-pre-line">{artisan.description}</p>
             )}
             {artisan.certifications.length > 0 && (
               <div className="flex items-center gap-2 flex-wrap">
-                <Award className="w-4 h-4 text-accent-500" />
+                <Award className="w-4 h-4 text-accent-400" strokeWidth={1.5} />
                 {artisan.certifications.map((c, i) => (
-                  <span key={i} className="text-xs px-2 py-0.5 bg-accent-50 text-accent-700 rounded-full">{c}</span>
+                  <span key={i} className="text-xs px-2 py-0.5 bg-accent-50 text-accent-600 rounded-[var(--radius-pill)]">{c}</span>
                 ))}
               </div>
             )}
             {artisan.horaires && (
-              <p className="text-sm text-slate-600 flex items-start gap-1.5">
-                <Clock className="w-4 h-4 text-slate-400 mt-0.5 shrink-0" />
+              <p className="text-sm text-[var(--color-text-secondary)] flex items-start gap-1.5">
+                <Clock className="w-4 h-4 text-[var(--color-text-tertiary)] mt-0.5 shrink-0" strokeWidth={1.5} />
                 <span className="whitespace-pre-line">{artisan.horaires}</span>
               </p>
             )}
           </div>
         )}
 
-        <div className="flex items-center justify-between mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
-          <p className="text-xs text-slate-400">
+        <div className="flex items-center justify-between mt-4 pt-4 border-t border-[var(--color-border)]">
+          <p className="text-xs text-[var(--color-text-tertiary)]">
             Ajouté par{" "}
-            <Link to={`/users/${artisan.createdBy.id}`} className="text-slate-500 no-underline hover:underline">
+            <Link to={`/users/${artisan.createdBy.id}`} className="text-[var(--color-text-secondary)] no-underline hover:underline">
               {artisan.createdBy.firstName} {artisan.createdBy.lastName}
             </Link>
           </p>
@@ -215,7 +215,7 @@ export function ArtisanDetail() {
                 onClick={() => setShowProfileEdit(true)}
                 className="inline-flex items-center gap-1 text-xs text-primary-600 hover:text-primary-700 bg-transparent border-none cursor-pointer"
               >
-                <Edit3 className="w-3.5 h-3.5" />
+                <Edit3 className="w-3.5 h-3.5" strokeWidth={1.5} />
                 Modifier mon profil
               </button>
             )}
@@ -230,7 +230,7 @@ export function ArtisanDetail() {
                 }}
                 className="inline-flex items-center gap-1 text-xs text-primary-600 hover:text-primary-700 bg-transparent border-none cursor-pointer"
               >
-                <MessageCircle className="w-3.5 h-3.5" />
+                <MessageCircle className="w-3.5 h-3.5" strokeWidth={1.5} />
                 Contacter
               </button>
             )}
@@ -240,17 +240,17 @@ export function ArtisanDetail() {
 
       {/* Claim CTA */}
       {!artisan.claimed && artisan.email && (
-        <div className="bg-accent-50 border border-accent-200 rounded-xl p-4 mb-6">
+        <div className="bg-accent-50 border border-accent-200 rounded-[var(--radius-card)] p-4 mb-6">
           <p className="text-sm text-accent-800 mb-2">
             Vous êtes <strong>{artisan.name}</strong> ? Revendiquez cette fiche pour gérer votre profil et répondre aux avis.
           </p>
           {claimMessage ? (
-            <p className="text-sm text-accent-700">{claimMessage}</p>
+            <p className="text-sm text-accent-600">{claimMessage}</p>
           ) : (
             <button
               onClick={handleClaim}
               disabled={claimLoading}
-              className="px-4 py-1.5 text-sm bg-accent-600 text-white rounded-lg hover:bg-accent-700 cursor-pointer disabled:opacity-50"
+              className="px-4 py-1.5 text-sm bg-accent-600 text-[var(--color-page)] rounded-[var(--radius-button)] hover:bg-accent-700 cursor-pointer disabled:opacity-50"
             >
               {claimLoading ? "..." : "Revendiquer cette fiche"}
             </button>
@@ -263,30 +263,30 @@ export function ArtisanDetail() {
         <h2 className="text-lg font-bold">Avis</h2>
         <button
           onClick={() => setShowReviewForm(true)}
-          className="px-4 py-2 text-sm bg-primary-600 text-white rounded-lg hover:bg-primary-700 cursor-pointer"
+          className="px-4 py-2 text-sm bg-primary-600 text-[var(--color-page)] rounded-[var(--radius-button)] hover:bg-primary-700 cursor-pointer"
         >
           Laisser un avis
         </button>
       </div>
 
       {artisan.reviews.length === 0 ? (
-        <p className="text-slate-500 text-center py-8">Aucun avis pour le moment</p>
+        <p className="text-[var(--color-text-secondary)] text-center py-8">Aucun avis pour le moment</p>
       ) : (
         <div className="space-y-4">
           {artisan.reviews.map((r) => (
-            <div key={r.id} className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
+            <div key={r.id} className="bg-[var(--color-card)] p-4 rounded-[var(--radius-card)] border border-[var(--color-border)]">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <Link to={`/users/${r.author.id}`} className="w-8 h-8 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center text-sm font-medium no-underline">
                     {r.author.firstName[0]}{r.author.lastName[0]}
                   </Link>
                   <div>
-                    <Link to={`/users/${r.author.id}`} className="text-sm font-medium text-slate-900 dark:text-slate-100 no-underline hover:underline">{r.author.firstName} {r.author.lastName}</Link>
+                    <Link to={`/users/${r.author.id}`} className="text-sm font-medium text-[var(--color-text-primary)] no-underline hover:underline">{r.author.firstName} {r.author.lastName}</Link>
                     <StarRating rating={r.rating} size={14} />
                   </div>
                 </div>
                 <div className="text-right">
-                  <span className="text-xs text-slate-400">
+                  <span className="text-xs text-[var(--color-text-tertiary)]">
                     {new Date(r.createdAt).toLocaleDateString("fr-FR")}
                   </span>
                   {r.visibility === "COMMUNITY" && (
@@ -294,14 +294,14 @@ export function ArtisanDetail() {
                   )}
                 </div>
               </div>
-              {r.comment && <p className="text-sm text-slate-600 mt-3">{r.comment}</p>}
+              {r.comment && <p className="text-sm text-[var(--color-text-secondary)] mt-3">{r.comment}</p>}
 
               {/* Replies */}
               {r.replies.length > 0 && (
-                <div className="mt-3 bg-primary-50 rounded-lg p-3 border-l-2 border-primary-300">
+                <div className="mt-3 bg-primary-50 rounded-[var(--radius-input)] p-3 border-l-2 border-primary-400">
                   <p className="text-xs font-semibold text-primary-700 mb-1">Réponse de l'artisan</p>
-                  <p className="text-sm text-slate-700">{r.replies[0].content}</p>
-                  <p className="text-xs text-slate-400 mt-1">
+                  <p className="text-sm text-[var(--color-text-secondary)]">{r.replies[0].content}</p>
+                  <p className="text-xs text-[var(--color-text-tertiary)] mt-1">
                     {new Date(r.replies[0].createdAt).toLocaleDateString("fr-FR")}
                   </p>
                 </div>
@@ -378,17 +378,17 @@ function ReplyForm({ reviewId, onClose, onCreated }: { reviewId: string; onClose
 
   return (
     <form onSubmit={handleSubmit} className="mt-3 space-y-2">
-      {error && <p className="text-xs text-red-500">{error}</p>}
+      {error && <p className="text-xs text-[var(--color-error)]">{error}</p>}
       <textarea
         value={content}
         onChange={(e) => setContent(e.target.value)}
-        className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg text-sm outline-none focus:ring-2 focus:ring-primary-500 bg-white dark:bg-slate-800 dark:text-slate-100"
+        className="w-full px-3 py-2 border border-[var(--color-border-strong)] rounded-[var(--radius-input)] text-sm outline-none focus:ring-2 focus:ring-primary-400 bg-[var(--color-input)] text-[var(--color-text-primary)]"
         rows={3}
         placeholder="Votre réponse..."
       />
       <div className="flex gap-2 justify-end">
-        <button type="button" onClick={onClose} className="px-3 py-1.5 text-xs text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg cursor-pointer">Annuler</button>
-        <button type="submit" disabled={loading} className="px-3 py-1.5 text-xs bg-primary-600 text-white rounded-lg disabled:opacity-50 cursor-pointer">{loading ? "..." : "Répondre"}</button>
+        <button type="button" onClick={onClose} className="px-3 py-1.5 text-xs text-[var(--color-text-secondary)] bg-[var(--color-input)] border border-[var(--color-border-strong)] rounded-[var(--radius-button)] cursor-pointer">Annuler</button>
+        <button type="submit" disabled={loading} className="px-3 py-1.5 text-xs bg-primary-600 text-[var(--color-page)] rounded-[var(--radius-button)] disabled:opacity-50 cursor-pointer">{loading ? "..." : "Répondre"}</button>
       </div>
     </form>
   );
@@ -419,30 +419,30 @@ function ReviewForm({ artisanId, communityId, onClose, onCreated }: { artisanId:
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
+    <div className="fixed inset-0 bg-[var(--color-overlay)] flex items-center justify-center z-50 p-4" onClick={onClose}>
       <form
         onClick={(e) => e.stopPropagation()}
         onSubmit={handleSubmit}
-        className="bg-white dark:bg-slate-900 p-6 rounded-xl w-full max-w-md space-y-4"
+        className="bg-[var(--color-card)] p-6 rounded-[var(--radius-card)] w-full max-w-md space-y-4"
       >
         <h2 className="text-lg font-bold">Laisser un avis</h2>
-        {error && <div className="bg-red-50 text-red-600 px-4 py-2 rounded-lg text-sm">{error}</div>}
+        {error && <div className="bg-[var(--color-error-light)] text-[var(--color-error)] px-4 py-2 rounded-[var(--radius-input)] text-sm">{error}</div>}
         <div>
-          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Note</label>
+          <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-2">Note</label>
           <StarRating rating={rating} onChange={setRating} size={28} />
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Commentaire</label>
+          <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">Commentaire</label>
           <textarea
             value={comment}
             onChange={(e) => setComment(e.target.value)}
-            className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg outline-none focus:ring-2 focus:ring-primary-500 bg-white dark:bg-slate-800 dark:text-slate-100"
+            className="w-full px-3 py-2 border border-[var(--color-border-strong)] rounded-[var(--radius-input)] outline-none focus:ring-2 focus:ring-primary-400 bg-[var(--color-input)] text-[var(--color-text-primary)]"
             rows={4}
             placeholder="Travail soigné, ponctuel, je recommande..."
           />
         </div>
         <div>
-          <label className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer">
+          <label className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)] cursor-pointer">
             <input
               type="checkbox"
               checked={visibility === "COMMUNITY"}
@@ -451,13 +451,13 @@ function ReviewForm({ artisanId, communityId, onClose, onCreated }: { artisanId:
             />
             Communauté — visible uniquement par les membres
           </label>
-          <p className="text-xs text-slate-400 mt-1 ml-6">
+          <p className="text-xs text-[var(--color-text-tertiary)] mt-1 ml-6">
             {visibility === "PUBLIC" ? "Visible par tous, y compris sur la page publique" : "Visible uniquement par les membres de vos communautés"}
           </p>
         </div>
         <div className="flex gap-2 justify-end">
-          <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg cursor-pointer">Annuler</button>
-          <button type="submit" disabled={loading} className="px-4 py-2 text-sm bg-primary-600 text-white rounded-lg disabled:opacity-50 cursor-pointer">{loading ? "..." : "Publier"}</button>
+          <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-[var(--color-text-secondary)] bg-[var(--color-input)] border border-[var(--color-border-strong)] rounded-[var(--radius-button)] cursor-pointer">Annuler</button>
+          <button type="submit" disabled={loading} className="px-4 py-2 text-sm bg-primary-600 text-[var(--color-page)] rounded-[var(--radius-button)] disabled:opacity-50 cursor-pointer">{loading ? "..." : "Publier"}</button>
         </div>
       </form>
     </div>
@@ -492,46 +492,46 @@ function ProfileEditForm({ artisan, onClose, onSaved }: { artisan: ArtisanData; 
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
+    <div className="fixed inset-0 bg-[var(--color-overlay)] flex items-center justify-center z-50 p-4" onClick={onClose}>
       <form
         onClick={(e) => e.stopPropagation()}
         onSubmit={handleSubmit}
-        className="bg-white dark:bg-slate-900 p-6 rounded-xl w-full max-w-md space-y-4 max-h-[90vh] overflow-y-auto"
+        className="bg-[var(--color-card)] p-6 rounded-[var(--radius-card)] w-full max-w-md space-y-4 max-h-[90vh] overflow-y-auto"
       >
         <h2 className="text-lg font-bold">Modifier mon profil</h2>
-        {error && <div className="bg-red-50 text-red-600 px-4 py-2 rounded-lg text-sm">{error}</div>}
+        {error && <div className="bg-[var(--color-error-light)] text-[var(--color-error)] px-4 py-2 rounded-[var(--radius-input)] text-sm">{error}</div>}
         <div>
-          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Description / Bio</label>
+          <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">Description / Bio</label>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg outline-none focus:ring-2 focus:ring-primary-500 bg-white dark:bg-slate-800 dark:text-slate-100"
+            className="w-full px-3 py-2 border border-[var(--color-border-strong)] rounded-[var(--radius-input)] outline-none focus:ring-2 focus:ring-primary-400 bg-[var(--color-input)] text-[var(--color-text-primary)]"
             rows={4}
             placeholder="Présentez votre activité, vos spécialités..."
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Certifications (séparées par des virgules)</label>
+          <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">Certifications (séparées par des virgules)</label>
           <input
             value={certifications}
             onChange={(e) => setCertifications(e.target.value)}
-            className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg outline-none focus:ring-2 focus:ring-primary-500 bg-white dark:bg-slate-800 dark:text-slate-100"
+            className="w-full px-3 py-2 border border-[var(--color-border-strong)] rounded-[var(--radius-input)] outline-none focus:ring-2 focus:ring-primary-400 bg-[var(--color-input)] text-[var(--color-text-primary)]"
             placeholder="RGE, Qualibat, Qualifelec..."
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Horaires</label>
+          <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">Horaires</label>
           <textarea
             value={horaires}
             onChange={(e) => setHoraires(e.target.value)}
-            className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg outline-none focus:ring-2 focus:ring-primary-500 bg-white dark:bg-slate-800 dark:text-slate-100"
+            className="w-full px-3 py-2 border border-[var(--color-border-strong)] rounded-[var(--radius-input)] outline-none focus:ring-2 focus:ring-primary-400 bg-[var(--color-input)] text-[var(--color-text-primary)]"
             rows={3}
             placeholder="Lun-Ven : 8h-18h&#10;Samedi : sur rendez-vous"
           />
         </div>
         <div className="flex gap-2 justify-end">
-          <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg cursor-pointer">Annuler</button>
-          <button type="submit" disabled={loading} className="px-4 py-2 text-sm bg-primary-600 text-white rounded-lg disabled:opacity-50 cursor-pointer">{loading ? "..." : "Enregistrer"}</button>
+          <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-[var(--color-text-secondary)] bg-[var(--color-input)] border border-[var(--color-border-strong)] rounded-[var(--radius-button)] cursor-pointer">Annuler</button>
+          <button type="submit" disabled={loading} className="px-4 py-2 text-sm bg-primary-600 text-[var(--color-page)] rounded-[var(--radius-button)] disabled:opacity-50 cursor-pointer">{loading ? "..." : "Enregistrer"}</button>
         </div>
       </form>
     </div>

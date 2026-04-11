@@ -3,40 +3,134 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  /* ===== PRIMARY — Vert cabanon ===== */
-  --color-primary-50: #f0fdf4;
-  --color-primary-100: #dcfce7;
-  --color-primary-200: #bbf7d0;
-  --color-primary-300: #86efac;
-  --color-primary-400: #4ade80;
-  --color-primary-500: #22c55e;
-  --color-primary-600: #16a34a;
-  --color-primary-700: #15803d;
-  --color-primary-800: #166534;
-  --color-primary-900: #14532d;
+  /* Primary — sage green */
+  --color-primary-50: #e8f0e8;
+  --color-primary-100: #c4d8c8;
+  --color-primary-200: #a3d1aa;
+  --color-primary-400: #5ba368;
+  --color-primary-600: #3d7a4a;
+  --color-primary-700: #336b40;
+  --color-primary-800: #2d5a37;
 
-  /* ===== ACCENT — Terre cuite ===== */
-  --color-accent-50: #fff7ed;
-  --color-accent-100: #ffedd5;
-  --color-accent-200: #fed7aa;
-  --color-accent-300: #fdba74;
-  --color-accent-400: #fb923c;
-  --color-accent-500: #f97316;
-  --color-accent-600: #ea580c;
-  --color-accent-700: #c2410c;
-  --color-accent-800: #9a3412;
-  --color-accent-900: #7c2d12;
+  /* Accent — terracotta */
+  --color-accent-50: #f5e8dc;
+  --color-accent-100: #e8c8aa;
+  --color-accent-200: #e8b896;
+  --color-accent-400: #c47a4a;
+  --color-accent-500: #b06a3a;
+  --color-accent-600: #9a5a32;
+  --color-accent-700: #7a4828;
+  --color-accent-800: #6b3a1f;
+  --color-accent-900: #4a2815;
 
-  /* ===== WARM — Étoiles / notation ===== */
-  --color-warm-50: #fefce8;
-  --color-warm-100: #fef9c3;
-  --color-warm-400: #facc15;
-  --color-warm-500: #eab308;
-  --color-warm-600: #ca8a04;
+  /* Warm — honey/sand */
+  --color-warm-50: #f0eadc;
+  --color-warm-100: #faedc4;
+  --color-warm-200: #f0d48a;
+  --color-warm-400: #d4a840;
+  --color-warm-500: #d4a840;
+  --color-warm-600: #a88028;
+  --color-warm-800: #7a6020;
+}
+
+:root {
+  /* Surfaces */
+  --color-page: #f5f2ec;
+  --color-card: #ece8e0;
+  --color-input: #e2ded4;
+  --color-hover: #d8d4ca;
+
+  /* Text */
+  --color-text-primary: #2a2824;
+  --color-text-secondary: #5a574e;
+  --color-text-tertiary: #8a8678;
+
+  /* Borders */
+  --color-border: #d8d4ca;
+  --color-border-strong: #c0bbb0;
+
+  /* Semantic */
+  --color-success: #5ba368;
+  --color-error: #c45a4a;
+  --color-error-light: #f0ddd8;
+  --color-warning: #d4a840;
+  --color-info: #4a8ac4;
+
+  /* Overlay */
+  --color-overlay: rgba(42, 40, 36, 0.5);
+
+  /* Radii */
+  --radius-card: 14px;
+  --radius-button: 10px;
+  --radius-pill: 24px;
+  --radius-input: 8px;
+
+  /* Font */
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+}
+
+.dark {
+  /* Surfaces */
+  --color-page: #1c1b18;
+  --color-card: #252420;
+  --color-input: #2e2d28;
+  --color-hover: #3a3830;
+
+  /* Primary (inverted) */
+  --color-primary-50: #1e2e22;
+  --color-primary-100: #2d4a34;
+  --color-primary-200: #3d7a4a;
+  --color-primary-400: #5ba368;
+  --color-primary-600: #a3d1aa;
+  --color-primary-700: #8ec098;
+  --color-primary-800: #c4d8c8;
+
+  /* Accent (inverted) */
+  --color-accent-50: #2e2218;
+  --color-accent-100: #4a3020;
+  --color-accent-200: #9a5a32;
+  --color-accent-400: #c47a4a;
+  --color-accent-500: #d4905a;
+  --color-accent-600: #e8b896;
+  --color-accent-700: #dca07a;
+  --color-accent-800: #e8c8aa;
+  --color-accent-900: #f0d8c0;
+
+  /* Warm (inverted) */
+  --color-warm-50: #2a2618;
+  --color-warm-100: #3a3420;
+  --color-warm-200: #7a6020;
+  --color-warm-400: #d4a840;
+  --color-warm-500: #d4a840;
+  --color-warm-600: #f0d48a;
+  --color-warm-800: #faedc4;
+
+  /* Text */
+  --color-text-primary: #e8e5de;
+  --color-text-secondary: #a8a498;
+  --color-text-tertiary: #6a6760;
+
+  /* Borders */
+  --color-border: #33312b;
+  --color-border-strong: #4a4840;
+
+  /* Semantic */
+  --color-success: #5ba368;
+  --color-error: #e87a6a;
+  --color-error-light: #2e1815;
+  --color-warning: #f0d48a;
+  --color-info: #7ab0e0;
+
+  /* Overlay */
+  --color-overlay: rgba(20, 19, 16, 0.6);
 }
 
 body {
-  @apply bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 antialiased;
-  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  background-color: var(--color-page);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
   margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }

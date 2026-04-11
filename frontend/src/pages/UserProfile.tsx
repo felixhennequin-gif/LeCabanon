@@ -55,7 +55,7 @@ export function UserProfile() {
     return <div className="flex justify-center py-12"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" /></div>;
   }
 
-  if (!profile) return <div className="text-center py-12 text-slate-500">Utilisateur introuvable</div>;
+  if (!profile) return <div className="text-center py-12 text-[var(--color-text-secondary)]">Utilisateur introuvable</div>;
 
   // Group equipment by community
   const equipmentByCommunity = profile.equipment.reduce<Record<string, { name: string; id: string; items: UserEquipment[] }>>((acc, e) => {
@@ -66,19 +66,19 @@ export function UserProfile() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <button onClick={() => navigate(-1)} className="inline-flex items-center gap-1 text-sm text-slate-500 hover:text-slate-700 mb-4 bg-transparent border-none cursor-pointer p-0">
-        <ArrowLeft className="w-4 h-4" /> Retour
+      <button onClick={() => navigate(-1)} className="inline-flex items-center gap-1 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] mb-4 bg-transparent border-none cursor-pointer p-0">
+        <ArrowLeft className="w-4 h-4" strokeWidth={1.5} /> Retour
       </button>
 
       {/* Header */}
-      <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-6 mb-6">
+      <div className="bg-[var(--color-card)] rounded-[var(--radius-card)] border border-[var(--color-border)] p-6 mb-6">
         <div className="flex items-center gap-4">
           <div className="w-16 h-16 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center text-xl font-bold">
             {profile.firstName[0]}{profile.lastName[0]}
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">{profile.firstName} {profile.lastName}</h1>
-            <p className="text-sm text-slate-400">
+            <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">{profile.firstName} {profile.lastName}</h1>
+            <p className="text-sm text-[var(--color-text-tertiary)]">
               Membre depuis {new Date(profile.createdAt).toLocaleDateString("fr-FR", { month: "long", year: "numeric" })}
             </p>
           </div>
@@ -88,25 +88,25 @@ export function UserProfile() {
       {/* Equipment */}
       {profile.equipment.length > 0 && (
         <div className="mb-6">
-          <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-3">Matériel à prêter</h2>
+          <h2 className="text-lg font-bold text-[var(--color-text-primary)] mb-3">Matériel à prêter</h2>
           {Object.values(equipmentByCommunity).map((group) => (
             <div key={group.id} className="mb-4">
-              <Link to={`/communities/${group.id}`} className="text-sm text-slate-400 no-underline hover:underline mb-2 block">
+              <Link to={`/communities/${group.id}`} className="text-sm text-[var(--color-text-tertiary)] no-underline hover:underline mb-2 block">
                 {group.name}
               </Link>
               <div className="grid gap-3 sm:grid-cols-2">
                 {group.items.map((e) => (
-                  <div key={e.id} className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
-                    <div className="h-28 bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+                  <div key={e.id} className="bg-[var(--color-card)] rounded-[var(--radius-card)] border border-[var(--color-border)] overflow-hidden">
+                    <div className="h-28 bg-[var(--color-input)] flex items-center justify-center">
                       {e.photos[0] ? (
                         <img src={e.photos[0]} alt={e.name} className="w-full h-full object-cover" />
                       ) : (
-                        <Package className="w-8 h-8 text-slate-300" />
+                        <Package className="w-8 h-8 text-[var(--color-text-tertiary)]" strokeWidth={1.5} />
                       )}
                     </div>
                     <div className="p-3">
-                      <h3 className="font-medium text-sm text-slate-900 dark:text-slate-100">{e.name}</h3>
-                      <span className="text-xs px-1.5 py-0.5 bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 rounded-full">{e.category}</span>
+                      <h3 className="font-medium text-sm text-[var(--color-text-primary)]">{e.name}</h3>
+                      <span className="text-xs px-1.5 py-0.5 bg-primary-50 text-primary-700 rounded-[var(--radius-pill)]">{e.category}</span>
                     </div>
                   </div>
                 ))}
@@ -119,18 +119,18 @@ export function UserProfile() {
       {/* Reviews */}
       {profile.reviews.length > 0 && (
         <div>
-          <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-3">Avis postés</h2>
+          <h2 className="text-lg font-bold text-[var(--color-text-primary)] mb-3">Avis postés</h2>
           <div className="space-y-3">
             {profile.reviews.map((r) => (
-              <div key={r.id} className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
+              <div key={r.id} className="bg-[var(--color-card)] p-4 rounded-[var(--radius-card)] border border-[var(--color-border)]">
                 <div className="flex items-center justify-between">
                   <Link to={`/artisans/${r.artisan.id}`} className="font-medium text-primary-600 no-underline hover:underline text-sm">
                     {r.artisan.company || r.artisan.name}
                   </Link>
                   <StarRating rating={r.rating} size={14} />
                 </div>
-                {r.comment && <p className="text-sm text-slate-600 dark:text-slate-300 mt-2">{r.comment}</p>}
-                <p className="text-xs text-slate-400 mt-2">
+                {r.comment && <p className="text-sm text-[var(--color-text-secondary)] mt-2">{r.comment}</p>}
+                <p className="text-xs text-[var(--color-text-tertiary)] mt-2">
                   {new Date(r.createdAt).toLocaleDateString("fr-FR")}
                 </p>
               </div>
@@ -140,7 +140,7 @@ export function UserProfile() {
       )}
 
       {profile.equipment.length === 0 && profile.reviews.length === 0 && (
-        <p className="text-center text-slate-400 py-8">Aucune activité visible</p>
+        <p className="text-center text-[var(--color-text-tertiary)] py-8">Aucune activité visible</p>
       )}
     </div>
   );

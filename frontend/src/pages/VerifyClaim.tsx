@@ -31,13 +31,13 @@ function VerifyClaimInner({ id, token }: { id: string; token: string }) {
   if (status === "error") {
     return (
       <div className="max-w-md mx-auto mt-12 text-center">
-        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-8">
-          <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
-          <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-2">Vérification échouée</h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">{error}</p>
+        <div className="bg-[var(--color-card)] rounded-[var(--radius-card)] border border-[var(--color-border)] p-8">
+          <AlertCircle className="w-12 h-12 text-[var(--color-error)] mx-auto mb-4" strokeWidth={1.5} />
+          <h1 className="text-xl font-bold text-[var(--color-text-primary)] mb-2">Vérification échouée</h1>
+          <p className="text-sm text-[var(--color-text-secondary)] mb-6">{error}</p>
           <button
             onClick={() => navigate(`/artisans/${id}`)}
-            className="px-6 py-2 bg-primary-600 text-white rounded-lg text-sm cursor-pointer"
+            className="px-6 py-2 bg-primary-600 text-[var(--color-page)] rounded-[var(--radius-button)] text-sm cursor-pointer"
           >
             Retour à la fiche
           </button>
@@ -48,15 +48,15 @@ function VerifyClaimInner({ id, token }: { id: string; token: string }) {
 
   return (
     <div className="max-w-md mx-auto mt-12 text-center">
-      <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-8">
-        <BadgeCheck className="w-12 h-12 text-green-500 mx-auto mb-4" />
-        <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-2">Fiche revendiquée !</h1>
-        <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">
+      <div className="bg-[var(--color-card)] rounded-[var(--radius-card)] border border-[var(--color-border)] p-8">
+        <BadgeCheck className="w-12 h-12 text-[var(--color-success)] mx-auto mb-4" strokeWidth={1.5} />
+        <h1 className="text-xl font-bold text-[var(--color-text-primary)] mb-2">Fiche revendiquée !</h1>
+        <p className="text-sm text-[var(--color-text-secondary)] mb-6">
           Vous pouvez maintenant personnaliser votre profil et répondre aux avis.
         </p>
         <button
           onClick={() => navigate(`/artisans/${id}`)}
-          className="px-6 py-2 bg-primary-600 text-white rounded-lg text-sm cursor-pointer"
+          className="px-6 py-2 bg-primary-600 text-[var(--color-page)] rounded-[var(--radius-button)] text-sm cursor-pointer"
         >
           Voir ma fiche
         </button>
@@ -73,10 +73,10 @@ export function VerifyClaim() {
   if (!id || !token) {
     return (
       <div className="max-w-md mx-auto mt-12 text-center">
-        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-8">
-          <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
-          <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-2">Lien invalide</h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400">Ce lien de vérification est invalide.</p>
+        <div className="bg-[var(--color-card)] rounded-[var(--radius-card)] border border-[var(--color-border)] p-8">
+          <AlertCircle className="w-12 h-12 text-[var(--color-error)] mx-auto mb-4" strokeWidth={1.5} />
+          <h1 className="text-xl font-bold text-[var(--color-text-primary)] mb-2">Lien invalide</h1>
+          <p className="text-sm text-[var(--color-text-secondary)]">Ce lien de vérification est invalide.</p>
         </div>
       </div>
     );

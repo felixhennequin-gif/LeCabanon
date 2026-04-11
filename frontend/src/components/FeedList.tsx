@@ -33,25 +33,25 @@ function Avatar({ firstName, lastName, id }: { firstName: string; lastName: stri
 
 function ActorLink({ actor }: { actor: Activity["actor"] }) {
   return (
-    <Link to={`/users/${actor.id}`} className="font-medium text-slate-900 dark:text-slate-100 no-underline hover:underline">
+    <Link to={`/users/${actor.id}`} className="font-medium text-[var(--color-text-primary)] no-underline hover:underline">
       {actor.firstName} {actor.lastName}
     </Link>
   );
 }
 
 function CategoryBadge({ category }: { category: string }) {
-  return <span className="text-xs px-2 py-0.5 bg-primary-50 text-primary-700 rounded-full">{category}</span>;
+  return <span className="text-xs px-2 py-0.5 bg-primary-50 text-primary-700 rounded-[var(--radius-pill)]">{category}</span>;
 }
 
 function ActivityIcon({ type }: { type: string }) {
   const cls = "w-4 h-4";
   switch (type) {
-    case "MEMBER_JOINED": return <UserPlus className={`${cls} text-green-500`} />;
-    case "EQUIPMENT_ADDED": return <Package className={`${cls} text-blue-500`} />;
-    case "EQUIPMENT_REMOVED": return <Trash2 className={`${cls} text-slate-400`} />;
-    case "ARTISAN_ADDED": return <HardHat className={`${cls} text-purple-500`} />;
-    case "ARTISAN_REMOVED": return <Trash2 className={`${cls} text-slate-400`} />;
-    case "REVIEW_ADDED": return <Star className={`${cls} text-warm-500`} />;
+    case "MEMBER_JOINED": return <UserPlus className={`${cls} text-[var(--color-success)]`} strokeWidth={1.5} />;
+    case "EQUIPMENT_ADDED": return <Package className={`${cls} text-[var(--color-info)]`} strokeWidth={1.5} />;
+    case "EQUIPMENT_REMOVED": return <Trash2 className={`${cls} text-[var(--color-text-tertiary)]`} strokeWidth={1.5} />;
+    case "ARTISAN_ADDED": return <HardHat className={`${cls} text-accent-400`} strokeWidth={1.5} />;
+    case "ARTISAN_REMOVED": return <Trash2 className={`${cls} text-[var(--color-text-tertiary)]`} strokeWidth={1.5} />;
+    case "REVIEW_ADDED": return <Star className={`${cls} text-warm-400`} strokeWidth={1.5} />;
     default: return null;
   }
 }
@@ -61,7 +61,7 @@ function ActivityCard({ activity }: { activity: Activity }) {
   const isRemoval = type === "EQUIPMENT_REMOVED" || type === "ARTISAN_REMOVED";
 
   return (
-    <div className={`flex gap-3 p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 ${isRemoval ? "opacity-60" : ""}`}>
+    <div className={`flex gap-3 p-4 bg-[var(--color-card)] rounded-[var(--radius-card)] border border-[var(--color-border)] ${isRemoval ? "opacity-60" : ""}`}>
       <Avatar firstName={actor.firstName} lastName={actor.lastName} id={actor.id} />
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2">
@@ -75,7 +75,7 @@ function ActivityCard({ activity }: { activity: Activity }) {
           <div className="mt-1.5">
             <StarRating rating={review.rating} size={14} />
             {review.comment && (
-              <p className="text-xs text-slate-500 mt-1 line-clamp-2">{review.comment}</p>
+              <p className="text-xs text-[var(--color-text-secondary)] mt-1 line-clamp-2">{review.comment}</p>
             )}
           </div>
         )}
@@ -92,7 +92,7 @@ function ActivityCard({ activity }: { activity: Activity }) {
           </div>
         )}
 
-        <p className="text-xs text-slate-400 mt-1.5">{formatRelativeDate(createdAt)}</p>
+        <p className="text-xs text-[var(--color-text-tertiary)] mt-1.5">{formatRelativeDate(createdAt)}</p>
       </div>
     </div>
   );
@@ -134,7 +134,7 @@ function ActivityContent({ type, actor, equipment, artisan, review }: {
               {artisan.company || artisan.name}
             </Link>
           ) : (
-            <span className="font-medium text-slate-400">Artisan supprimé</span>
+            <span className="font-medium text-[var(--color-text-tertiary)]">Artisan supprimé</span>
           )}
         </>
       );
@@ -158,7 +158,7 @@ function ActivityContent({ type, actor, equipment, artisan, review }: {
               {artisanName}
             </Link>
           ) : (
-            <span className="font-medium text-slate-400">{artisanName}</span>
+            <span className="font-medium text-[var(--color-text-tertiary)]">{artisanName}</span>
           )}
         </>
       );
@@ -208,8 +208,8 @@ export function FeedList({ communityId }: { communityId: string }) {
 
   if (activities.length === 0) {
     return (
-      <div className="text-center py-16 text-slate-500">
-        <Rss className="w-12 h-12 mx-auto mb-3 text-slate-300" />
+      <div className="text-center py-16 text-[var(--color-text-secondary)]">
+        <Rss className="w-12 h-12 mx-auto mb-3 text-[var(--color-text-tertiary)]" strokeWidth={1.5} />
         <p className="text-lg font-medium">Rien de nouveau pour le moment</p>
         <p className="text-sm mt-1">Ajoutez du matériel ou recommandez un artisan pour lancer la communauté !</p>
       </div>
@@ -226,7 +226,7 @@ export function FeedList({ communityId }: { communityId: string }) {
           <button
             onClick={handleLoadMore}
             disabled={loadingMore}
-            className="px-4 py-2 text-sm text-primary-600 dark:text-primary-400 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-primary-50 dark:hover:bg-primary-900/30 cursor-pointer disabled:opacity-50 bg-white dark:bg-slate-900"
+            className="px-4 py-2 text-sm text-primary-600 border border-[var(--color-border)] rounded-[var(--radius-button)] hover:bg-primary-50 cursor-pointer disabled:opacity-50 bg-[var(--color-card)]"
           >
             {loadingMore ? "Chargement..." : "Charger plus"}
           </button>

@@ -147,82 +147,82 @@ export function CommunityAdmin() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <Link to={`/communities/${id}`} className="inline-flex items-center gap-1.5 text-sm text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 mb-4 no-underline">
-        <ArrowLeft className="w-4 h-4" />
+      <Link to={`/communities/${id}`} className="inline-flex items-center gap-1.5 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] mb-4 no-underline">
+        <ArrowLeft className="w-4 h-4" strokeWidth={1.5} />
         Retour à la communauté
       </Link>
 
-      <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-8">Administration — {community.name}</h1>
+      <h1 className="text-2xl font-bold text-[var(--color-text-primary)] mb-8">Administration — {community.name}</h1>
 
       {/* Section 1: Edit info */}
-      <section className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-6 mb-6">
-        <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-4">Informations</h2>
+      <section className="bg-[var(--color-card)] rounded-[var(--radius-card)] border border-[var(--color-border)] p-6 mb-6">
+        <h2 className="text-lg font-semibold text-[var(--color-text-primary)] mb-4">Informations</h2>
         <form onSubmit={handleSubmit(onSave)} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Nom</label>
+            <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">Nom</label>
             <input
               {...register("name")}
-              className="w-full border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-slate-800 dark:text-slate-100"
+              className="w-full border border-[var(--color-border-strong)] rounded-[var(--radius-input)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-primary-400 bg-[var(--color-input)] text-[var(--color-text-primary)]"
             />
-            {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
+            {errors.name && <p className="text-[var(--color-error)] text-xs mt-1">{errors.name.message}</p>}
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Description</label>
+            <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">Description</label>
             <textarea
               {...register("description")}
               rows={3}
-              className="w-full border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-slate-800 dark:text-slate-100"
+              className="w-full border border-[var(--color-border-strong)] rounded-[var(--radius-input)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-primary-400 bg-[var(--color-input)] text-[var(--color-text-primary)]"
             />
           </div>
           <div className="flex items-center gap-3">
             <button
               type="submit"
               disabled={isSubmitting}
-              className="bg-primary-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary-700 disabled:opacity-50 cursor-pointer"
+              className="bg-primary-600 text-[var(--color-page)] px-4 py-2 rounded-[var(--radius-button)] text-sm font-medium hover:bg-primary-700 disabled:opacity-50 cursor-pointer"
             >
               {isSubmitting ? "Enregistrement…" : "Sauvegarder"}
             </button>
-            {saveMsg && <span className="text-sm text-green-600">{saveMsg}</span>}
+            {saveMsg && <span className="text-sm text-[var(--color-success)]">{saveMsg}</span>}
           </div>
         </form>
       </section>
 
       {/* Section 2: Access code */}
-      <section className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-6 mb-6">
-        <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-4">Code d'accès</h2>
+      <section className="bg-[var(--color-card)] rounded-[var(--radius-card)] border border-[var(--color-border)] p-6 mb-6">
+        <h2 className="text-lg font-semibold text-[var(--color-text-primary)] mb-4">Code d'accès</h2>
         <div className="flex items-center gap-3 mb-4">
-          <code className="bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded text-sm font-mono tracking-wider dark:text-slate-200">
+          <code className="bg-[var(--color-input)] px-3 py-1.5 rounded-[var(--radius-input)] text-sm font-mono tracking-wider text-[var(--color-text-primary)]">
             {showCode ? accessCode : "••••••••"}
           </code>
           <button
             onClick={() => setShowCode(!showCode)}
-            className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 bg-transparent border-none cursor-pointer"
+            className="text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)] bg-transparent border-none cursor-pointer"
             title={showCode ? "Masquer" : "Révéler"}
           >
-            {showCode ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            {showCode ? <EyeOff className="w-4 h-4" strokeWidth={1.5} /> : <Eye className="w-4 h-4" strokeWidth={1.5} />}
           </button>
         </div>
         <button
           onClick={handleRegenerateCode}
-          className="inline-flex items-center gap-1.5 text-sm text-primary-600 hover:text-primary-700 bg-transparent border border-primary-300 dark:border-primary-700 rounded-lg px-3 py-1.5 cursor-pointer"
+          className="inline-flex items-center gap-1.5 text-sm text-primary-600 hover:text-primary-700 bg-transparent border border-primary-400 rounded-[var(--radius-button)] px-3 py-1.5 cursor-pointer"
         >
-          <RefreshCw className="w-4 h-4" />
+          <RefreshCw className="w-4 h-4" strokeWidth={1.5} />
           Regénérer le code
         </button>
       </section>
 
       {/* Section 3: Invitations */}
-      <section className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-6 mb-6">
-        <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-4">Invitations</h2>
+      <section className="bg-[var(--color-card)] rounded-[var(--radius-card)] border border-[var(--color-border)] p-6 mb-6">
+        <h2 className="text-lg font-semibold text-[var(--color-text-primary)] mb-4">Invitations</h2>
 
         {/* Create invitation form */}
         <div className="flex flex-wrap items-end gap-3 mb-4">
           <div>
-            <label className="block text-xs font-medium text-slate-500 mb-1">Durée de validité</label>
+            <label className="block text-xs font-medium text-[var(--color-text-secondary)] mb-1">Durée de validité</label>
             <select
               value={inviteDuration}
               onChange={(e) => setInviteDuration(Number(e.target.value))}
-              className="border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-slate-800 dark:text-slate-100"
+              className="border border-[var(--color-border-strong)] rounded-[var(--radius-input)] px-3 py-2 text-sm bg-[var(--color-input)] text-[var(--color-text-primary)]"
             >
               {DURATION_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -230,14 +230,14 @@ export function CommunityAdmin() {
             </select>
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-500 mb-1">Max. utilisations</label>
+            <label className="block text-xs font-medium text-[var(--color-text-secondary)] mb-1">Max. utilisations</label>
             <input
               type="number"
               min="1"
               value={inviteMaxUses}
               onChange={(e) => setInviteMaxUses(e.target.value)}
               placeholder="Illimité"
-              className="border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm w-28 bg-white dark:bg-slate-800 dark:text-slate-100"
+              className="border border-[var(--color-border-strong)] rounded-[var(--radius-input)] px-3 py-2 text-sm w-28 bg-[var(--color-input)] text-[var(--color-text-primary)]"
             />
           </div>
           <button
@@ -258,27 +258,27 @@ export function CommunityAdmin() {
               }
             }}
             disabled={inviteCreating}
-            className="inline-flex items-center gap-1.5 bg-primary-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary-700 disabled:opacity-50 cursor-pointer"
+            className="inline-flex items-center gap-1.5 bg-primary-600 text-[var(--color-page)] px-4 py-2 rounded-[var(--radius-button)] text-sm font-medium hover:bg-primary-700 disabled:opacity-50 cursor-pointer"
           >
-            <Link2 className="w-4 h-4" />
+            <Link2 className="w-4 h-4" strokeWidth={1.5} />
             {inviteCreating ? "..." : "Générer un lien"}
           </button>
         </div>
 
         {/* Newly generated link */}
         {newInvite && (
-          <div className="bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-800 rounded-lg p-4 mb-4">
+          <div className="bg-primary-50 border border-primary-200 rounded-[var(--radius-button)] p-4 mb-4">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-primary-700 dark:text-primary-300">Lien d'invitation généré</span>
-              <button onClick={() => setNewInvite(null)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 bg-transparent border-none cursor-pointer">
-                <XIcon className="w-4 h-4" />
+              <span className="text-sm font-medium text-primary-700">Lien d'invitation généré</span>
+              <button onClick={() => setNewInvite(null)} className="text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)] bg-transparent border-none cursor-pointer">
+                <XIcon className="w-4 h-4" strokeWidth={1.5} />
               </button>
             </div>
             <div className="flex items-center gap-2 mb-3">
               <input
                 readOnly
                 value={newInvite.url}
-                className="flex-1 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-1.5 text-sm font-mono dark:text-slate-100"
+                className="flex-1 bg-[var(--color-input)] border border-[var(--color-border-strong)] rounded-[var(--radius-input)] px-3 py-1.5 text-sm font-mono text-[var(--color-text-primary)]"
                 onFocus={(e) => e.target.select()}
               />
               <button
@@ -287,9 +287,9 @@ export function CommunityAdmin() {
                   setCopied(true);
                   setTimeout(() => setCopied(false), 2000);
                 }}
-                className="inline-flex items-center gap-1 px-3 py-1.5 text-sm border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-700 cursor-pointer"
+                className="inline-flex items-center gap-1 px-3 py-1.5 text-sm border border-[var(--color-border-strong)] rounded-[var(--radius-button)] bg-[var(--color-input)] text-[var(--color-text-primary)] hover:bg-[var(--color-hover)] cursor-pointer"
               >
-                {copied ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4" />}
+                {copied ? <Check className="w-4 h-4 text-[var(--color-success)]" strokeWidth={1.5} /> : <Copy className="w-4 h-4" strokeWidth={1.5} />}
                 {copied ? "Copié" : "Copier"}
               </button>
               {typeof navigator.share === "function" && (
@@ -301,14 +301,14 @@ export function CommunityAdmin() {
                       url: newInvite.url,
                     });
                   }}
-                  className="inline-flex items-center gap-1 px-3 py-1.5 text-sm border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-700 cursor-pointer"
+                  className="inline-flex items-center gap-1 px-3 py-1.5 text-sm border border-[var(--color-border-strong)] rounded-[var(--radius-button)] bg-[var(--color-input)] text-[var(--color-text-primary)] hover:bg-[var(--color-hover)] cursor-pointer"
                 >
-                  <Share2 className="w-4 h-4" />
+                  <Share2 className="w-4 h-4" strokeWidth={1.5} />
                   Partager
                 </button>
               )}
             </div>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
+            <p className="text-xs text-[var(--color-text-secondary)]">
               Expire le {new Date(newInvite.expiresAt).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}
               {newInvite.maxUses ? ` — ${newInvite.maxUses} utilisation${newInvite.maxUses > 1 ? "s" : ""} max.` : " — utilisations illimitées"}
             </p>
@@ -318,18 +318,18 @@ export function CommunityAdmin() {
         {/* Existing invitations list */}
         {invitations.length > 0 && (
           <div className="space-y-2">
-            <h3 className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Invitations existantes</h3>
+            <h3 className="text-sm font-medium text-[var(--color-text-secondary)] mb-2">Invitations existantes</h3>
             {invitations.map((inv) => {
               const status = !inv.active ? "Révoqué" : inv.expired ? "Expiré" : "Actif";
-              const statusColor = status === "Actif" ? "text-green-600 bg-green-50 dark:bg-green-900/30 dark:text-green-400" : "text-slate-500 bg-slate-100 dark:bg-slate-800 dark:text-slate-400";
+              const statusColor = status === "Actif" ? "text-[var(--color-success)] bg-primary-50" : "text-[var(--color-text-secondary)] bg-[var(--color-input)]";
               return (
-                <div key={inv.id} className={`flex items-center justify-between p-3 rounded-lg border ${inv.expired ? "border-slate-200 dark:border-slate-700 opacity-60" : "border-slate-200 dark:border-slate-700"}`}>
+                <div key={inv.id} className={`flex items-center justify-between p-3 rounded-[var(--radius-button)] border ${inv.expired ? "border-[var(--color-border)] opacity-60" : "border-[var(--color-border)]"}`}>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <code className="text-xs font-mono text-slate-500 truncate">...{inv.token.slice(-8)}</code>
-                      <span className={`text-xs px-1.5 py-0.5 rounded ${statusColor}`}>{status}</span>
+                      <code className="text-xs font-mono text-[var(--color-text-secondary)] truncate">...{inv.token.slice(-8)}</code>
+                      <span className={`text-xs px-1.5 py-0.5 rounded-[var(--radius-pill)] ${statusColor}`}>{status}</span>
                     </div>
-                    <p className="text-xs text-slate-400">
+                    <p className="text-xs text-[var(--color-text-tertiary)]">
                       Créé le {new Date(inv.createdAt).toLocaleDateString("fr-FR")} — Expire le {new Date(inv.expiresAt).toLocaleDateString("fr-FR")} — {inv.uses}/{inv.maxUses ?? "\u221E"} utilisations
                     </p>
                   </div>
@@ -343,9 +343,9 @@ export function CommunityAdmin() {
                         });
                         setInvitations((prev) => prev.map((i) => i.id === inv.id ? { ...i, active: false, expired: true } : i));
                       }}
-                      className="text-slate-400 hover:text-red-500 bg-transparent border-none cursor-pointer ml-3"
+                      className="text-[var(--color-text-tertiary)] hover:text-[var(--color-error)] bg-transparent border-none cursor-pointer ml-3"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Trash2 className="w-4 h-4" strokeWidth={1.5} />
                     </button>
                   )}
                 </div>
@@ -356,9 +356,9 @@ export function CommunityAdmin() {
       </section>
 
       {/* Section 4: Members */}
-      <section className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-6 mb-6">
-        <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-1">Membres</h2>
-        <p className="text-sm text-slate-400 mb-4">{community._count.members} membre{community._count.members > 1 ? "s" : ""}</p>
+      <section className="bg-[var(--color-card)] rounded-[var(--radius-card)] border border-[var(--color-border)] p-6 mb-6">
+        <h2 className="text-lg font-semibold text-[var(--color-text-primary)] mb-1">Membres</h2>
+        <p className="text-sm text-[var(--color-text-tertiary)] mb-4">{community._count.members} membre{community._count.members > 1 ? "s" : ""}</p>
         <div className="space-y-3">
           {community.members.map((m) => (
             <div key={m.userId} className="flex items-center justify-between">
@@ -367,19 +367,19 @@ export function CommunityAdmin() {
                   {m.user.firstName[0]}{m.user.lastName[0]}
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-slate-900 dark:text-slate-100">
+                  <p className="text-sm font-medium text-[var(--color-text-primary)]">
                     {m.user.firstName} {m.user.lastName}
-                    {m.role === "ADMIN" && <span className="ml-1.5 text-xs text-primary-600 bg-primary-50 px-1.5 py-0.5 rounded">Admin</span>}
+                    {m.role === "ADMIN" && <span className="ml-1.5 text-xs text-primary-600 bg-primary-50 px-1.5 py-0.5 rounded-[var(--radius-pill)]">Admin</span>}
                   </p>
-                  <p className="text-xs text-slate-400">{m.user.email}</p>
+                  <p className="text-xs text-[var(--color-text-tertiary)]">{m.user.email}</p>
                 </div>
               </div>
               {m.userId !== user?.id && (
                 <button
                   onClick={() => handleRemoveMember(m)}
-                  className="text-slate-400 hover:text-red-500 bg-transparent border-none cursor-pointer"
+                  className="text-[var(--color-text-tertiary)] hover:text-[var(--color-error)] bg-transparent border-none cursor-pointer"
                 >
-                  <Trash2 className="w-4 h-4" />
+                  <Trash2 className="w-4 h-4" strokeWidth={1.5} />
                 </button>
               )}
             </div>
@@ -388,12 +388,12 @@ export function CommunityAdmin() {
       </section>
 
       {/* Section 5: Danger zone */}
-      <section className="rounded-xl border-2 border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 p-6">
-        <h2 className="text-lg font-semibold text-red-700 dark:text-red-400 mb-2">Zone dangereuse</h2>
-        <p className="text-sm text-red-600 dark:text-red-400 mb-4">Ces actions sont irréversibles.</p>
+      <section className="rounded-[var(--radius-card)] border-2 border-[var(--color-error)] bg-[var(--color-error-light)] p-6">
+        <h2 className="text-lg font-semibold text-[var(--color-error)] mb-2">Zone dangereuse</h2>
+        <p className="text-sm text-[var(--color-error)] mb-4">Ces actions sont irréversibles.</p>
         <button
           onClick={() => setShowDeleteModal(true)}
-          className="bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-700 cursor-pointer"
+          className="bg-[var(--color-error)] text-[var(--color-page)] px-4 py-2 rounded-[var(--radius-button)] text-sm font-medium hover:opacity-90 cursor-pointer"
         >
           Supprimer la communauté
         </button>
@@ -401,33 +401,33 @@ export function CommunityAdmin() {
 
       {/* Delete confirmation modal */}
       {showDeleteModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowDeleteModal(false)}>
-          <div className="bg-white dark:bg-slate-900 rounded-xl p-6 max-w-md w-full" onClick={(e) => e.stopPropagation()}>
-            <h3 className="text-lg font-semibold text-red-700 dark:text-red-400 mb-3">Supprimer la communauté</h3>
-            <p className="text-sm text-slate-600 dark:text-slate-300 mb-4">
+        <div className="fixed inset-0 bg-[var(--color-overlay)] flex items-center justify-center z-50 p-4" onClick={() => setShowDeleteModal(false)}>
+          <div className="bg-[var(--color-card)] rounded-[var(--radius-card)] p-6 max-w-md w-full" onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-lg font-semibold text-[var(--color-error)] mb-3">Supprimer la communauté</h3>
+            <p className="text-sm text-[var(--color-text-secondary)] mb-4">
               Êtes-vous sûr ? Cette action supprimera définitivement la communauté, tout le matériel, les artisans, les avis et les messages. Cette action est irréversible.
             </p>
-            <p className="text-sm text-slate-600 dark:text-slate-300 mb-2">
+            <p className="text-sm text-[var(--color-text-secondary)] mb-2">
               Tapez <strong>{community.name}</strong> pour confirmer :
             </p>
             <input
               type="text"
               value={deleteConfirmName}
               onChange={(e) => setDeleteConfirmName(e.target.value)}
-              className="w-full border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm mb-4 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 bg-white dark:bg-slate-800 dark:text-slate-100"
+              className="w-full border border-[var(--color-border-strong)] rounded-[var(--radius-input)] px-3 py-2 text-sm mb-4 focus:outline-none focus:ring-2 focus:ring-[var(--color-error)] focus:border-[var(--color-error)] bg-[var(--color-input)] text-[var(--color-text-primary)]"
               placeholder={community.name}
             />
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => { setShowDeleteModal(false); setDeleteConfirmName(""); }}
-                className="px-4 py-2 text-sm text-slate-600 dark:text-slate-300 border border-slate-300 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 cursor-pointer bg-white dark:bg-slate-800"
+                className="px-4 py-2 text-sm text-[var(--color-text-secondary)] border border-[var(--color-border-strong)] rounded-[var(--radius-button)] hover:bg-[var(--color-hover)] cursor-pointer bg-[var(--color-input)]"
               >
                 Annuler
               </button>
               <button
                 onClick={handleDeleteCommunity}
                 disabled={deleteConfirmName !== community.name}
-                className="px-4 py-2 text-sm text-white bg-red-600 rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                className="px-4 py-2 text-sm text-[var(--color-page)] bg-[var(--color-error)] rounded-[var(--radius-button)] hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
                 Supprimer définitivement
               </button>

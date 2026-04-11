@@ -48,17 +48,17 @@ export function ArtisanList() {
 
   return (
     <div>
-      <Link to={`/communities/${communityId}`} className="inline-flex items-center gap-1 text-sm text-slate-500 hover:text-slate-700 mb-4 no-underline">
-        <ArrowLeft className="w-4 h-4" /> Retour
+      <Link to={`/communities/${communityId}`} className="inline-flex items-center gap-1 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] mb-4 no-underline">
+        <ArrowLeft className="w-4 h-4" strokeWidth={1.5} /> Retour
       </Link>
 
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Artisans recommandés</h1>
+        <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">Artisans recommandés</h1>
         <button
           onClick={() => setShowForm(true)}
-          className="flex items-center gap-1.5 px-4 py-2 text-sm bg-primary-600 text-white rounded-lg hover:bg-primary-700 cursor-pointer"
+          className="flex items-center gap-1.5 px-4 py-2 text-sm bg-primary-600 text-[var(--color-page)] rounded-[var(--radius-button)] hover:bg-primary-700 cursor-pointer"
         >
-          <Plus className="w-4 h-4" /> Ajouter
+          <Plus className="w-4 h-4" strokeWidth={1.5} /> Ajouter
         </button>
       </div>
 
@@ -66,7 +66,7 @@ export function ArtisanList() {
       <div className="flex flex-wrap gap-2 mb-6">
         <button
           onClick={() => setFilter("")}
-          className={`px-3 py-1 text-sm rounded-full cursor-pointer border ${!filter ? "bg-primary-600 text-white border-primary-600" : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700"}`}
+          className={`px-3 py-1 text-sm rounded-[var(--radius-pill)] cursor-pointer border ${!filter ? "bg-primary-600 text-[var(--color-page)] border-primary-600" : "bg-[var(--color-card)] text-[var(--color-text-secondary)] border-[var(--color-border-strong)] hover:bg-[var(--color-hover)]"}`}
         >
           Tout
         </button>
@@ -74,7 +74,7 @@ export function ArtisanList() {
           <button
             key={cat}
             onClick={() => setFilter(cat === filter ? "" : cat)}
-            className={`px-3 py-1 text-sm rounded-full cursor-pointer border ${filter === cat ? "bg-primary-600 text-white border-primary-600" : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700"}`}
+            className={`px-3 py-1 text-sm rounded-[var(--radius-pill)] cursor-pointer border ${filter === cat ? "bg-primary-600 text-[var(--color-page)] border-primary-600" : "bg-[var(--color-card)] text-[var(--color-text-secondary)] border-[var(--color-border-strong)] hover:bg-[var(--color-hover)]"}`}
           >
             {cat}
           </button>
@@ -84,8 +84,8 @@ export function ArtisanList() {
       {loading ? (
         <div className="flex justify-center py-12"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" /></div>
       ) : artisans.length === 0 ? (
-        <div className="text-center py-16 text-slate-500">
-          <HardHat className="w-12 h-12 mx-auto mb-3 text-slate-300" />
+        <div className="text-center py-16 text-[var(--color-text-secondary)]">
+          <HardHat className="w-12 h-12 mx-auto mb-3 text-[var(--color-text-tertiary)]" strokeWidth={1.5} />
           <p className="text-lg font-medium">Aucun artisan{filter ? ` en "${filter}"` : ""}</p>
           <p className="text-sm mt-1">Recommandez un artisan à vos voisins !</p>
         </div>
@@ -95,28 +95,28 @@ export function ArtisanList() {
             <Link
               key={a.id}
               to={`/artisans/${a.id}`}
-              className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-primary-300 dark:hover:border-primary-600 hover:shadow-sm transition-all no-underline"
+              className="bg-[var(--color-card)] p-5 rounded-[var(--radius-card)] border border-[var(--color-border)] hover:border-primary-400 hover:shadow-sm transition-all no-underline"
             >
               <div className="flex items-start justify-between">
                 <div>
-                  <h3 className="font-semibold text-slate-900 dark:text-slate-100">
+                  <h3 className="font-semibold text-[var(--color-text-primary)]">
                     {a.name}
-                    {a.claimed && <BadgeCheck className="inline w-3.5 h-3.5 text-green-500 ml-1 -mt-0.5" />}
-                    {a.website && <Globe className="inline w-3.5 h-3.5 text-slate-400 ml-1.5 -mt-0.5" />}
+                    {a.claimed && <BadgeCheck className="inline w-3.5 h-3.5 text-[var(--color-success)] ml-1 -mt-0.5" strokeWidth={1.5} />}
+                    {a.website && <Globe className="inline w-3.5 h-3.5 text-[var(--color-text-tertiary)] ml-1.5 -mt-0.5" strokeWidth={1.5} />}
                   </h3>
-                  {a.company && <p className="text-sm text-slate-500">{a.company}</p>}
+                  {a.company && <p className="text-sm text-[var(--color-text-secondary)]">{a.company}</p>}
                 </div>
-                <span className="text-xs px-2 py-0.5 bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 rounded-full">{a.category}</span>
+                <span className="text-xs px-2 py-0.5 bg-primary-50 text-primary-700 rounded-[var(--radius-pill)]">{a.category}</span>
               </div>
               <div className="flex items-center gap-2 mt-3">
                 <StarRating rating={a.avgRating ?? 0} size={16} />
-                <span className="text-xs text-slate-400 dark:text-slate-500">
+                <span className="text-xs text-[var(--color-text-tertiary)]">
                   {a.reviewCount} avis
                 </span>
               </div>
-              <div className="flex flex-wrap gap-3 mt-3 text-xs text-slate-500">
-                {a.zone && <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{a.zone}</span>}
-                {a.phone && <span className="flex items-center gap-1"><Phone className="w-3 h-3" />{a.phone}</span>}
+              <div className="flex flex-wrap gap-3 mt-3 text-xs text-[var(--color-text-secondary)]">
+                {a.zone && <span className="flex items-center gap-1"><MapPin className="w-3 h-3" strokeWidth={1.5} />{a.zone}</span>}
+                {a.phone && <span className="flex items-center gap-1"><Phone className="w-3 h-3" strokeWidth={1.5} />{a.phone}</span>}
               </div>
             </Link>
           ))}
@@ -157,49 +157,49 @@ function ArtisanForm({ communityId, onClose, onCreated }: { communityId: string;
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
+    <div className="fixed inset-0 bg-[var(--color-overlay)] flex items-center justify-center z-50 p-4" onClick={onClose}>
       <form
         onClick={(e) => e.stopPropagation()}
         onSubmit={handleSubmit}
-        className="bg-white dark:bg-slate-900 p-6 rounded-xl w-full max-w-md space-y-4 max-h-[90vh] overflow-y-auto"
+        className="bg-[var(--color-card)] p-6 rounded-[var(--radius-card)] w-full max-w-md space-y-4 max-h-[90vh] overflow-y-auto"
       >
-        <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">Recommander un artisan</h2>
-        {error && <div className="bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 px-4 py-2 rounded-lg text-sm">{error}</div>}
+        <h2 className="text-lg font-bold text-[var(--color-text-primary)]">Recommander un artisan</h2>
+        {error && <div className="bg-[var(--color-error-light)] text-[var(--color-error)] px-4 py-2 rounded-[var(--radius-input)] text-sm">{error}</div>}
         <div>
-          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Nom</label>
-          <input value={form.name} onChange={(e) => update("name", e.target.value)} required className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg outline-none focus:ring-2 focus:ring-primary-500 bg-white dark:bg-slate-800 dark:text-slate-100" />
+          <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">Nom</label>
+          <input value={form.name} onChange={(e) => update("name", e.target.value)} required className="w-full px-3 py-2 border border-[var(--color-border-strong)] rounded-[var(--radius-input)] outline-none focus:ring-2 focus:ring-primary-400 bg-[var(--color-input)] text-[var(--color-text-primary)]" />
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Entreprise (optionnel)</label>
-          <input value={form.company} onChange={(e) => update("company", e.target.value)} className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg outline-none focus:ring-2 focus:ring-primary-500 bg-white dark:bg-slate-800 dark:text-slate-100" />
+          <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">Entreprise (optionnel)</label>
+          <input value={form.company} onChange={(e) => update("company", e.target.value)} className="w-full px-3 py-2 border border-[var(--color-border-strong)] rounded-[var(--radius-input)] outline-none focus:ring-2 focus:ring-primary-400 bg-[var(--color-input)] text-[var(--color-text-primary)]" />
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Catégorie</label>
-          <select value={form.category} onChange={(e) => update("category", e.target.value)} className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg outline-none focus:ring-2 focus:ring-primary-500 bg-white dark:bg-slate-800 dark:text-slate-100">
+          <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">Catégorie</label>
+          <select value={form.category} onChange={(e) => update("category", e.target.value)} className="w-full px-3 py-2 border border-[var(--color-border-strong)] rounded-[var(--radius-input)] outline-none focus:ring-2 focus:ring-primary-400 bg-[var(--color-input)] text-[var(--color-text-primary)]">
             {ARTISAN_CATEGORIES.map((cat) => <option key={cat} value={cat}>{cat}</option>)}
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Zone (optionnel)</label>
-          <input value={form.zone} onChange={(e) => update("zone", e.target.value)} className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg outline-none focus:ring-2 focus:ring-primary-500 bg-white dark:bg-slate-800 dark:text-slate-100" placeholder="Maisons-Laffitte et environs" />
+          <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">Zone (optionnel)</label>
+          <input value={form.zone} onChange={(e) => update("zone", e.target.value)} className="w-full px-3 py-2 border border-[var(--color-border-strong)] rounded-[var(--radius-input)] outline-none focus:ring-2 focus:ring-primary-400 bg-[var(--color-input)] text-[var(--color-text-primary)]" placeholder="Maisons-Laffitte et environs" />
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Téléphone</label>
-            <input value={form.phone} onChange={(e) => update("phone", e.target.value)} className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg outline-none focus:ring-2 focus:ring-primary-500 bg-white dark:bg-slate-800 dark:text-slate-100" />
+            <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">Téléphone</label>
+            <input value={form.phone} onChange={(e) => update("phone", e.target.value)} className="w-full px-3 py-2 border border-[var(--color-border-strong)] rounded-[var(--radius-input)] outline-none focus:ring-2 focus:ring-primary-400 bg-[var(--color-input)] text-[var(--color-text-primary)]" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Email</label>
-            <input value={form.email} onChange={(e) => update("email", e.target.value)} type="email" className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg outline-none focus:ring-2 focus:ring-primary-500 bg-white dark:bg-slate-800 dark:text-slate-100" />
+            <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">Email</label>
+            <input value={form.email} onChange={(e) => update("email", e.target.value)} type="email" className="w-full px-3 py-2 border border-[var(--color-border-strong)] rounded-[var(--radius-input)] outline-none focus:ring-2 focus:ring-primary-400 bg-[var(--color-input)] text-[var(--color-text-primary)]" />
           </div>
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Site web (optionnel)</label>
-          <input value={form.website} onChange={(e) => update("website", e.target.value)} type="url" className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg outline-none focus:ring-2 focus:ring-primary-500 bg-white dark:bg-slate-800 dark:text-slate-100" placeholder="https://www.artisan-exemple.fr" />
+          <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">Site web (optionnel)</label>
+          <input value={form.website} onChange={(e) => update("website", e.target.value)} type="url" className="w-full px-3 py-2 border border-[var(--color-border-strong)] rounded-[var(--radius-input)] outline-none focus:ring-2 focus:ring-primary-400 bg-[var(--color-input)] text-[var(--color-text-primary)]" placeholder="https://www.artisan-exemple.fr" />
         </div>
         <div className="flex gap-2 justify-end">
-          <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg cursor-pointer">Annuler</button>
-          <button type="submit" disabled={loading} className="px-4 py-2 text-sm bg-primary-600 text-white rounded-lg disabled:opacity-50 cursor-pointer">{loading ? "..." : "Ajouter"}</button>
+          <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-[var(--color-text-secondary)] bg-[var(--color-input)] border border-[var(--color-border-strong)] rounded-[var(--radius-button)] cursor-pointer">Annuler</button>
+          <button type="submit" disabled={loading} className="px-4 py-2 text-sm bg-primary-600 text-[var(--color-page)] rounded-[var(--radius-button)] disabled:opacity-50 cursor-pointer">{loading ? "..." : "Ajouter"}</button>
         </div>
       </form>
     </div>

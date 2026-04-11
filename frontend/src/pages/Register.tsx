@@ -31,77 +31,77 @@ export function Register() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-[var(--color-page)] px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <Warehouse className="w-12 h-12 text-primary-600 mx-auto mb-3" />
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Créer un compte</h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-1">Rejoignez votre communauté de voisins</p>
+          <Warehouse className="w-12 h-12 text-primary-600 mx-auto mb-3" strokeWidth={1.5} />
+          <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">Créer un compte</h1>
+          <p className="text-[var(--color-text-secondary)] mt-1">Rejoignez votre communauté de voisins</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 space-y-4">
+        <form onSubmit={handleSubmit} className="bg-[var(--color-card)] p-6 rounded-[var(--radius-card)] shadow-sm border border-[var(--color-border)] space-y-4">
           {error && (
-            <div className="bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 px-4 py-2 rounded-lg text-sm">{error}</div>
+            <div className="bg-[var(--color-error-light)] text-[var(--color-error)] px-4 py-2 rounded-[var(--radius-input)] text-sm">{error}</div>
           )}
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Prénom</label>
+              <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">Prénom</label>
               <input
                 type="text"
                 value={form.firstName}
                 onChange={(e) => update("firstName", e.target.value)}
                 required
-                className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none bg-white dark:bg-slate-800 dark:text-slate-100"
+                className="w-full px-3 py-2 border border-[var(--color-border-strong)] rounded-[var(--radius-input)] focus:ring-2 focus:ring-primary-400 focus:border-primary-400 outline-none bg-[var(--color-input)] text-[var(--color-text-primary)]"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Nom</label>
+              <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">Nom</label>
               <input
                 type="text"
                 value={form.lastName}
                 onChange={(e) => update("lastName", e.target.value)}
                 required
-                className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none bg-white dark:bg-slate-800 dark:text-slate-100"
+                className="w-full px-3 py-2 border border-[var(--color-border-strong)] rounded-[var(--radius-input)] focus:ring-2 focus:ring-primary-400 focus:border-primary-400 outline-none bg-[var(--color-input)] text-[var(--color-text-primary)]"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Email</label>
+            <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">Email</label>
             <input
               type="email"
               value={form.email}
               onChange={(e) => update("email", e.target.value)}
               required
-              className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none bg-white dark:bg-slate-800 dark:text-slate-100"
+              className="w-full px-3 py-2 border border-[var(--color-border-strong)] rounded-[var(--radius-input)] focus:ring-2 focus:ring-primary-400 focus:border-primary-400 outline-none bg-[var(--color-input)] text-[var(--color-text-primary)]"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Mot de passe</label>
+            <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">Mot de passe</label>
             <input
               type="password"
               value={form.password}
               onChange={(e) => update("password", e.target.value)}
               required
               minLength={6}
-              className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none bg-white dark:bg-slate-800 dark:text-slate-100"
+              className="w-full px-3 py-2 border border-[var(--color-border-strong)] rounded-[var(--radius-input)] focus:ring-2 focus:ring-primary-400 focus:border-primary-400 outline-none bg-[var(--color-input)] text-[var(--color-text-primary)]"
             />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-primary-600 text-white py-2.5 rounded-lg font-medium hover:bg-primary-700 disabled:opacity-50 cursor-pointer"
+            className="w-full bg-primary-600 text-[var(--color-page)] py-2.5 rounded-[var(--radius-button)] font-medium hover:bg-primary-700 disabled:opacity-50 cursor-pointer"
           >
             {loading ? "Inscription..." : "S'inscrire"}
           </button>
         </form>
 
-        <p className="text-center mt-4 text-sm text-slate-500 dark:text-slate-400">
+        <p className="text-center mt-4 text-sm text-[var(--color-text-secondary)]">
           Déjà un compte ?{" "}
-          <Link to={redirectTo ? `/login?redirect=${encodeURIComponent(redirectTo)}` : "/login"} className="text-primary-600 dark:text-primary-400 hover:underline">
+          <Link to={redirectTo ? `/login?redirect=${encodeURIComponent(redirectTo)}` : "/login"} className="text-primary-600 hover:underline">
             Se connecter
           </Link>
         </p>

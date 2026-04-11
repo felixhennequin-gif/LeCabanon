@@ -25,12 +25,12 @@ function LinkPreviewInner({ url }: { url: string }) {
 
   if (loading) {
     return (
-      <div className="animate-pulse bg-slate-100 rounded-lg p-4 flex gap-4">
-        <div className="w-20 h-20 bg-slate-200 rounded shrink-0" />
+      <div className="animate-pulse bg-[var(--color-input)] rounded-[var(--radius-button)] p-4 flex gap-4">
+        <div className="w-20 h-20 bg-[var(--color-hover)] rounded shrink-0" />
         <div className="flex-1 space-y-2">
-          <div className="h-4 bg-slate-200 rounded w-3/4" />
-          <div className="h-3 bg-slate-200 rounded w-full" />
-          <div className="h-3 bg-slate-200 rounded w-1/2" />
+          <div className="h-4 bg-[var(--color-hover)] rounded w-3/4" />
+          <div className="h-3 bg-[var(--color-hover)] rounded w-full" />
+          <div className="h-3 bg-[var(--color-hover)] rounded w-1/2" />
         </div>
       </div>
     );
@@ -44,7 +44,7 @@ function LinkPreviewInner({ url }: { url: string }) {
         rel="noopener noreferrer"
         className="inline-flex items-center gap-1.5 text-sm text-primary-600 hover:underline no-underline"
       >
-        <ExternalLink className="w-4 h-4" />
+        <ExternalLink className="w-4 h-4" strokeWidth={1.5} />
         {url}
       </a>
     );
@@ -55,11 +55,11 @@ function LinkPreviewInner({ url }: { url: string }) {
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      className="block bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden hover:border-primary-300 dark:hover:border-primary-600 transition-colors no-underline"
+      className="block bg-[var(--color-page)] rounded-[var(--radius-button)] border border-[var(--color-border)] overflow-hidden hover:border-primary-400 transition-colors no-underline"
     >
       <div className="flex">
         {data.image && (
-          <div className="w-24 h-24 shrink-0 bg-slate-200">
+          <div className="w-24 h-24 shrink-0 bg-[var(--color-input)]">
             <img
               src={data.image}
               alt=""
@@ -69,10 +69,10 @@ function LinkPreviewInner({ url }: { url: string }) {
           </div>
         )}
         <div className="p-3 min-w-0 flex-1">
-          {data.siteName && <p className="text-xs text-slate-400 mb-0.5">{data.siteName}</p>}
-          {data.title && <p className="text-sm font-medium text-slate-900 dark:text-slate-100 truncate">{data.title}</p>}
+          {data.siteName && <p className="text-xs text-[var(--color-text-tertiary)] mb-0.5">{data.siteName}</p>}
+          {data.title && <p className="text-sm font-medium text-[var(--color-text-primary)] truncate">{data.title}</p>}
           {data.description && (
-            <p className="text-xs text-slate-500 mt-1 line-clamp-2">
+            <p className="text-xs text-[var(--color-text-secondary)] mt-1 line-clamp-2">
               {data.description.length > 150 ? data.description.slice(0, 150) + "…" : data.description}
             </p>
           )}
