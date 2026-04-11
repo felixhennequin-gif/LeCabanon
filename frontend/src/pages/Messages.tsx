@@ -5,6 +5,7 @@ import { api } from "../lib/api";
 import { useAuth } from "../contexts/AuthContext";
 import { useLocalizedNavigate } from "../hooks/useLocalizedNavigate";
 import { LocalizedLink } from "../components/LocalizedLink";
+import { Avatar } from "../components/Avatar";
 import { ArrowLeft, Send, Check, CheckCheck, Wrench, X } from "lucide-react";
 
 interface ConversationSummary {
@@ -257,9 +258,7 @@ export function Messages() {
                 className={`w-full flex items-center gap-3 px-4 py-3 text-left border-none cursor-pointer hover:bg-[var(--color-hover)] ${c.id === conversationId ? "bg-primary-50" : "bg-transparent"}`}
               >
                 <div className="relative shrink-0">
-                  <div className="w-10 h-10 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center text-sm font-medium">
-                    {c.other.firstName[0]}{c.other.lastName[0]}
-                  </div>
+                  <Avatar src={c.other.photo} name={`${c.other.firstName} ${c.other.lastName}`} size="md" />
                   {c.online && <div className="absolute bottom-0 right-0 w-3 h-3 bg-[var(--color-success)] rounded-full border-2 border-[var(--color-card)]" />}
                 </div>
                 <div className="min-w-0 flex-1">
@@ -302,9 +301,7 @@ export function Messages() {
               {activeConv && (
                 <>
                   <div className="relative">
-                    <div className="w-8 h-8 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center text-sm font-medium">
-                      {activeConv.other.firstName[0]}{activeConv.other.lastName[0]}
-                    </div>
+                    <Avatar src={activeConv.other.photo} name={`${activeConv.other.firstName} ${activeConv.other.lastName}`} size="sm" />
                     {activeConv.online && <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-[var(--color-success)] rounded-full border-2 border-[var(--color-card)]" />}
                   </div>
                   <div>

@@ -5,6 +5,7 @@ import { api } from "../lib/api";
 import { useAuth } from "../contexts/AuthContext";
 import { useLocalizedNavigate } from "../hooks/useLocalizedNavigate";
 import { LocalizedLink } from "../components/LocalizedLink";
+import { Avatar } from "../components/Avatar";
 import { ArrowLeft, Search, Trash2, MessageCircle } from "lucide-react";
 
 interface Member {
@@ -93,9 +94,9 @@ export function Members() {
             <div className="flex items-center gap-3">
               <LocalizedLink
                 to={`/app/users/${m.user.id}`}
-                className="w-10 h-10 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center text-sm font-medium no-underline shrink-0"
+                className="no-underline shrink-0"
               >
-                {m.user.firstName[0]}{m.user.lastName[0]}
+                <Avatar src={m.user.photo} name={`${m.user.firstName} ${m.user.lastName}`} size="md" />
               </LocalizedLink>
               <div>
                 <p className="text-sm font-medium text-[var(--color-text-primary)]">

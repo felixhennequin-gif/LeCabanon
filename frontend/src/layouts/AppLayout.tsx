@@ -6,7 +6,8 @@ import { useTheme } from "../hooks/useTheme";
 import { useLocalizedNavigate } from "../hooks/useLocalizedNavigate";
 import { LocalizedLink } from "../components/LocalizedLink";
 import { api } from "../lib/api";
-import { Home, LogOut, MessageCircle, User, Warehouse, Sun, Moon } from "lucide-react";
+import { Avatar } from "../components/Avatar";
+import { Home, LogOut, MessageCircle, Warehouse, Sun, Moon } from "lucide-react";
 
 interface ConversationSummary {
   id: string;
@@ -79,8 +80,8 @@ export function AppLayout() {
                   </span>
                 )}
               </LocalizedLink>
-              <LocalizedLink to="/app/profile" className="text-[var(--color-text-secondary)] hover:text-primary-600 no-underline text-sm flex items-center gap-1">
-                <User className="w-4 h-4" strokeWidth={1.5} />
+              <LocalizedLink to="/app/profile" className="text-[var(--color-text-secondary)] hover:text-primary-600 no-underline text-sm flex items-center gap-1.5">
+                <Avatar src={user.photo} name={`${user.firstName} ${user.lastName}`} size="sm" />
                 <span className="hidden sm:inline">{user.firstName}</span>
               </LocalizedLink>
               <button

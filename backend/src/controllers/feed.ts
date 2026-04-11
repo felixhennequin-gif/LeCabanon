@@ -14,7 +14,7 @@ export async function getFeed(req: Request, res: Response, next: NextFunction) {
       ...(cursor && { cursor: { id: cursor }, skip: 1 }),
       include: {
         actor: { select: { id: true, firstName: true, lastName: true, photo: true } },
-        equipment: { select: { id: true, name: true, category: true, photos: true } },
+        equipment: { select: { id: true, name: true, category: true, photos: { select: { id: true, url: true }, orderBy: { order: "asc" }, take: 1 } } },
         artisan: { select: { id: true, name: true, category: true, company: true } },
         review: { select: { id: true, rating: true, comment: true, artisan: { select: { id: true, name: true } } } },
       },

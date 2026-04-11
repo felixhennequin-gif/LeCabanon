@@ -3,7 +3,8 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "../contexts/AuthContext";
 import { useLocalizedNavigate } from "../hooks/useLocalizedNavigate";
 import { LocalizedLink } from "./LocalizedLink";
-import { Home, MessageCircle, User, LogOut, Wrench, HardHat, Users, Settings, X } from "lucide-react";
+import { Avatar } from "./Avatar";
+import { Home, MessageCircle, LogOut, Wrench, HardHat, Users, Settings, X } from "lucide-react";
 
 interface MobileDrawerProps {
   isOpen: boolean;
@@ -66,7 +67,7 @@ export function MobileDrawer({ isOpen, onClose, communityId, communityCounts, is
           <p className="text-xs font-semibold text-[var(--color-text-tertiary)] uppercase tracking-wider px-3 mb-1">{t("drawer.nav_section")}</p>
           <DrawerLink to="/app" icon={<Home className="w-5 h-5" strokeWidth={1.5} />} label={tc("nav.communities")} onClose={onClose} />
           <DrawerLink to="/app/messages" icon={<MessageCircle className="w-5 h-5" strokeWidth={1.5} />} label={tc("nav.messages")} onClose={onClose} />
-          <DrawerLink to="/app/profile" icon={<User className="w-5 h-5" strokeWidth={1.5} />} label={user?.firstName ?? tc("nav.communities")} onClose={onClose} />
+          <DrawerLink to="/app/profile" icon={user ? <Avatar src={user.photo} name={`${user.firstName} ${user.lastName}`} size="xs" /> : null} label={user?.firstName ?? tc("nav.communities")} onClose={onClose} />
 
           <div className="flex-1" />
 

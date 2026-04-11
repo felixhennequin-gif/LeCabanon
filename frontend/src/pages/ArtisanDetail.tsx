@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api } from "../lib/api";
@@ -7,13 +7,20 @@ import { useLocalizedNavigate } from "../hooks/useLocalizedNavigate";
 import { LocalizedLink } from "../components/LocalizedLink";
 import { StarRating } from "../components/StarRating";
 import { LinkPreview } from "../components/LinkPreview";
-import { ArrowLeft, Phone, Mail, MapPin, Trash2, MessageCircle, BadgeCheck, ExternalLink, Award, Clock, Edit3 } from "lucide-react";
+import { Avatar } from "../components/Avatar";
+import { ArrowLeft, Phone, Mail, MapPin, Trash2, MessageCircle, BadgeCheck, ExternalLink, Award, Clock, Edit3, Plus, X } from "lucide-react";
 
 interface ReviewReply {
   id: string;
   content: string;
   createdAt: string;
   author: { id: string; firstName: string; lastName: string };
+}
+
+interface ReviewMedia {
+  id: string;
+  url: string;
+  type: string;
 }
 
 interface Review {
@@ -24,6 +31,7 @@ interface Review {
   createdAt: string;
   authorId: string;
   author: { id: string; firstName: string; lastName: string; photo?: string | null };
+  media: ReviewMedia[];
   replies: ReviewReply[];
 }
 
@@ -276,8 +284,8 @@ export function ArtisanDetail() {
             <div key={r.id} className="bg-[var(--color-card)] p-4 rounded-[var(--radius-card)] border border-[var(--color-border)]">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <LocalizedLink to={`/app/users/${r.author.id}`} className="w-8 h-8 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center text-sm font-medium no-underline">
-                    {r.author.firstName[0]}{r.author.lastName[0]}
+                  <LocalizedLink to={`/app/users/${r.author.id}`} className="no-underline shrink-0">
+                    <Avatar src={r.author.photo} name={`${r.author.firstName} ${r.author.lastName}`} size="sm" />
                   </LocalizedLink>
                   <div>
                     <LocalizedLink to={`/app/users/${r.author.id}`} className="text-sm font-medium text-[var(--color-text-primary)] no-underline hover:underline">{r.author.firstName} {r.author.lastName}</LocalizedLink>
@@ -294,6 +302,16 @@ export function ArtisanDetail() {
                 </div>
               </div>
               {r.comment && <p className="text-sm text-[var(--color-text-secondary)] mt-3">{r.comment}</p>}
+
+              {r.media && r.media.length > 0 && (
+                <div className="flex gap-2 mt-3 flex-wrap">
+                  {r.media.map((m) => (
+                    <a key={m.id} href={m.url} target="_blank" rel="noopener noreferrer">
+                      <img src={m.url} alt="" className="w-20 h-20 rounded-[var(--radius-input)] object-cover" />
+                    </a>
+                  ))}
+                </div>
+              )}
 
               {r.replies.length > 0 && (
                 <div className="mt-3 bg-primary-50 rounded-[var(--radius-input)] p-3 border-l-2 border-primary-400">
@@ -399,18 +417,43 @@ function ReviewForm({ artisanId, communityId, onClose, onCreated }: { artisanId:
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
   const [visibility, setVisibility] = useState<"PUBLIC" | "COMMUNITY">("PUBLIC");
+  const [photoFiles, setPhotoFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    if (!e.target.files) return;
+    const newFiles = Array.from(e.target.files).slice(0, 3 - photoFiles.length);
+    setPhotoFiles((prev) => [...prev, ...newFiles]);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  }
+
+  function removeFile(index: number) {
+    setPhotoFiles((prev) => prev.filter((_, i) => i !== index));
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (rating === 0) { setError(t("reviews.rating_required")); return; }
     setLoading(true);
     try {
-      await api(`/artisans/${artisanId}/reviews`, {
+      const review = await api<{ id: string }>(`/artisans/${artisanId}/reviews`, {
         method: "POST",
         body: JSON.stringify({ rating, comment, visibility, communityId }),
       });
+
+      if (photoFiles.length > 0) {
+        const formData = new FormData();
+        for (const file of photoFiles) {
+          formData.append("photos", file);
+        }
+        await api(`/artisans/reviews/${review.id}/photos`, {
+          method: "POST",
+          body: formData,
+        });
+      }
+
       onCreated();
     } catch (err) {
       setError(err instanceof Error ? err.message : tc("errors.generic"));
@@ -424,7 +467,7 @@ function ReviewForm({ artisanId, communityId, onClose, onCreated }: { artisanId:
       <form
         onClick={(e) => e.stopPropagation()}
         onSubmit={handleSubmit}
-        className="bg-[var(--color-card)] p-6 rounded-[var(--radius-card)] w-full max-w-md space-y-4"
+        className="bg-[var(--color-card)] p-6 rounded-[var(--radius-card)] w-full max-w-md space-y-4 max-h-[90vh] overflow-y-auto"
       >
         <h2 className="text-lg font-bold">{t("reviews.leave_review")}</h2>
         {error && <div className="bg-[var(--color-error-light)] text-[var(--color-error)] px-4 py-2 rounded-[var(--radius-input)] text-sm">{error}</div>}
@@ -440,6 +483,44 @@ function ReviewForm({ artisanId, communityId, onClose, onCreated }: { artisanId:
             className="w-full px-3 py-2 border border-[var(--color-border-strong)] rounded-[var(--radius-input)] outline-none focus:ring-2 focus:ring-primary-400 bg-[var(--color-input)] text-[var(--color-text-primary)]"
             rows={4}
             placeholder={t("reviews.comment_placeholder")}
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-2">{t("photos.add")}</label>
+          {photoFiles.length > 0 && (
+            <div className="flex gap-2 mb-2 flex-wrap">
+              {photoFiles.map((file, i) => (
+                <div key={i} className="relative group">
+                  <img src={URL.createObjectURL(file)} alt="" className="w-16 h-16 rounded-[var(--radius-input)] object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => removeFile(i)}
+                    className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-[var(--color-error)] text-[var(--color-page)] rounded-full flex items-center justify-center cursor-pointer border-none"
+                  >
+                    <X className="w-3 h-3" strokeWidth={2} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+          {photoFiles.length < 3 && (
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="flex items-center gap-1.5 text-xs text-primary-600 hover:text-primary-700 bg-transparent border-none cursor-pointer p-0"
+            >
+              <Plus className="w-3.5 h-3.5" strokeWidth={1.5} />
+              {t("photos.add")}
+            </button>
+          )}
+          <p className="text-xs text-[var(--color-text-tertiary)] mt-1">{t("photos.max_reviews")} — {t("photos.formats")}</p>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={handleFileSelect}
+            className="hidden"
           />
         </div>
         <div>

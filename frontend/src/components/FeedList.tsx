@@ -4,6 +4,7 @@ import { api } from "../lib/api";
 import { formatRelativeDate } from "../lib/date";
 import { LocalizedLink } from "./LocalizedLink";
 import { StarRating } from "./StarRating";
+import { Avatar } from "./Avatar";
 import { Package, HardHat, UserPlus, Star, Trash2, Rss } from "lucide-react";
 
 interface Activity {
@@ -11,7 +12,7 @@ interface Activity {
   type: string;
   createdAt: string;
   actor: { id: string; firstName: string; lastName: string; photo?: string | null };
-  equipment?: { id: string; name: string; category: string; photos: string[] } | null;
+  equipment?: { id: string; name: string; category: string; photos: { id: string; url: string }[] } | null;
   artisan?: { id: string; name: string; category: string; company?: string | null } | null;
   review?: { id: string; rating: number; comment?: string | null; artisan: { id: string; name: string } | null } | null;
 }
@@ -21,13 +22,10 @@ interface FeedResponse {
   nextCursor: string | null;
 }
 
-function Avatar({ firstName, lastName, id }: { firstName: string; lastName: string; id: string }) {
+function FeedAvatar({ firstName, lastName, photo, id }: { firstName: string; lastName: string; photo?: string | null; id: string }) {
   return (
-    <LocalizedLink
-      to={`/app/users/${id}`}
-      className="w-9 h-9 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center text-sm font-medium shrink-0 no-underline"
-    >
-      {firstName[0]}{lastName[0]}
+    <LocalizedLink to={`/app/users/${id}`} className="shrink-0 no-underline">
+      <Avatar src={photo} name={`${firstName} ${lastName}`} size="sm" />
     </LocalizedLink>
   );
 }
@@ -63,7 +61,7 @@ function ActivityCard({ activity }: { activity: Activity }) {
 
   return (
     <div className={`flex gap-3 p-4 bg-[var(--color-card)] rounded-[var(--radius-card)] border border-[var(--color-border)] ${isRemoval ? "opacity-60" : ""}`}>
-      <Avatar firstName={actor.firstName} lastName={actor.lastName} id={actor.id} />
+      <FeedAvatar firstName={actor.firstName} lastName={actor.lastName} photo={actor.photo} id={actor.id} />
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2">
           <p className="text-sm">

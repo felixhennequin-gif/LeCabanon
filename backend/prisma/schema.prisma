@@ -14,6 +14,7 @@ model User {
   firstName String
   lastName  String
   photo     String?
+  bio       String?
   googleId  String?  @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -74,7 +75,6 @@ model Equipment {
   name        String
   description String?
   category    String
-  photos      String[] @default([])
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -83,7 +83,17 @@ model Equipment {
   communityId String
   community   Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
 
+  photos     EquipmentPhoto[]
   activities Activity[]
+}
+
+model EquipmentPhoto {
+  id          String    @id @default(cuid())
+  url         String
+  order       Int       @default(0)
+  equipmentId String
+  equipment   Equipment @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
 }
 
 model Artisan {
@@ -172,11 +182,12 @@ enum Visibility {
 }
 
 model ReviewMedia {
-  id       String    @id @default(cuid())
-  url      String
-  type     MediaType @default(IMAGE)
-  reviewId String
-  review   Review    @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  id        String    @id @default(cuid())
+  url       String
+  type      MediaType @default(IMAGE)
+  reviewId  String
+  review    Review    @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  createdAt DateTime  @default(now())
 }
 
 enum MediaType {

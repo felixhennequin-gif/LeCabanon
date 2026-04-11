@@ -3,6 +3,7 @@ import { z } from "zod";
 import { prisma } from "../utils/prisma.js";
 import { AppError } from "../middlewares/errorHandler.js";
 import { createActivity } from "../services/activity.js";
+import { processAndSaveImage } from "../utils/image.js";
 
 const createArtisanSchema = z.object({
   name: z.string().min(1, "Nom requis"),
@@ -333,6 +334,54 @@ export async function listReviews(req: Request, res: Response, next: NextFunctio
       (r) => r.visibility === "PUBLIC" || isMember || r.authorId === req.userId,
     );
     res.json(filtered);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function uploadReviewPhotos(req: Request, res: Response, next: NextFunction) {
+  try {
+    const reviewId = req.params.reviewId as string;
+    const review = await prisma.review.findUnique({
+      where: { id: reviewId },
+      include: { _count: { select: { media: true } } },
+    });
+    if (!review) throw new AppError(404, "Avis introuvable");
+    if (review.authorId !== req.userId) {
+      throw new AppError(403, "Non autorise");
+    }
+
+    const files = req.files as Express.Multer.File[];
+    if (!files || files.length === 0) {
+      res.status(400).json({ error: "Aucun fichier fourni" });
+      return;
+    }
+
+    if (review._count.media + files.length > 3) {
+      res.status(400).json({ error: "Maximum 3 photos par avis" });
+      return;
+    }
+
+    const media = [];
+    for (const file of files) {
+      const url = await processAndSaveImage({
+        buffer: file.buffer,
+        folder: "reviews",
+        maxWidth: 800,
+        maxHeight: 800,
+        quality: 75,
+      });
+      const m = await prisma.reviewMedia.create({
+        data: {
+          url,
+          type: "IMAGE",
+          reviewId,
+        },
+      });
+      media.push(m);
+    }
+
+    res.status(201).json(media);
   } catch (err) {
     next(err);
   }
