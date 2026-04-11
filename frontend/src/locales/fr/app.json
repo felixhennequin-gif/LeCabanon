@@ -1,0 +1,294 @@
+{
+  "communities": {
+    "title": "Mes communautes",
+    "empty": "Aucune communaute",
+    "empty_hint": "Creez ou rejoignez une communaute pour commencer",
+    "member_count": "{{count}} membre",
+    "member_count_plural": "{{count}} membres",
+    "create": {
+      "title": "Creer une communaute",
+      "name": "Nom",
+      "name_placeholder": "Avenue Guillon",
+      "description": "Description",
+      "description_placeholder": "Partage de matos et bons plans artisans entre voisins",
+      "submit": "Creer",
+      "submitting": "Creation..."
+    },
+    "join": {
+      "title": "Rejoindre une communaute",
+      "access_code": "Code d'acces",
+      "submit": "Rejoindre"
+    }
+  },
+  "community_detail": {
+    "not_found": "Communaute introuvable",
+    "equipment_label": "materiel",
+    "artisans_label": "artisans",
+    "members_label": "membres",
+    "equipment_card": {
+      "title": "Materiel",
+      "subtitle": "objets a preter"
+    },
+    "artisans_card": {
+      "title": "Artisans",
+      "subtitle": "artisans recommandes"
+    },
+    "members_card": {
+      "title": "Membres",
+      "subtitle": "voisins"
+    }
+  },
+  "equipment": {
+    "title": "Materiel a preter",
+    "all": "Tout",
+    "all_owners": "Tous les proprietaires",
+    "empty": "Aucun materiel",
+    "empty_in_category": "Aucun materiel en \"{{category}}\"",
+    "empty_hint": "Soyez le premier a ajouter du materiel a preter !",
+    "not_found": "Materiel introuvable",
+    "owner": "Proprietaire",
+    "added_on": "Ajoute le {{date}}",
+    "contact": "Contacter",
+    "delete_confirm": "Supprimer ce materiel ?",
+    "form": {
+      "title": "Ajouter du materiel",
+      "name": "Nom",
+      "name_placeholder": "Perceuse Bosch",
+      "category": "Categorie",
+      "description": "Description",
+      "description_placeholder": "En bon etat, avec ses embouts"
+    },
+    "categories": {
+      "jardinage": "Jardinage",
+      "bricolage": "Bricolage",
+      "nettoyage": "Nettoyage",
+      "electroportatif": "Electroportatif",
+      "echelles": "Echelles & echafaudages",
+      "automobile": "Automobile",
+      "demenagement": "Demenagement",
+      "cuisine": "Cuisine / Reception"
+    }
+  },
+  "artisans": {
+    "title": "Artisans recommandes",
+    "all": "Tout",
+    "empty": "Aucun artisan",
+    "empty_in_category": "Aucun artisan en \"{{category}}\"",
+    "empty_hint": "Recommandez un artisan a vos voisins !",
+    "not_found": "Artisan introuvable",
+    "review_count": "{{count}} avis",
+    "verified": "Verifie",
+    "verified_profile": "Profil verifie",
+    "contact": "Contacter",
+    "delete_confirm": "Supprimer cet artisan ?",
+    "added_by": "Ajoute par",
+    "edit_profile": "Modifier mon profil",
+    "view_public_page": "Voir la page publique",
+    "claim": {
+      "prompt": "Vous etes <strong>{{name}}</strong> ? Revendiquez cette fiche pour gerer votre profil et repondre aux avis.",
+      "prompt_public": "Vous etes <strong>{{name}}</strong> ? Revendiquez cette fiche pour enrichir votre profil et repondre aux avis.",
+      "button": "Revendiquer cette fiche",
+      "link": "Revendiquer cette fiche \u2192",
+      "success_title": "Fiche revendiquee !",
+      "success_message": "Vous pouvez maintenant personnaliser votre profil et repondre aux avis.",
+      "view_profile": "Voir ma fiche"
+    },
+    "form": {
+      "title": "Recommander un artisan",
+      "name": "Nom",
+      "company": "Entreprise (optionnel)",
+      "category": "Categorie",
+      "zone": "Zone (optionnel)",
+      "zone_placeholder": "Maisons-Laffitte et environs",
+      "phone": "Telephone",
+      "email": "Email",
+      "website": "Site web (optionnel)",
+      "website_placeholder": "https://www.artisan-exemple.fr"
+    },
+    "profile_edit": {
+      "title": "Modifier mon profil",
+      "description": "Description / Bio",
+      "description_placeholder": "Presentez votre activite, vos specialites...",
+      "certifications": "Certifications (separees par des virgules)",
+      "certifications_placeholder": "RGE, Qualibat, Qualifelec...",
+      "hours": "Horaires",
+      "hours_placeholder": "Lun-Ven : 8h-18h\nSamedi : sur rendez-vous"
+    },
+    "categories": {
+      "plomberie": "Plomberie",
+      "electricite": "Electricite",
+      "maconnerie": "Maconnerie",
+      "peinture": "Peinture",
+      "menuiserie": "Menuiserie",
+      "paysagisme": "Paysagisme",
+      "couverture": "Couverture / Toiture",
+      "serrurerie": "Serrurerie",
+      "chauffage": "Chauffage / Climatisation",
+      "nettoyage": "Nettoyage"
+    }
+  },
+  "reviews": {
+    "title": "Avis",
+    "public_title": "Avis publics",
+    "leave_review": "Laisser un avis",
+    "no_reviews": "Aucun avis pour le moment",
+    "no_public_reviews": "Aucun avis public pour le moment",
+    "rating_required": "Veuillez donner une note",
+    "rating_label": "Note",
+    "comment_label": "Commentaire",
+    "comment_placeholder": "Travail soigne, ponctuel, je recommande...",
+    "visibility_community": "Communaute \u2014 visible uniquement par les membres",
+    "visibility_public_hint": "Visible par tous, y compris sur la page publique",
+    "visibility_community_hint": "Visible uniquement par les membres de vos communautes",
+    "visibility_badge": "Communaute",
+    "artisan_reply": "Reponse de l'artisan",
+    "reply_placeholder": "Votre reponse..."
+  },
+  "public_profile": {
+    "about": "A propos",
+    "certifications": "Certifications",
+    "hours": "Horaires",
+    "photos": "Photos",
+    "join_cta": "Rejoignez une communaute pour contacter {{name}} et voir tous les avis",
+    "create_account": "Creer un compte",
+    "share_text": "Decouvrez {{name}}{{company}} sur LeCabanon"
+  },
+  "messages": {
+    "title": "Messages",
+    "empty": "Aucune conversation. Contactez un voisin depuis la page materiel ou membres !",
+    "select": "Selectionnez une conversation",
+    "new_conversation": "Nouvelle conversation",
+    "you_prefix": "Vous : ",
+    "typing": "En train d'ecrire...",
+    "online": "En ligne",
+    "send_placeholder": "Ecrire un message...",
+    "first_message": "Envoyez votre premier message !",
+    "load_older": "Charger les messages precedents",
+    "equipment_context": "A propos de <strong>{{name}}</strong>",
+    "equipment_prefill": "Bonjour, je vous contacte a propos de : {{name}}\n",
+    "send_message_title": "Envoyer un message"
+  },
+  "members": {
+    "title": "Membres \u2014 {{name}}",
+    "search_placeholder": "Rechercher un membre...",
+    "member_since": "Membre depuis {{date}}",
+    "no_members": "Aucun membre trouve",
+    "remove_confirm": "Retirer {{name}} de la communaute ?"
+  },
+  "profile": {
+    "title": "Mon profil",
+    "firstname": "Prenom",
+    "lastname": "Nom",
+    "email": "Email",
+    "save": "Sauvegarder",
+    "saved": "Sauvegarde",
+    "my_communities": "Mes communautes",
+    "no_communities": "Aucune communaute",
+    "my_equipment_in": "Mon materiel dans cette communaute",
+    "firstname_required": "Prenom requis",
+    "lastname_required": "Nom requis"
+  },
+  "user_profile": {
+    "not_found": "Utilisateur introuvable",
+    "member_since": "Membre depuis {{date}}",
+    "equipment_title": "Materiel a preter",
+    "reviews_title": "Avis postes",
+    "no_activity": "Aucune activite visible"
+  },
+  "admin": {
+    "back_to_community": "Retour a la communaute",
+    "title": "Administration \u2014 {{name}}",
+    "info_section": "Informations",
+    "name": "Nom",
+    "description": "Description",
+    "name_required": "Nom requis",
+    "save": "Sauvegarder",
+    "saving": "Enregistrement\u2026",
+    "saved": "Modifications enregistrees",
+    "access_code": {
+      "title": "Code d'acces",
+      "show": "Reveler",
+      "hide": "Masquer",
+      "regenerate": "Regenerer le code",
+      "regenerate_confirm": "Attention : l'ancien code ne fonctionnera plus. Les liens d'invitation existants seront invalides. Continuer ?"
+    },
+    "invitations": {
+      "title": "Invitations",
+      "duration": "Duree de validite",
+      "max_uses": "Max. utilisations",
+      "max_uses_placeholder": "Illimite",
+      "generate": "Generer un lien",
+      "generated": "Lien d'invitation genere",
+      "expires": "Expire le {{date}}",
+      "uses_limited": "{{max}} utilisation max.",
+      "uses_limited_plural": "{{max}} utilisations max.",
+      "uses_unlimited": "utilisations illimitees",
+      "existing": "Invitations existantes",
+      "created_on": "Cree le {{date}} \u2014 Expire le {{expiresDate}} \u2014 {{uses}}/{{max}} utilisations",
+      "revoke_confirm": "Revoquer cette invitation ?",
+      "status_active": "Actif",
+      "status_revoked": "Revoque",
+      "status_expired": "Expire",
+      "share_title": "Rejoignez {{name}} sur LeCabanon",
+      "share_text": "Vous etes invite a rejoindre la communaute {{name}} sur LeCabanon !"
+    },
+    "members_section": "Membres",
+    "danger": {
+      "title": "Zone dangereuse",
+      "warning": "Ces actions sont irreversibles.",
+      "delete_button": "Supprimer la communaute",
+      "delete_modal_title": "Supprimer la communaute",
+      "delete_modal_text": "Etes-vous sur ? Cette action supprimera definitivement la communaute, tout le materiel, les artisans, les avis et les messages. Cette action est irreversible.",
+      "delete_confirm_prompt": "Tapez <strong>{{name}}</strong> pour confirmer :",
+      "delete_final": "Supprimer definitivement"
+    },
+    "duration": {
+      "1h": "1 heure",
+      "6h": "6 heures",
+      "12h": "12 heures",
+      "24h": "24 heures",
+      "48h": "48 heures",
+      "7d": "7 jours",
+      "30d": "30 jours"
+    }
+  },
+  "invitation": {
+    "invited_to_join": "Vous etes invite a rejoindre",
+    "invitation_from": "Invitation de {{name}}",
+    "join_button": "Rejoindre la communaute",
+    "login_to_join": "Se connecter pour rejoindre",
+    "invalid_title": "Invitation invalide",
+    "invalid_message": "Ce lien d'invitation a expire ou n'est plus valide.",
+    "back_home": "Retour a l'accueil",
+    "join_error": "Erreur lors de la tentative de rejoindre",
+    "invalid_link": "Lien invalide"
+  },
+  "verify_claim": {
+    "error_title": "Verification echouee",
+    "back_to_profile": "Retour a la fiche",
+    "invalid_link_title": "Lien invalide",
+    "invalid_link_message": "Ce lien de verification est invalide."
+  },
+  "feed": {
+    "empty": "Rien de nouveau pour le moment",
+    "empty_hint": "Ajoutez du materiel ou recommandez un artisan pour lancer la communaute !",
+    "member_joined": "a rejoint la communaute",
+    "equipment_added": "a ajoute du materiel :",
+    "equipment_removed": "a retire du materiel :",
+    "artisan_added": "a recommande un artisan :",
+    "artisan_removed": "a retire un artisan :",
+    "review_added": "a laisse un avis sur",
+    "action_performed": "a effectue une action",
+    "deleted_item": "Element supprime",
+    "deleted_artisan": "Artisan supprime"
+  },
+  "drawer": {
+    "community_section": "Communaute",
+    "nav_section": "Navigation",
+    "equipment": "Materiel",
+    "artisans": "Artisans",
+    "members": "Membres",
+    "administration": "Administration",
+    "disconnect": "Deconnexion"
+  }
+}

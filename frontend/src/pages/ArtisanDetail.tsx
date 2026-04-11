@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { api } from "../lib/api";
 import { useAuth } from "../contexts/AuthContext";
+import { useLocalizedNavigate } from "../hooks/useLocalizedNavigate";
+import { LocalizedLink } from "../components/LocalizedLink";
 import { StarRating } from "../components/StarRating";
 import { LinkPreview } from "../components/LinkPreview";
 import { ArrowLeft, Phone, Mail, MapPin, Trash2, MessageCircle, BadgeCheck, ExternalLink, Award, Clock, Edit3 } from "lucide-react";
@@ -52,9 +55,11 @@ interface ArtisanData {
 }
 
 export function ArtisanDetail() {
+  const { t } = useTranslation("app");
+  const { t: tc } = useTranslation("common");
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
-  const navigate = useNavigate();
+  const navigate = useLocalizedNavigate();
   const [artisan, setArtisan] = useState<ArtisanData | null>(null);
   const [loading, setLoading] = useState(true);
   const [showReviewForm, setShowReviewForm] = useState(false);
@@ -76,7 +81,7 @@ export function ArtisanDetail() {
   }, [id]);
 
   async function handleDelete() {
-    if (!artisan || !confirm("Supprimer cet artisan ?")) return;
+    if (!artisan || !confirm(t("artisans.delete_confirm"))) return;
     await api(`/artisans/${artisan.id}`, { method: "DELETE" });
     navigate(-1);
   }
@@ -88,7 +93,7 @@ export function ArtisanDetail() {
       const res = await api<{ message: string }>(`/artisans/${artisan.id}/claim`, { method: "POST" });
       setClaimMessage(res.message);
     } catch (err) {
-      setClaimMessage(err instanceof Error ? err.message : "Erreur");
+      setClaimMessage(err instanceof Error ? err.message : tc("errors.generic"));
     } finally {
       setClaimLoading(false);
     }
@@ -98,7 +103,7 @@ export function ArtisanDetail() {
     return <div className="flex justify-center py-12"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" /></div>;
   }
 
-  if (!artisan) return <div className="text-center py-12 text-[var(--color-text-secondary)]">Artisan introuvable</div>;
+  if (!artisan) return <div className="text-center py-12 text-[var(--color-text-secondary)]">{t("artisans.not_found")}</div>;
 
   const isOwner = artisan.ownerId === user?.id;
   const firstCommunityId = artisan.communities[0]?.communityId;
@@ -106,7 +111,7 @@ export function ArtisanDetail() {
   return (
     <div>
       <button onClick={() => navigate(-1)} className="inline-flex items-center gap-1 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] mb-4 bg-transparent border-none cursor-pointer p-0">
-        <ArrowLeft className="w-4 h-4" strokeWidth={1.5} /> Retour
+        <ArrowLeft className="w-4 h-4" strokeWidth={1.5} /> {tc("actions.back")}
       </button>
 
       <div className="bg-[var(--color-card)] rounded-[var(--radius-card)] border border-[var(--color-border)] p-6 mb-6">
@@ -116,7 +121,7 @@ export function ArtisanDetail() {
               <h1 className="text-2xl font-bold">{artisan.name}</h1>
               {artisan.claimed && (
                 <span className="inline-flex items-center gap-1 text-xs text-accent-600 bg-accent-50 px-2 py-0.5 rounded-[var(--radius-pill)]">
-                  <BadgeCheck className="w-3.5 h-3.5" strokeWidth={1.5} /> Vérifié
+                  <BadgeCheck className="w-3.5 h-3.5" strokeWidth={1.5} /> {t("artisans.verified")}
                 </span>
               )}
             </div>
@@ -124,13 +129,13 @@ export function ArtisanDetail() {
             <span className="inline-block text-xs px-2 py-0.5 bg-primary-50 text-primary-700 rounded-[var(--radius-pill)] mt-2">{artisan.category}</span>
           </div>
           <div className="flex items-center gap-2">
-            <Link
+            <LocalizedLink
               to={`/artisans/${artisan.id}/public`}
               className="text-[var(--color-text-tertiary)] hover:text-primary-600 no-underline"
-              title="Voir la page publique"
+              title={t("artisans.view_public_page")}
             >
               <ExternalLink className="w-5 h-5" strokeWidth={1.5} />
-            </Link>
+            </LocalizedLink>
             {artisan.createdById === user?.id && (
               <button onClick={handleDelete} className="text-[var(--color-text-tertiary)] hover:text-[var(--color-error)] bg-transparent border-none cursor-pointer">
                 <Trash2 className="w-5 h-5" strokeWidth={1.5} />
@@ -139,24 +144,23 @@ export function ArtisanDetail() {
           </div>
         </div>
 
-        {/* Communities badges */}
         {artisan.communities.length > 0 && (
           <div className="flex flex-wrap gap-1.5 mt-3">
             {artisan.communities.map((ac) => (
-              <Link
+              <LocalizedLink
                 key={ac.communityId}
-                to={`/communities/${ac.communityId}`}
+                to={`/app/communities/${ac.communityId}`}
                 className="text-xs px-2 py-0.5 bg-[var(--color-input)] text-[var(--color-text-secondary)] rounded-[var(--radius-pill)] no-underline hover:bg-[var(--color-hover)]"
               >
                 {ac.community.name}
-              </Link>
+              </LocalizedLink>
             ))}
           </div>
         )}
 
         <div className="flex items-center gap-2 mt-4">
           <StarRating rating={artisan.avgRating ?? 0} size={20} />
-          <span className="text-sm text-[var(--color-text-secondary)]">({artisan.reviews.length} avis)</span>
+          <span className="text-sm text-[var(--color-text-secondary)]">({t("artisans.review_count", { count: artisan.reviews.length })})</span>
         </div>
 
         <div className="flex flex-wrap gap-4 mt-4 text-sm text-[var(--color-text-secondary)]">
@@ -179,7 +183,6 @@ export function ArtisanDetail() {
           </div>
         )}
 
-        {/* Claimed profile info */}
         {artisan.claimed && (artisan.description || artisan.certifications.length > 0 || artisan.horaires) && (
           <div className="mt-4 pt-4 border-t border-[var(--color-border)] space-y-3">
             {artisan.description && (
@@ -204,10 +207,10 @@ export function ArtisanDetail() {
 
         <div className="flex items-center justify-between mt-4 pt-4 border-t border-[var(--color-border)]">
           <p className="text-xs text-[var(--color-text-tertiary)]">
-            Ajouté par{" "}
-            <Link to={`/users/${artisan.createdBy.id}`} className="text-[var(--color-text-secondary)] no-underline hover:underline">
+            {t("artisans.added_by")}{" "}
+            <LocalizedLink to={`/app/users/${artisan.createdBy.id}`} className="text-[var(--color-text-secondary)] no-underline hover:underline">
               {artisan.createdBy.firstName} {artisan.createdBy.lastName}
-            </Link>
+            </LocalizedLink>
           </p>
           <div className="flex items-center gap-2">
             {isOwner && (
@@ -216,7 +219,7 @@ export function ArtisanDetail() {
                 className="inline-flex items-center gap-1 text-xs text-primary-600 hover:text-primary-700 bg-transparent border-none cursor-pointer"
               >
                 <Edit3 className="w-3.5 h-3.5" strokeWidth={1.5} />
-                Modifier mon profil
+                {t("artisans.edit_profile")}
               </button>
             )}
             {artisan.createdById !== user?.id && firstCommunityId && (
@@ -226,24 +229,21 @@ export function ArtisanDetail() {
                     method: "POST",
                     body: JSON.stringify({ recipientId: artisan.createdById, communityId: firstCommunityId }),
                   });
-                  navigate(`/messages/${conv.id}`);
+                  navigate(`/app/messages/${conv.id}`);
                 }}
                 className="inline-flex items-center gap-1 text-xs text-primary-600 hover:text-primary-700 bg-transparent border-none cursor-pointer"
               >
                 <MessageCircle className="w-3.5 h-3.5" strokeWidth={1.5} />
-                Contacter
+                {t("artisans.contact")}
               </button>
             )}
           </div>
         </div>
       </div>
 
-      {/* Claim CTA */}
       {!artisan.claimed && artisan.email && (
         <div className="bg-accent-50 border border-accent-200 rounded-[var(--radius-card)] p-4 mb-6">
-          <p className="text-sm text-accent-800 mb-2">
-            Vous êtes <strong>{artisan.name}</strong> ? Revendiquez cette fiche pour gérer votre profil et répondre aux avis.
-          </p>
+          <p className="text-sm text-accent-800 mb-2" dangerouslySetInnerHTML={{ __html: t("artisans.claim.prompt", { name: artisan.name }) }} />
           {claimMessage ? (
             <p className="text-sm text-accent-600">{claimMessage}</p>
           ) : (
@@ -252,36 +252,35 @@ export function ArtisanDetail() {
               disabled={claimLoading}
               className="px-4 py-1.5 text-sm bg-accent-600 text-[var(--color-page)] rounded-[var(--radius-button)] hover:bg-accent-700 cursor-pointer disabled:opacity-50"
             >
-              {claimLoading ? "..." : "Revendiquer cette fiche"}
+              {claimLoading ? "..." : t("artisans.claim.button")}
             </button>
           )}
         </div>
       )}
 
-      {/* Reviews */}
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-bold">Avis</h2>
+        <h2 className="text-lg font-bold">{t("reviews.title")}</h2>
         <button
           onClick={() => setShowReviewForm(true)}
           className="px-4 py-2 text-sm bg-primary-600 text-[var(--color-page)] rounded-[var(--radius-button)] hover:bg-primary-700 cursor-pointer"
         >
-          Laisser un avis
+          {t("reviews.leave_review")}
         </button>
       </div>
 
       {artisan.reviews.length === 0 ? (
-        <p className="text-[var(--color-text-secondary)] text-center py-8">Aucun avis pour le moment</p>
+        <p className="text-[var(--color-text-secondary)] text-center py-8">{t("reviews.no_reviews")}</p>
       ) : (
         <div className="space-y-4">
           {artisan.reviews.map((r) => (
             <div key={r.id} className="bg-[var(--color-card)] p-4 rounded-[var(--radius-card)] border border-[var(--color-border)]">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <Link to={`/users/${r.author.id}`} className="w-8 h-8 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center text-sm font-medium no-underline">
+                  <LocalizedLink to={`/app/users/${r.author.id}`} className="w-8 h-8 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center text-sm font-medium no-underline">
                     {r.author.firstName[0]}{r.author.lastName[0]}
-                  </Link>
+                  </LocalizedLink>
                   <div>
-                    <Link to={`/users/${r.author.id}`} className="text-sm font-medium text-[var(--color-text-primary)] no-underline hover:underline">{r.author.firstName} {r.author.lastName}</Link>
+                    <LocalizedLink to={`/app/users/${r.author.id}`} className="text-sm font-medium text-[var(--color-text-primary)] no-underline hover:underline">{r.author.firstName} {r.author.lastName}</LocalizedLink>
                     <StarRating rating={r.rating} size={14} />
                   </div>
                 </div>
@@ -290,16 +289,15 @@ export function ArtisanDetail() {
                     {new Date(r.createdAt).toLocaleDateString("fr-FR")}
                   </span>
                   {r.visibility === "COMMUNITY" && (
-                    <span className="block text-xs text-accent-600 mt-0.5">Communauté</span>
+                    <span className="block text-xs text-accent-600 mt-0.5">{t("reviews.visibility_badge")}</span>
                   )}
                 </div>
               </div>
               {r.comment && <p className="text-sm text-[var(--color-text-secondary)] mt-3">{r.comment}</p>}
 
-              {/* Replies */}
               {r.replies.length > 0 && (
                 <div className="mt-3 bg-primary-50 rounded-[var(--radius-input)] p-3 border-l-2 border-primary-400">
-                  <p className="text-xs font-semibold text-primary-700 mb-1">Réponse de l'artisan</p>
+                  <p className="text-xs font-semibold text-primary-700 mb-1">{t("reviews.artisan_reply")}</p>
                   <p className="text-sm text-[var(--color-text-secondary)]">{r.replies[0].content}</p>
                   <p className="text-xs text-[var(--color-text-tertiary)] mt-1">
                     {new Date(r.replies[0].createdAt).toLocaleDateString("fr-FR")}
@@ -307,7 +305,6 @@ export function ArtisanDetail() {
                 </div>
               )}
 
-              {/* Reply button for owner */}
               {isOwner && r.replies.length === 0 && (
                 <>
                   {replyingTo === r.id ? (
@@ -321,7 +318,7 @@ export function ArtisanDetail() {
                       onClick={() => setReplyingTo(r.id)}
                       className="mt-2 text-xs text-primary-600 hover:text-primary-700 bg-transparent border-none cursor-pointer"
                     >
-                      Répondre
+                      {tc("actions.reply")}
                     </button>
                   )}
                 </>
@@ -355,6 +352,8 @@ export function ArtisanDetail() {
 }
 
 function ReplyForm({ reviewId, onClose, onCreated }: { reviewId: string; onClose: () => void; onCreated: () => void }) {
+  const { t } = useTranslation("app");
+  const { t: tc } = useTranslation("common");
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -370,7 +369,7 @@ function ReplyForm({ reviewId, onClose, onCreated }: { reviewId: string; onClose
       });
       onCreated();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erreur");
+      setError(err instanceof Error ? err.message : tc("errors.generic"));
     } finally {
       setLoading(false);
     }
@@ -384,17 +383,19 @@ function ReplyForm({ reviewId, onClose, onCreated }: { reviewId: string; onClose
         onChange={(e) => setContent(e.target.value)}
         className="w-full px-3 py-2 border border-[var(--color-border-strong)] rounded-[var(--radius-input)] text-sm outline-none focus:ring-2 focus:ring-primary-400 bg-[var(--color-input)] text-[var(--color-text-primary)]"
         rows={3}
-        placeholder="Votre réponse..."
+        placeholder={t("reviews.reply_placeholder")}
       />
       <div className="flex gap-2 justify-end">
-        <button type="button" onClick={onClose} className="px-3 py-1.5 text-xs text-[var(--color-text-secondary)] bg-[var(--color-input)] border border-[var(--color-border-strong)] rounded-[var(--radius-button)] cursor-pointer">Annuler</button>
-        <button type="submit" disabled={loading} className="px-3 py-1.5 text-xs bg-primary-600 text-[var(--color-page)] rounded-[var(--radius-button)] disabled:opacity-50 cursor-pointer">{loading ? "..." : "Répondre"}</button>
+        <button type="button" onClick={onClose} className="px-3 py-1.5 text-xs text-[var(--color-text-secondary)] bg-[var(--color-input)] border border-[var(--color-border-strong)] rounded-[var(--radius-button)] cursor-pointer">{tc("actions.cancel")}</button>
+        <button type="submit" disabled={loading} className="px-3 py-1.5 text-xs bg-primary-600 text-[var(--color-page)] rounded-[var(--radius-button)] disabled:opacity-50 cursor-pointer">{loading ? "..." : tc("actions.reply")}</button>
       </div>
     </form>
   );
 }
 
 function ReviewForm({ artisanId, communityId, onClose, onCreated }: { artisanId: string; communityId: string; onClose: () => void; onCreated: () => void }) {
+  const { t } = useTranslation("app");
+  const { t: tc } = useTranslation("common");
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
   const [visibility, setVisibility] = useState<"PUBLIC" | "COMMUNITY">("PUBLIC");
@@ -403,7 +404,7 @@ function ReviewForm({ artisanId, communityId, onClose, onCreated }: { artisanId:
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (rating === 0) { setError("Veuillez donner une note"); return; }
+    if (rating === 0) { setError(t("reviews.rating_required")); return; }
     setLoading(true);
     try {
       await api(`/artisans/${artisanId}/reviews`, {
@@ -412,7 +413,7 @@ function ReviewForm({ artisanId, communityId, onClose, onCreated }: { artisanId:
       });
       onCreated();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erreur");
+      setError(err instanceof Error ? err.message : tc("errors.generic"));
     } finally {
       setLoading(false);
     }
@@ -425,20 +426,20 @@ function ReviewForm({ artisanId, communityId, onClose, onCreated }: { artisanId:
         onSubmit={handleSubmit}
         className="bg-[var(--color-card)] p-6 rounded-[var(--radius-card)] w-full max-w-md space-y-4"
       >
-        <h2 className="text-lg font-bold">Laisser un avis</h2>
+        <h2 className="text-lg font-bold">{t("reviews.leave_review")}</h2>
         {error && <div className="bg-[var(--color-error-light)] text-[var(--color-error)] px-4 py-2 rounded-[var(--radius-input)] text-sm">{error}</div>}
         <div>
-          <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-2">Note</label>
+          <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-2">{t("reviews.rating_label")}</label>
           <StarRating rating={rating} onChange={setRating} size={28} />
         </div>
         <div>
-          <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">Commentaire</label>
+          <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">{t("reviews.comment_label")}</label>
           <textarea
             value={comment}
             onChange={(e) => setComment(e.target.value)}
             className="w-full px-3 py-2 border border-[var(--color-border-strong)] rounded-[var(--radius-input)] outline-none focus:ring-2 focus:ring-primary-400 bg-[var(--color-input)] text-[var(--color-text-primary)]"
             rows={4}
-            placeholder="Travail soigné, ponctuel, je recommande..."
+            placeholder={t("reviews.comment_placeholder")}
           />
         </div>
         <div>
@@ -449,15 +450,15 @@ function ReviewForm({ artisanId, communityId, onClose, onCreated }: { artisanId:
               onChange={(e) => setVisibility(e.target.checked ? "COMMUNITY" : "PUBLIC")}
               className="accent-primary-600"
             />
-            Communauté — visible uniquement par les membres
+            {t("reviews.visibility_community")}
           </label>
           <p className="text-xs text-[var(--color-text-tertiary)] mt-1 ml-6">
-            {visibility === "PUBLIC" ? "Visible par tous, y compris sur la page publique" : "Visible uniquement par les membres de vos communautés"}
+            {visibility === "PUBLIC" ? t("reviews.visibility_public_hint") : t("reviews.visibility_community_hint")}
           </p>
         </div>
         <div className="flex gap-2 justify-end">
-          <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-[var(--color-text-secondary)] bg-[var(--color-input)] border border-[var(--color-border-strong)] rounded-[var(--radius-button)] cursor-pointer">Annuler</button>
-          <button type="submit" disabled={loading} className="px-4 py-2 text-sm bg-primary-600 text-[var(--color-page)] rounded-[var(--radius-button)] disabled:opacity-50 cursor-pointer">{loading ? "..." : "Publier"}</button>
+          <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-[var(--color-text-secondary)] bg-[var(--color-input)] border border-[var(--color-border-strong)] rounded-[var(--radius-button)] cursor-pointer">{tc("actions.cancel")}</button>
+          <button type="submit" disabled={loading} className="px-4 py-2 text-sm bg-primary-600 text-[var(--color-page)] rounded-[var(--radius-button)] disabled:opacity-50 cursor-pointer">{loading ? "..." : tc("actions.publish")}</button>
         </div>
       </form>
     </div>
@@ -465,6 +466,8 @@ function ReviewForm({ artisanId, communityId, onClose, onCreated }: { artisanId:
 }
 
 function ProfileEditForm({ artisan, onClose, onSaved }: { artisan: ArtisanData; onClose: () => void; onSaved: () => void }) {
+  const { t } = useTranslation("app");
+  const { t: tc } = useTranslation("common");
   const [description, setDescription] = useState(artisan.description ?? "");
   const [certifications, setCertifications] = useState(artisan.certifications.join(", "));
   const [horaires, setHoraires] = useState(artisan.horaires ?? "");
@@ -485,7 +488,7 @@ function ProfileEditForm({ artisan, onClose, onSaved }: { artisan: ArtisanData; 
       });
       onSaved();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erreur");
+      setError(err instanceof Error ? err.message : tc("errors.generic"));
     } finally {
       setLoading(false);
     }
@@ -498,40 +501,40 @@ function ProfileEditForm({ artisan, onClose, onSaved }: { artisan: ArtisanData; 
         onSubmit={handleSubmit}
         className="bg-[var(--color-card)] p-6 rounded-[var(--radius-card)] w-full max-w-md space-y-4 max-h-[90vh] overflow-y-auto"
       >
-        <h2 className="text-lg font-bold">Modifier mon profil</h2>
+        <h2 className="text-lg font-bold">{t("artisans.profile_edit.title")}</h2>
         {error && <div className="bg-[var(--color-error-light)] text-[var(--color-error)] px-4 py-2 rounded-[var(--radius-input)] text-sm">{error}</div>}
         <div>
-          <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">Description / Bio</label>
+          <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">{t("artisans.profile_edit.description")}</label>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             className="w-full px-3 py-2 border border-[var(--color-border-strong)] rounded-[var(--radius-input)] outline-none focus:ring-2 focus:ring-primary-400 bg-[var(--color-input)] text-[var(--color-text-primary)]"
             rows={4}
-            placeholder="Présentez votre activité, vos spécialités..."
+            placeholder={t("artisans.profile_edit.description_placeholder")}
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">Certifications (séparées par des virgules)</label>
+          <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">{t("artisans.profile_edit.certifications")}</label>
           <input
             value={certifications}
             onChange={(e) => setCertifications(e.target.value)}
             className="w-full px-3 py-2 border border-[var(--color-border-strong)] rounded-[var(--radius-input)] outline-none focus:ring-2 focus:ring-primary-400 bg-[var(--color-input)] text-[var(--color-text-primary)]"
-            placeholder="RGE, Qualibat, Qualifelec..."
+            placeholder={t("artisans.profile_edit.certifications_placeholder")}
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">Horaires</label>
+          <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">{t("artisans.profile_edit.hours")}</label>
           <textarea
             value={horaires}
             onChange={(e) => setHoraires(e.target.value)}
             className="w-full px-3 py-2 border border-[var(--color-border-strong)] rounded-[var(--radius-input)] outline-none focus:ring-2 focus:ring-primary-400 bg-[var(--color-input)] text-[var(--color-text-primary)]"
             rows={3}
-            placeholder="Lun-Ven : 8h-18h&#10;Samedi : sur rendez-vous"
+            placeholder={t("artisans.profile_edit.hours_placeholder")}
           />
         </div>
         <div className="flex gap-2 justify-end">
-          <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-[var(--color-text-secondary)] bg-[var(--color-input)] border border-[var(--color-border-strong)] rounded-[var(--radius-button)] cursor-pointer">Annuler</button>
-          <button type="submit" disabled={loading} className="px-4 py-2 text-sm bg-primary-600 text-[var(--color-page)] rounded-[var(--radius-button)] disabled:opacity-50 cursor-pointer">{loading ? "..." : "Enregistrer"}</button>
+          <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-[var(--color-text-secondary)] bg-[var(--color-input)] border border-[var(--color-border-strong)] rounded-[var(--radius-button)] cursor-pointer">{tc("actions.cancel")}</button>
+          <button type="submit" disabled={loading} className="px-4 py-2 text-sm bg-primary-600 text-[var(--color-page)] rounded-[var(--radius-button)] disabled:opacity-50 cursor-pointer">{loading ? "..." : tc("actions.save")}</button>
         </div>
       </form>
     </div>

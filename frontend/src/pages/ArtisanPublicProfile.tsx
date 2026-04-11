@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { StarRating } from "../components/StarRating";
 import { LinkPreview } from "../components/LinkPreview";
+import { LocalizedLink } from "../components/LocalizedLink";
 import { MapPin, BadgeCheck, Clock, Share2, Award, Phone, UserCheck } from "lucide-react";
 
 interface ReviewReply {
@@ -40,6 +42,7 @@ interface PublicArtisan {
 }
 
 export function ArtisanPublicProfile() {
+  const { t } = useTranslation("app");
   const { id } = useParams<{ id: string }>();
   const [artisan, setArtisan] = useState<PublicArtisan | null>(null);
   const [loading, setLoading] = useState(true);
@@ -49,13 +52,13 @@ export function ArtisanPublicProfile() {
     if (!id) return;
     fetch(`/api/artisans/${id}/public`)
       .then(async (res) => {
-        if (!res.ok) throw new Error("Artisan introuvable");
+        if (!res.ok) throw new Error(t("artisans.not_found"));
         return res.json();
       })
       .then(setArtisan)
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
-  }, [id]);
+  }, [id, t]);
 
   if (loading) {
     return (
@@ -68,12 +71,11 @@ export function ArtisanPublicProfile() {
   if (error || !artisan) {
     return (
       <div className="min-h-screen bg-[var(--color-page)] flex items-center justify-center">
-        <p className="text-[var(--color-text-secondary)]">{error || "Artisan introuvable"}</p>
+        <p className="text-[var(--color-text-secondary)]">{error || t("artisans.not_found")}</p>
       </div>
     );
   }
 
-  // Collect all photos: artisan's own + review media
   const allPhotos = [
     ...artisan.ownPhotos,
     ...artisan.reviews.flatMap((r) => r.media.filter((m) => m.type === "IMAGE").map((m) => m.url)),
@@ -83,7 +85,7 @@ export function ArtisanPublicProfile() {
     if (navigator.share) {
       navigator.share({
         title: `${artisan!.name} — LeCabanon`,
-        text: `Découvrez ${artisan!.name}${artisan!.company ? ` (${artisan!.company})` : ""} sur LeCabanon`,
+        text: t("public_profile.share_text", { name: artisan!.name, company: artisan!.company ? ` (${artisan!.company})` : "" }),
         url: window.location.href,
       }).catch(() => {});
     } else {
@@ -94,7 +96,6 @@ export function ArtisanPublicProfile() {
   return (
     <div className="min-h-screen bg-[var(--color-page)]">
       <div className="max-w-3xl mx-auto px-4 py-8">
-        {/* Header */}
         <div className="bg-[var(--color-card)] rounded-[var(--radius-card)] border border-[var(--color-border)] p-6 mb-6">
           <div className="flex items-start justify-between">
             <div>
@@ -102,7 +103,7 @@ export function ArtisanPublicProfile() {
                 <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">{artisan.name}</h1>
                 {artisan.claimed && (
                   <span className="inline-flex items-center gap-1 text-xs text-accent-600 bg-accent-50 px-2 py-0.5 rounded-[var(--radius-pill)]">
-                    <BadgeCheck className="w-3.5 h-3.5" strokeWidth={1.5} /> Profil vérifié
+                    <BadgeCheck className="w-3.5 h-3.5" strokeWidth={1.5} /> {t("artisans.verified_profile")}
                   </span>
                 )}
               </div>
@@ -114,13 +115,12 @@ export function ArtisanPublicProfile() {
             <button
               onClick={handleShare}
               className="text-[var(--color-text-tertiary)] hover:text-primary-600 bg-transparent border-none cursor-pointer p-2"
-              title="Partager"
+              title={t("public_profile.share_text", { name: "", company: "" })}
             >
               <Share2 className="w-5 h-5" strokeWidth={1.5} />
             </button>
           </div>
 
-          {/* Contact & location info */}
           {(artisan.zone || artisan.phone) && (
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-3">
               {artisan.zone && (
@@ -138,7 +138,7 @@ export function ArtisanPublicProfile() {
 
           <div className="flex items-center gap-2 mt-4">
             <StarRating rating={artisan.avgRating ?? 0} size={20} />
-            <span className="text-sm text-[var(--color-text-secondary)]">({artisan.totalReviews} avis)</span>
+            <span className="text-sm text-[var(--color-text-secondary)]">({t("artisans.review_count", { count: artisan.totalReviews })})</span>
           </div>
 
           {artisan.website && (
@@ -148,37 +148,33 @@ export function ArtisanPublicProfile() {
           )}
         </div>
 
-        {/* Claim CTA */}
         {!artisan.claimed && (
           <div className="bg-accent-50 border border-accent-200 rounded-[var(--radius-card)] p-4 mb-6 flex items-center gap-3">
             <UserCheck className="w-5 h-5 text-accent-600 shrink-0" strokeWidth={1.5} />
             <div>
-              <p className="text-sm text-accent-800">
-                Vous êtes <strong>{artisan.name}</strong> ? Revendiquez cette fiche pour enrichir votre profil et répondre aux avis.
-              </p>
-              <Link
+              <p className="text-sm text-accent-800" dangerouslySetInnerHTML={{ __html: t("artisans.claim.prompt_public", { name: artisan.name }) }} />
+              <LocalizedLink
                 to={`/login?redirect=/artisans/${id}`}
                 className="text-sm font-medium text-accent-600 hover:underline"
               >
-                Revendiquer cette fiche →
-              </Link>
+                {t("artisans.claim.link")}
+              </LocalizedLink>
             </div>
           </div>
         )}
 
-        {/* Profile info (if claimed) */}
         {artisan.claimed && (artisan.description || artisan.certifications.length > 0 || artisan.horaires) && (
           <div className="bg-[var(--color-card)] rounded-[var(--radius-card)] border border-[var(--color-border)] p-6 mb-6 space-y-4">
             {artisan.description && (
               <div>
-                <h2 className="text-sm font-semibold text-[var(--color-text-secondary)] mb-2">À propos</h2>
+                <h2 className="text-sm font-semibold text-[var(--color-text-secondary)] mb-2">{t("public_profile.about")}</h2>
                 <p className="text-sm text-[var(--color-text-secondary)] whitespace-pre-line">{artisan.description}</p>
               </div>
             )}
             {artisan.certifications.length > 0 && (
               <div>
                 <h2 className="text-sm font-semibold text-[var(--color-text-secondary)] mb-2 flex items-center gap-1">
-                  <Award className="w-4 h-4" strokeWidth={1.5} /> Certifications
+                  <Award className="w-4 h-4" strokeWidth={1.5} /> {t("public_profile.certifications")}
                 </h2>
                 <div className="flex flex-wrap gap-2">
                   {artisan.certifications.map((cert, i) => (
@@ -192,7 +188,7 @@ export function ArtisanPublicProfile() {
             {artisan.horaires && (
               <div>
                 <h2 className="text-sm font-semibold text-[var(--color-text-secondary)] mb-2 flex items-center gap-1">
-                  <Clock className="w-4 h-4" strokeWidth={1.5} /> Horaires
+                  <Clock className="w-4 h-4" strokeWidth={1.5} /> {t("public_profile.hours")}
                 </h2>
                 <p className="text-sm text-[var(--color-text-secondary)] whitespace-pre-line">{artisan.horaires}</p>
               </div>
@@ -200,10 +196,9 @@ export function ArtisanPublicProfile() {
           </div>
         )}
 
-        {/* Photo gallery */}
         {allPhotos.length > 0 && (
           <div className="mb-6">
-            <h2 className="text-lg font-bold text-[var(--color-text-primary)] mb-3">Photos</h2>
+            <h2 className="text-lg font-bold text-[var(--color-text-primary)] mb-3">{t("public_profile.photos")}</h2>
             <div className="grid grid-cols-3 gap-2">
               {allPhotos.map((url, i) => (
                 <div key={i} className="aspect-square rounded-[var(--radius-button)] overflow-hidden bg-[var(--color-input)]">
@@ -214,13 +209,12 @@ export function ArtisanPublicProfile() {
           </div>
         )}
 
-        {/* Reviews */}
         <div className="mb-4">
-          <h2 className="text-lg font-bold text-[var(--color-text-primary)]">Avis publics</h2>
+          <h2 className="text-lg font-bold text-[var(--color-text-primary)]">{t("reviews.public_title")}</h2>
         </div>
 
         {artisan.reviews.length === 0 ? (
-          <p className="text-[var(--color-text-secondary)] text-center py-8">Aucun avis public pour le moment</p>
+          <p className="text-[var(--color-text-secondary)] text-center py-8">{t("reviews.no_public_reviews")}</p>
         ) : (
           <div className="space-y-4">
             {artisan.reviews.map((r) => (
@@ -249,11 +243,10 @@ export function ArtisanPublicProfile() {
                     ))}
                   </div>
                 )}
-                {/* Reply */}
                 {r.replies.length > 0 && (
                   <div className="mt-3 bg-primary-50 rounded-[var(--radius-input)] p-3 border-l-2 border-primary-400">
                     <p className="text-xs font-semibold text-primary-700 mb-1">
-                      Réponse de l'artisan
+                      {t("reviews.artisan_reply")}
                     </p>
                     <p className="text-sm text-[var(--color-text-secondary)]">{r.replies[0].content}</p>
                     <p className="text-xs text-[var(--color-text-tertiary)] mt-1">
@@ -266,17 +259,16 @@ export function ArtisanPublicProfile() {
           </div>
         )}
 
-        {/* CTA */}
         <div className="mt-8 text-center bg-[var(--color-card)] rounded-[var(--radius-card)] border border-[var(--color-border)] p-6">
           <p className="text-sm text-[var(--color-text-secondary)] mb-3">
-            Rejoignez une communauté pour contacter {artisan.name} et voir tous les avis
+            {t("public_profile.join_cta", { name: artisan.name })}
           </p>
-          <a
-            href="/register"
+          <LocalizedLink
+            to="/register"
             className="inline-block px-6 py-2.5 bg-primary-600 text-[var(--color-page)] rounded-[var(--radius-button)] text-sm font-medium hover:bg-primary-700 no-underline"
           >
-            Créer un compte
-          </a>
+            {t("public_profile.create_account")}
+          </LocalizedLink>
         </div>
       </div>
     </div>

@@ -1,0 +1,58 @@
+{
+  "nav": {
+    "features": "Fonctionnalites",
+    "pricing": "Tarifs",
+    "about": "A propos",
+    "login": "Se connecter",
+    "signup": "Creer un compte",
+    "logout": "Se deconnecter",
+    "language": "Langue",
+    "communities": "Communautes",
+    "messages": "Messages",
+    "menu": "Menu"
+  },
+  "footer": {
+    "legal": "Mentions legales",
+    "terms": "CGU",
+    "contact": "Contact",
+    "copyright": "\u00a9 {{year}} LeCabanon. Tous droits reserves."
+  },
+  "actions": {
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "back": "Retour",
+    "next": "Suivant",
+    "confirm": "Confirmer",
+    "search": "Rechercher",
+    "loading": "Chargement\u2026",
+    "add": "Ajouter",
+    "create": "Creer",
+    "join": "Rejoindre",
+    "submit": "Envoyer",
+    "close": "Fermer",
+    "copy": "Copier",
+    "copied": "Copie",
+    "share": "Partager",
+    "reply": "Repondre",
+    "publish": "Publier",
+    "load_more": "Charger plus",
+    "loading_more": "Chargement..."
+  },
+  "roles": {
+    "admin": "Admin",
+    "member": "Membre"
+  },
+  "theme": {
+    "light": "Mode clair",
+    "dark": "Mode sombre"
+  },
+  "errors": {
+    "generic": "Erreur",
+    "not_found": "Introuvable"
+  },
+  "time": {
+    "yesterday": "Hier"
+  }
+}

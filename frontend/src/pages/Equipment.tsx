@@ -1,11 +1,13 @@
 import { useState, useEffect, useCallback } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { api } from "../lib/api";
+import { LocalizedLink } from "../components/LocalizedLink";
 import { Plus, ArrowLeft, Package, User } from "lucide-react";
 
 const EQUIPMENT_CATEGORIES = [
-  "Jardinage", "Bricolage", "Nettoyage", "Électroportatif",
-  "Échelles & échafaudages", "Automobile", "Déménagement", "Cuisine / Réception",
+  "Jardinage", "Bricolage", "Nettoyage", "Electroportatif",
+  "Echelles & echafaudages", "Automobile", "Demenagement", "Cuisine / Reception",
 ];
 
 interface EquipmentItem {
@@ -31,6 +33,8 @@ interface EquipmentListResponse {
 }
 
 export function EquipmentList() {
+  const { t } = useTranslation("app");
+  const { t: tc } = useTranslation("common");
   const { communityId } = useParams<{ communityId: string }>();
   const [equipment, setEquipment] = useState<EquipmentItem[]>([]);
   const [owners, setOwners] = useState<OwnerInfo[]>([]);
@@ -60,27 +64,26 @@ export function EquipmentList() {
 
   return (
     <div>
-      <Link to={`/communities/${communityId}`} className="inline-flex items-center gap-1 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] mb-4 no-underline">
-        <ArrowLeft className="w-4 h-4" strokeWidth={1.5} /> Retour
-      </Link>
+      <LocalizedLink to={`/app/communities/${communityId}`} className="inline-flex items-center gap-1 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] mb-4 no-underline">
+        <ArrowLeft className="w-4 h-4" strokeWidth={1.5} /> {tc("actions.back")}
+      </LocalizedLink>
 
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-bold">Matériel à prêter</h1>
+        <h1 className="text-2xl font-bold">{t("equipment.title")}</h1>
         <button
           onClick={() => setShowForm(true)}
           className="flex items-center gap-1.5 px-4 py-2 text-sm bg-primary-600 text-[var(--color-page)] rounded-[var(--radius-button)] hover:bg-primary-700 cursor-pointer"
         >
-          <Plus className="w-4 h-4" strokeWidth={1.5} /> Ajouter
+          <Plus className="w-4 h-4" strokeWidth={1.5} /> {tc("actions.add")}
         </button>
       </div>
 
-      {/* Category filter */}
       <div className="flex flex-wrap gap-2 mb-6">
         <button
           onClick={() => setFilter("")}
           className={`px-3 py-1 text-sm rounded-[var(--radius-pill)] cursor-pointer border ${!filter ? "bg-primary-600 text-[var(--color-page)] border-primary-600" : "bg-[var(--color-card)] text-[var(--color-text-secondary)] border-[var(--color-border-strong)] hover:bg-[var(--color-hover)]"}`}
         >
-          Tout
+          {t("equipment.all")}
         </button>
         {EQUIPMENT_CATEGORIES.map((cat) => (
           <button
@@ -93,7 +96,6 @@ export function EquipmentList() {
         ))}
       </div>
 
-      {/* Owner filter */}
       {owners.length > 1 && (
         <div className="flex items-center gap-2 mb-6">
           <User className="w-4 h-4 text-[var(--color-text-tertiary)] shrink-0" strokeWidth={1.5} />
@@ -102,7 +104,7 @@ export function EquipmentList() {
             onChange={(e) => setOwnerFilter(e.target.value)}
             className="px-3 py-1.5 text-sm border border-[var(--color-border-strong)] rounded-[var(--radius-input)] bg-[var(--color-input)] text-[var(--color-text-primary)] outline-none focus:ring-2 focus:ring-primary-400"
           >
-            <option value="">Tous les propriétaires</option>
+            <option value="">{t("equipment.all_owners")}</option>
             {owners.map((o) => (
               <option key={o.id} value={o.id}>{o.firstName} {o.lastName}</option>
             ))}
@@ -115,13 +117,13 @@ export function EquipmentList() {
       ) : equipment.length === 0 ? (
         <div className="text-center py-16 text-[var(--color-text-secondary)]">
           <Package className="w-12 h-12 mx-auto mb-3 text-[var(--color-text-tertiary)]" strokeWidth={1.5} />
-          <p className="text-lg font-medium">Aucun matériel{filter ? ` en "${filter}"` : ""}</p>
-          <p className="text-sm mt-1">Soyez le premier à ajouter du matériel à prêter !</p>
+          <p className="text-lg font-medium">{filter ? t("equipment.empty_in_category", { category: filter }) : t("equipment.empty")}</p>
+          <p className="text-sm mt-1">{t("equipment.empty_hint")}</p>
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {equipment.map((e) => (
-            <Link key={e.id} to={`/equipment/${e.id}`} className="bg-[var(--color-card)] rounded-[var(--radius-card)] border border-[var(--color-border)] overflow-hidden no-underline hover:border-primary-400 hover:shadow-sm transition-all">
+            <LocalizedLink key={e.id} to={`/app/equipment/${e.id}`} className="bg-[var(--color-card)] rounded-[var(--radius-card)] border border-[var(--color-border)] overflow-hidden no-underline hover:border-primary-400 hover:shadow-sm transition-all">
               <div className="h-40 bg-[var(--color-input)] flex items-center justify-center">
                 {e.photos[0] ? (
                   <img src={e.photos[0]} alt={e.name} className="w-full h-full object-cover" />
@@ -144,7 +146,7 @@ export function EquipmentList() {
                   </div>
                 </div>
               </div>
-            </Link>
+            </LocalizedLink>
           ))}
         </div>
       )}
@@ -161,6 +163,8 @@ export function EquipmentList() {
 }
 
 function EquipmentForm({ communityId, onClose, onCreated }: { communityId: string; onClose: () => void; onCreated: () => void }) {
+  const { t } = useTranslation("app");
+  const { t: tc } = useTranslation("common");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState(EQUIPMENT_CATEGORIES[0]);
@@ -178,7 +182,7 @@ function EquipmentForm({ communityId, onClose, onCreated }: { communityId: strin
       onCreated();
       onClose();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erreur");
+      setError(err instanceof Error ? err.message : tc("errors.generic"));
     } finally {
       setLoading(false);
     }
@@ -191,20 +195,20 @@ function EquipmentForm({ communityId, onClose, onCreated }: { communityId: strin
         onSubmit={handleSubmit}
         className="bg-[var(--color-card)] p-6 rounded-[var(--radius-card)] w-full max-w-md space-y-4"
       >
-        <h2 className="text-lg font-bold">Ajouter du matériel</h2>
+        <h2 className="text-lg font-bold">{t("equipment.form.title")}</h2>
         {error && <div className="bg-[var(--color-error-light)] text-[var(--color-error)] px-4 py-2 rounded-[var(--radius-input)] text-sm">{error}</div>}
         <div>
-          <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">Nom</label>
+          <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">{t("equipment.form.name")}</label>
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
             className="w-full px-3 py-2 border border-[var(--color-border-strong)] rounded-[var(--radius-input)] outline-none focus:ring-2 focus:ring-primary-400 bg-[var(--color-input)] text-[var(--color-text-primary)]"
-            placeholder="Perceuse Bosch"
+            placeholder={t("equipment.form.name_placeholder")}
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">Catégorie</label>
+          <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">{t("equipment.form.category")}</label>
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
@@ -216,21 +220,21 @@ function EquipmentForm({ communityId, onClose, onCreated }: { communityId: strin
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">Description</label>
+          <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">{t("equipment.form.description")}</label>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             className="w-full px-3 py-2 border border-[var(--color-border-strong)] rounded-[var(--radius-input)] outline-none focus:ring-2 focus:ring-primary-400 bg-[var(--color-input)] text-[var(--color-text-primary)]"
             rows={3}
-            placeholder="En bon état, avec ses embouts"
+            placeholder={t("equipment.form.description_placeholder")}
           />
         </div>
         <div className="flex gap-2 justify-end">
           <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-[var(--color-text-secondary)] bg-[var(--color-input)] border border-[var(--color-border-strong)] rounded-[var(--radius-button)] cursor-pointer">
-            Annuler
+            {tc("actions.cancel")}
           </button>
           <button type="submit" disabled={loading} className="px-4 py-2 text-sm bg-primary-600 text-[var(--color-page)] rounded-[var(--radius-button)] disabled:opacity-50 cursor-pointer">
-            {loading ? "..." : "Ajouter"}
+            {loading ? "..." : tc("actions.add")}
           </button>
         </div>
       </form>

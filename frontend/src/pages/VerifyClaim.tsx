@@ -1,10 +1,13 @@
 import { useState, useEffect } from "react";
-import { useParams, useSearchParams, useNavigate } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { api } from "../lib/api";
+import { useLocalizedNavigate } from "../hooks/useLocalizedNavigate";
 import { BadgeCheck, AlertCircle } from "lucide-react";
 
 function VerifyClaimInner({ id, token }: { id: string; token: string }) {
-  const navigate = useNavigate();
+  const { t } = useTranslation("app");
+  const navigate = useLocalizedNavigate();
   const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
   const [error, setError] = useState("");
 
@@ -16,9 +19,9 @@ function VerifyClaimInner({ id, token }: { id: string; token: string }) {
       .then(() => setStatus("success"))
       .catch((err) => {
         setStatus("error");
-        setError(err instanceof Error ? err.message : "Erreur de vérification");
+        setError(err instanceof Error ? err.message : t("verify_claim.error_title"));
       });
-  }, [id, token]);
+  }, [id, token, t]);
 
   if (status === "loading") {
     return (
@@ -33,13 +36,13 @@ function VerifyClaimInner({ id, token }: { id: string; token: string }) {
       <div className="max-w-md mx-auto mt-12 text-center">
         <div className="bg-[var(--color-card)] rounded-[var(--radius-card)] border border-[var(--color-border)] p-8">
           <AlertCircle className="w-12 h-12 text-[var(--color-error)] mx-auto mb-4" strokeWidth={1.5} />
-          <h1 className="text-xl font-bold text-[var(--color-text-primary)] mb-2">Vérification échouée</h1>
+          <h1 className="text-xl font-bold text-[var(--color-text-primary)] mb-2">{t("verify_claim.error_title")}</h1>
           <p className="text-sm text-[var(--color-text-secondary)] mb-6">{error}</p>
           <button
-            onClick={() => navigate(`/artisans/${id}`)}
+            onClick={() => navigate(`/app/artisans/${id}`)}
             className="px-6 py-2 bg-primary-600 text-[var(--color-page)] rounded-[var(--radius-button)] text-sm cursor-pointer"
           >
-            Retour à la fiche
+            {t("verify_claim.back_to_profile")}
           </button>
         </div>
       </div>
@@ -50,15 +53,15 @@ function VerifyClaimInner({ id, token }: { id: string; token: string }) {
     <div className="max-w-md mx-auto mt-12 text-center">
       <div className="bg-[var(--color-card)] rounded-[var(--radius-card)] border border-[var(--color-border)] p-8">
         <BadgeCheck className="w-12 h-12 text-[var(--color-success)] mx-auto mb-4" strokeWidth={1.5} />
-        <h1 className="text-xl font-bold text-[var(--color-text-primary)] mb-2">Fiche revendiquée !</h1>
+        <h1 className="text-xl font-bold text-[var(--color-text-primary)] mb-2">{t("artisans.claim.success_title")}</h1>
         <p className="text-sm text-[var(--color-text-secondary)] mb-6">
-          Vous pouvez maintenant personnaliser votre profil et répondre aux avis.
+          {t("artisans.claim.success_message")}
         </p>
         <button
-          onClick={() => navigate(`/artisans/${id}`)}
+          onClick={() => navigate(`/app/artisans/${id}`)}
           className="px-6 py-2 bg-primary-600 text-[var(--color-page)] rounded-[var(--radius-button)] text-sm cursor-pointer"
         >
-          Voir ma fiche
+          {t("artisans.claim.view_profile")}
         </button>
       </div>
     </div>
@@ -66,6 +69,7 @@ function VerifyClaimInner({ id, token }: { id: string; token: string }) {
 }
 
 export function VerifyClaim() {
+  const { t } = useTranslation("app");
   const { id } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
@@ -75,8 +79,8 @@ export function VerifyClaim() {
       <div className="max-w-md mx-auto mt-12 text-center">
         <div className="bg-[var(--color-card)] rounded-[var(--radius-card)] border border-[var(--color-border)] p-8">
           <AlertCircle className="w-12 h-12 text-[var(--color-error)] mx-auto mb-4" strokeWidth={1.5} />
-          <h1 className="text-xl font-bold text-[var(--color-text-primary)] mb-2">Lien invalide</h1>
-          <p className="text-sm text-[var(--color-text-secondary)]">Ce lien de vérification est invalide.</p>
+          <h1 className="text-xl font-bold text-[var(--color-text-primary)] mb-2">{t("verify_claim.invalid_link_title")}</h1>
+          <p className="text-sm text-[var(--color-text-secondary)]">{t("verify_claim.invalid_link_message")}</p>
         </div>
       </div>
     );

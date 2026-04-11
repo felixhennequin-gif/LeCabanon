@@ -1,11 +1,13 @@
 import { useState, useEffect, useCallback } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { api } from "../lib/api";
 import { StarRating } from "../components/StarRating";
+import { LocalizedLink } from "../components/LocalizedLink";
 import { Plus, ArrowLeft, HardHat, Phone, MapPin, Globe, BadgeCheck } from "lucide-react";
 
 const ARTISAN_CATEGORIES = [
-  "Plomberie", "Électricité", "Maçonnerie", "Peinture", "Menuiserie",
+  "Plomberie", "Electricite", "Maconnerie", "Peinture", "Menuiserie",
   "Paysagisme", "Couverture / Toiture", "Serrurerie", "Chauffage / Climatisation", "Nettoyage",
 ];
 
@@ -25,6 +27,8 @@ interface ArtisanItem {
 }
 
 export function ArtisanList() {
+  const { t } = useTranslation("app");
+  const { t: tc } = useTranslation("common");
   const { communityId } = useParams<{ communityId: string }>();
   const [artisans, setArtisans] = useState<ArtisanItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -48,27 +52,26 @@ export function ArtisanList() {
 
   return (
     <div>
-      <Link to={`/communities/${communityId}`} className="inline-flex items-center gap-1 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] mb-4 no-underline">
-        <ArrowLeft className="w-4 h-4" strokeWidth={1.5} /> Retour
-      </Link>
+      <LocalizedLink to={`/app/communities/${communityId}`} className="inline-flex items-center gap-1 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] mb-4 no-underline">
+        <ArrowLeft className="w-4 h-4" strokeWidth={1.5} /> {tc("actions.back")}
+      </LocalizedLink>
 
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">Artisans recommandés</h1>
+        <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">{t("artisans.title")}</h1>
         <button
           onClick={() => setShowForm(true)}
           className="flex items-center gap-1.5 px-4 py-2 text-sm bg-primary-600 text-[var(--color-page)] rounded-[var(--radius-button)] hover:bg-primary-700 cursor-pointer"
         >
-          <Plus className="w-4 h-4" strokeWidth={1.5} /> Ajouter
+          <Plus className="w-4 h-4" strokeWidth={1.5} /> {tc("actions.add")}
         </button>
       </div>
 
-      {/* Category filter */}
       <div className="flex flex-wrap gap-2 mb-6">
         <button
           onClick={() => setFilter("")}
           className={`px-3 py-1 text-sm rounded-[var(--radius-pill)] cursor-pointer border ${!filter ? "bg-primary-600 text-[var(--color-page)] border-primary-600" : "bg-[var(--color-card)] text-[var(--color-text-secondary)] border-[var(--color-border-strong)] hover:bg-[var(--color-hover)]"}`}
         >
-          Tout
+          {t("artisans.all")}
         </button>
         {ARTISAN_CATEGORIES.map((cat) => (
           <button
@@ -86,15 +89,15 @@ export function ArtisanList() {
       ) : artisans.length === 0 ? (
         <div className="text-center py-16 text-[var(--color-text-secondary)]">
           <HardHat className="w-12 h-12 mx-auto mb-3 text-[var(--color-text-tertiary)]" strokeWidth={1.5} />
-          <p className="text-lg font-medium">Aucun artisan{filter ? ` en "${filter}"` : ""}</p>
-          <p className="text-sm mt-1">Recommandez un artisan à vos voisins !</p>
+          <p className="text-lg font-medium">{filter ? t("artisans.empty_in_category", { category: filter }) : t("artisans.empty")}</p>
+          <p className="text-sm mt-1">{t("artisans.empty_hint")}</p>
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2">
           {artisans.map((a) => (
-            <Link
+            <LocalizedLink
               key={a.id}
-              to={`/artisans/${a.id}`}
+              to={`/app/artisans/${a.id}`}
               className="bg-[var(--color-card)] p-5 rounded-[var(--radius-card)] border border-[var(--color-border)] hover:border-primary-400 hover:shadow-sm transition-all no-underline"
             >
               <div className="flex items-start justify-between">
@@ -111,14 +114,14 @@ export function ArtisanList() {
               <div className="flex items-center gap-2 mt-3">
                 <StarRating rating={a.avgRating ?? 0} size={16} />
                 <span className="text-xs text-[var(--color-text-tertiary)]">
-                  {a.reviewCount} avis
+                  {t("artisans.review_count", { count: a.reviewCount })}
                 </span>
               </div>
               <div className="flex flex-wrap gap-3 mt-3 text-xs text-[var(--color-text-secondary)]">
                 {a.zone && <span className="flex items-center gap-1"><MapPin className="w-3 h-3" strokeWidth={1.5} />{a.zone}</span>}
                 {a.phone && <span className="flex items-center gap-1"><Phone className="w-3 h-3" strokeWidth={1.5} />{a.phone}</span>}
               </div>
-            </Link>
+            </LocalizedLink>
           ))}
         </div>
       )}
@@ -131,6 +134,8 @@ export function ArtisanList() {
 }
 
 function ArtisanForm({ communityId, onClose, onCreated }: { communityId: string; onClose: () => void; onCreated: () => void }) {
+  const { t } = useTranslation("app");
+  const { t: tc } = useTranslation("common");
   const [form, setForm] = useState({ name: "", company: "", category: ARTISAN_CATEGORIES[0], zone: "", phone: "", email: "", website: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -150,7 +155,7 @@ function ArtisanForm({ communityId, onClose, onCreated }: { communityId: string;
       onCreated();
       onClose();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erreur");
+      setError(err instanceof Error ? err.message : tc("errors.generic"));
     } finally {
       setLoading(false);
     }
@@ -163,43 +168,43 @@ function ArtisanForm({ communityId, onClose, onCreated }: { communityId: string;
         onSubmit={handleSubmit}
         className="bg-[var(--color-card)] p-6 rounded-[var(--radius-card)] w-full max-w-md space-y-4 max-h-[90vh] overflow-y-auto"
       >
-        <h2 className="text-lg font-bold text-[var(--color-text-primary)]">Recommander un artisan</h2>
+        <h2 className="text-lg font-bold text-[var(--color-text-primary)]">{t("artisans.form.title")}</h2>
         {error && <div className="bg-[var(--color-error-light)] text-[var(--color-error)] px-4 py-2 rounded-[var(--radius-input)] text-sm">{error}</div>}
         <div>
-          <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">Nom</label>
+          <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">{t("artisans.form.name")}</label>
           <input value={form.name} onChange={(e) => update("name", e.target.value)} required className="w-full px-3 py-2 border border-[var(--color-border-strong)] rounded-[var(--radius-input)] outline-none focus:ring-2 focus:ring-primary-400 bg-[var(--color-input)] text-[var(--color-text-primary)]" />
         </div>
         <div>
-          <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">Entreprise (optionnel)</label>
+          <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">{t("artisans.form.company")}</label>
           <input value={form.company} onChange={(e) => update("company", e.target.value)} className="w-full px-3 py-2 border border-[var(--color-border-strong)] rounded-[var(--radius-input)] outline-none focus:ring-2 focus:ring-primary-400 bg-[var(--color-input)] text-[var(--color-text-primary)]" />
         </div>
         <div>
-          <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">Catégorie</label>
+          <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">{t("artisans.form.category")}</label>
           <select value={form.category} onChange={(e) => update("category", e.target.value)} className="w-full px-3 py-2 border border-[var(--color-border-strong)] rounded-[var(--radius-input)] outline-none focus:ring-2 focus:ring-primary-400 bg-[var(--color-input)] text-[var(--color-text-primary)]">
             {ARTISAN_CATEGORIES.map((cat) => <option key={cat} value={cat}>{cat}</option>)}
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">Zone (optionnel)</label>
-          <input value={form.zone} onChange={(e) => update("zone", e.target.value)} className="w-full px-3 py-2 border border-[var(--color-border-strong)] rounded-[var(--radius-input)] outline-none focus:ring-2 focus:ring-primary-400 bg-[var(--color-input)] text-[var(--color-text-primary)]" placeholder="Maisons-Laffitte et environs" />
+          <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">{t("artisans.form.zone")}</label>
+          <input value={form.zone} onChange={(e) => update("zone", e.target.value)} className="w-full px-3 py-2 border border-[var(--color-border-strong)] rounded-[var(--radius-input)] outline-none focus:ring-2 focus:ring-primary-400 bg-[var(--color-input)] text-[var(--color-text-primary)]" placeholder={t("artisans.form.zone_placeholder")} />
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">Téléphone</label>
+            <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">{t("artisans.form.phone")}</label>
             <input value={form.phone} onChange={(e) => update("phone", e.target.value)} className="w-full px-3 py-2 border border-[var(--color-border-strong)] rounded-[var(--radius-input)] outline-none focus:ring-2 focus:ring-primary-400 bg-[var(--color-input)] text-[var(--color-text-primary)]" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">Email</label>
+            <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">{t("artisans.form.email")}</label>
             <input value={form.email} onChange={(e) => update("email", e.target.value)} type="email" className="w-full px-3 py-2 border border-[var(--color-border-strong)] rounded-[var(--radius-input)] outline-none focus:ring-2 focus:ring-primary-400 bg-[var(--color-input)] text-[var(--color-text-primary)]" />
           </div>
         </div>
         <div>
-          <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">Site web (optionnel)</label>
-          <input value={form.website} onChange={(e) => update("website", e.target.value)} type="url" className="w-full px-3 py-2 border border-[var(--color-border-strong)] rounded-[var(--radius-input)] outline-none focus:ring-2 focus:ring-primary-400 bg-[var(--color-input)] text-[var(--color-text-primary)]" placeholder="https://www.artisan-exemple.fr" />
+          <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">{t("artisans.form.website")}</label>
+          <input value={form.website} onChange={(e) => update("website", e.target.value)} type="url" className="w-full px-3 py-2 border border-[var(--color-border-strong)] rounded-[var(--radius-input)] outline-none focus:ring-2 focus:ring-primary-400 bg-[var(--color-input)] text-[var(--color-text-primary)]" placeholder={t("artisans.form.website_placeholder")} />
         </div>
         <div className="flex gap-2 justify-end">
-          <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-[var(--color-text-secondary)] bg-[var(--color-input)] border border-[var(--color-border-strong)] rounded-[var(--radius-button)] cursor-pointer">Annuler</button>
-          <button type="submit" disabled={loading} className="px-4 py-2 text-sm bg-primary-600 text-[var(--color-page)] rounded-[var(--radius-button)] disabled:opacity-50 cursor-pointer">{loading ? "..." : "Ajouter"}</button>
+          <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-[var(--color-text-secondary)] bg-[var(--color-input)] border border-[var(--color-border-strong)] rounded-[var(--radius-button)] cursor-pointer">{tc("actions.cancel")}</button>
+          <button type="submit" disabled={loading} className="px-4 py-2 text-sm bg-primary-600 text-[var(--color-page)] rounded-[var(--radius-button)] disabled:opacity-50 cursor-pointer">{loading ? "..." : tc("actions.add")}</button>
         </div>
       </form>
     </div>

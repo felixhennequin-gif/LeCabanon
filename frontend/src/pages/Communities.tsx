@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { api } from "../lib/api";
+import { useLocalizedNavigate } from "../hooks/useLocalizedNavigate";
+import { LocalizedLink } from "../components/LocalizedLink";
 import { Plus, Users, LogIn, Copy, Check } from "lucide-react";
 
 interface Community {
@@ -13,6 +15,8 @@ interface Community {
 }
 
 export function Communities() {
+  const { t } = useTranslation("app");
+  const { t: tc } = useTranslation("common");
   const [communities, setCommunities] = useState<Community[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
@@ -38,21 +42,21 @@ export function Communities() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Mes communautés</h1>
+        <h1 className="text-2xl font-bold">{t("communities.title")}</h1>
         <div className="flex gap-2">
           <button
             onClick={() => setShowJoin(true)}
             className="flex items-center gap-1.5 px-4 py-2 text-sm bg-accent-50 border border-accent-200 text-accent-600 rounded-[var(--radius-button)] hover:bg-accent-100 cursor-pointer"
           >
             <LogIn className="w-4 h-4" strokeWidth={1.5} />
-            Rejoindre
+            {tc("actions.join")}
           </button>
           <button
             onClick={() => setShowCreate(true)}
             className="flex items-center gap-1.5 px-4 py-2 text-sm bg-primary-600 text-[var(--color-page)] rounded-[var(--radius-button)] hover:bg-primary-700 cursor-pointer"
           >
             <Plus className="w-4 h-4" strokeWidth={1.5} />
-            Créer
+            {tc("actions.create")}
           </button>
         </div>
       </div>
@@ -60,15 +64,15 @@ export function Communities() {
       {communities.length === 0 ? (
         <div className="text-center py-16 text-[var(--color-text-secondary)]">
           <Users className="w-12 h-12 mx-auto mb-3 text-[var(--color-text-tertiary)]" strokeWidth={1.5} />
-          <p className="text-lg font-medium">Aucune communauté</p>
-          <p className="text-sm mt-1">Créez ou rejoignez une communauté pour commencer</p>
+          <p className="text-lg font-medium">{t("communities.empty")}</p>
+          <p className="text-sm mt-1">{t("communities.empty_hint")}</p>
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2">
           {communities.map((c) => (
-            <Link
+            <LocalizedLink
               key={c.id}
-              to={`/communities/${c.id}`}
+              to={`/app/communities/${c.id}`}
               className="bg-[var(--color-card)] p-5 rounded-[var(--radius-card)] border border-[var(--color-border)] hover:border-primary-400 hover:shadow-sm transition-all no-underline"
             >
               <div className="flex items-start justify-between">
@@ -80,9 +84,9 @@ export function Communities() {
               {c.description && <p className="text-sm text-[var(--color-text-secondary)] mt-1">{c.description}</p>}
               <div className="flex items-center gap-1 mt-3 text-xs text-[var(--color-text-tertiary)]">
                 <Users className="w-3.5 h-3.5" strokeWidth={1.5} />
-                {c.memberCount} membre{c.memberCount > 1 ? "s" : ""}
+                {c.memberCount > 1 ? t("communities.member_count_plural", { count: c.memberCount }) : t("communities.member_count", { count: c.memberCount })}
               </div>
-            </Link>
+            </LocalizedLink>
           ))}
         </div>
       )}
@@ -94,7 +98,9 @@ export function Communities() {
 }
 
 function CreateCommunityModal({ onClose, onCreated }: { onClose: () => void; onCreated: () => void }) {
-  const navigate = useNavigate();
+  const { t } = useTranslation("app");
+  const { t: tc } = useTranslation("common");
+  const navigate = useLocalizedNavigate();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
@@ -110,9 +116,9 @@ function CreateCommunityModal({ onClose, onCreated }: { onClose: () => void; onC
       });
       onCreated();
       onClose();
-      navigate(`/communities/${community.id}`);
+      navigate(`/app/communities/${community.id}`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erreur");
+      setError(err instanceof Error ? err.message : tc("errors.generic"));
     } finally {
       setLoading(false);
     }
@@ -125,34 +131,34 @@ function CreateCommunityModal({ onClose, onCreated }: { onClose: () => void; onC
         onSubmit={handleSubmit}
         className="bg-[var(--color-card)] p-6 rounded-[var(--radius-card)] w-full max-w-md space-y-4"
       >
-        <h2 className="text-lg font-bold">Créer une communauté</h2>
+        <h2 className="text-lg font-bold">{t("communities.create.title")}</h2>
         {error && <div className="bg-[var(--color-error-light)] text-[var(--color-error)] px-4 py-2 rounded-[var(--radius-input)] text-sm">{error}</div>}
         <div>
-          <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">Nom</label>
+          <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">{t("communities.create.name")}</label>
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
             className="w-full px-3 py-2 border border-[var(--color-border-strong)] rounded-[var(--radius-input)] outline-none focus:ring-2 focus:ring-primary-400 bg-[var(--color-input)] text-[var(--color-text-primary)]"
-            placeholder="Avenue Guillon"
+            placeholder={t("communities.create.name_placeholder")}
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">Description</label>
+          <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">{t("communities.create.description")}</label>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             className="w-full px-3 py-2 border border-[var(--color-border-strong)] rounded-[var(--radius-input)] outline-none focus:ring-2 focus:ring-primary-400 bg-[var(--color-input)] text-[var(--color-text-primary)]"
             rows={3}
-            placeholder="Partage de matos et bons plans artisans entre voisins"
+            placeholder={t("communities.create.description_placeholder")}
           />
         </div>
         <div className="flex gap-2 justify-end">
           <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-[var(--color-text-secondary)] bg-[var(--color-input)] border border-[var(--color-border-strong)] rounded-[var(--radius-button)] cursor-pointer">
-            Annuler
+            {tc("actions.cancel")}
           </button>
           <button type="submit" disabled={loading} className="px-4 py-2 text-sm bg-primary-600 text-[var(--color-page)] rounded-[var(--radius-button)] disabled:opacity-50 cursor-pointer">
-            {loading ? "Création..." : "Créer"}
+            {loading ? t("communities.create.submitting") : t("communities.create.submit")}
           </button>
         </div>
       </form>
@@ -161,7 +167,9 @@ function CreateCommunityModal({ onClose, onCreated }: { onClose: () => void; onC
 }
 
 function JoinCommunityModal({ onClose, onJoined }: { onClose: () => void; onJoined: () => void }) {
-  const navigate = useNavigate();
+  const { t } = useTranslation("app");
+  const { t: tc } = useTranslation("common");
+  const navigate = useLocalizedNavigate();
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -176,9 +184,9 @@ function JoinCommunityModal({ onClose, onJoined }: { onClose: () => void; onJoin
       });
       onJoined();
       onClose();
-      navigate(`/communities/${community.id}`);
+      navigate(`/app/communities/${community.id}`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erreur");
+      setError(err instanceof Error ? err.message : tc("errors.generic"));
     } finally {
       setLoading(false);
     }
@@ -191,10 +199,10 @@ function JoinCommunityModal({ onClose, onJoined }: { onClose: () => void; onJoin
         onSubmit={handleSubmit}
         className="bg-[var(--color-card)] p-6 rounded-[var(--radius-card)] w-full max-w-md space-y-4"
       >
-        <h2 className="text-lg font-bold">Rejoindre une communauté</h2>
+        <h2 className="text-lg font-bold">{t("communities.join.title")}</h2>
         {error && <div className="bg-[var(--color-error-light)] text-[var(--color-error)] px-4 py-2 rounded-[var(--radius-input)] text-sm">{error}</div>}
         <div>
-          <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">Code d'accès</label>
+          <label className="block text-sm font-medium text-[var(--color-text-secondary)] mb-1">{t("communities.join.access_code")}</label>
           <input
             value={code}
             onChange={(e) => setCode(e.target.value)}
@@ -205,10 +213,10 @@ function JoinCommunityModal({ onClose, onJoined }: { onClose: () => void; onJoin
         </div>
         <div className="flex gap-2 justify-end">
           <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-[var(--color-text-secondary)] bg-[var(--color-input)] border border-[var(--color-border-strong)] rounded-[var(--radius-button)] cursor-pointer">
-            Annuler
+            {tc("actions.cancel")}
           </button>
           <button type="submit" disabled={loading} className="px-4 py-2 text-sm bg-primary-600 text-[var(--color-page)] rounded-[var(--radius-button)] disabled:opacity-50 cursor-pointer">
-            {loading ? "..." : "Rejoindre"}
+            {loading ? "..." : t("communities.join.submit")}
           </button>
         </div>
       </form>

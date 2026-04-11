@@ -1,7 +1,10 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useParams, useNavigate, useSearchParams, Link } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { api } from "../lib/api";
 import { useAuth } from "../contexts/AuthContext";
+import { useLocalizedNavigate } from "../hooks/useLocalizedNavigate";
+import { LocalizedLink } from "../components/LocalizedLink";
 import { ArrowLeft, Send, Check, CheckCheck, Package } from "lucide-react";
 
 interface ConversationSummary {
@@ -24,8 +27,10 @@ interface MessageData {
 }
 
 export function Messages() {
+  const { t } = useTranslation("app");
+  const { t: tc } = useTranslation("common");
   const { conversationId } = useParams<{ conversationId?: string }>();
-  const navigate = useNavigate();
+  const navigate = useLocalizedNavigate();
   const [searchParams] = useSearchParams();
   const { user } = useAuth();
   const equipmentContext = searchParams.get("context") === "equipment" ? searchParams.get("equipmentName") : null;
@@ -44,10 +49,9 @@ export function Messages() {
 
   const activeConv = conversations.find((c) => c.id === conversationId);
 
-  // Pre-fill input with equipment context
   useEffect(() => {
     if (equipmentContext && conversationId && !input) {
-      setInput(`Bonjour, je vous contacte à propos de : ${equipmentContext}\n`);
+      setInput(t("messages.equipment_prefill", { name: equipmentContext }));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [conversationId, equipmentContext]);
@@ -65,7 +69,6 @@ export function Messages() {
     loadConversations();
   }, [loadConversations]);
 
-  // Load messages when conversation changes
   useEffect(() => {
     if (!conversationId) { setMessages([]); return; }
     setMsgLoading(true);
@@ -75,18 +78,15 @@ export function Messages() {
       .then((data) => {
         setMessages(data.messages.reverse());
         setNextCursor(data.nextCursor);
-        // Mark as read — update unread count locally
         setConversations((prev) => prev.map((c) => c.id === conversationId ? { ...c, unreadCount: 0 } : c));
       })
       .finally(() => setMsgLoading(false));
   }, [conversationId]);
 
-  // Scroll to bottom on new messages
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Socket.io event listeners
   useEffect(() => {
     const socketModule = import("../lib/socket.js");
     let cleanup: (() => void) | undefined;
@@ -98,10 +98,8 @@ export function Messages() {
       const onNewMessage = (data: { message: MessageData; conversationId: string }) => {
         if (data.conversationId === conversationId) {
           setMessages((prev) => [...prev, data.message]);
-          // Mark as read since we're viewing this conversation
           socket.emit("mark_read", { conversationId: data.conversationId });
         }
-        // Update conversation list
         setConversations((prev) => {
           const updated = prev.map((c) => {
             if (c.id === data.conversationId) {
@@ -169,7 +167,6 @@ export function Messages() {
     setInput("");
     setSending(true);
 
-    // Optimistic update
     const optimisticMsg: MessageData = {
       id: "pending",
       content,
@@ -181,13 +178,11 @@ export function Messages() {
     setMessages((prev) => [...prev, optimisticMsg]);
 
     try {
-      // Try socket first
       const { getSocket } = await import("../lib/socket.js");
       const socket = getSocket();
       if (socket?.connected) {
         socket.emit("send_message", { conversationId, content });
       } else {
-        // Fallback to REST
         const msg = await api<MessageData>(`/conversations/${conversationId}/messages`, {
           method: "POST",
           body: JSON.stringify({ content }),
@@ -195,7 +190,6 @@ export function Messages() {
         setMessages((prev) => prev.map((m) => m.id === "pending" ? msg : m));
       }
     } catch {
-      // Remove optimistic message on error
       setMessages((prev) => prev.filter((m) => m.id !== "pending"));
     } finally {
       setSending(false);
@@ -228,7 +222,7 @@ export function Messages() {
     const now = new Date();
     const diff = now.getTime() - d.getTime();
     if (diff < 86400000 && d.getDate() === now.getDate()) return formatTime(dateStr);
-    if (diff < 172800000) return "Hier";
+    if (diff < 172800000) return tc("time.yesterday");
     return d.toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
   }
 
@@ -238,29 +232,27 @@ export function Messages() {
     return <Check className="w-3.5 h-3.5 text-[var(--color-text-tertiary)]" />;
   }
 
-  // Mobile: show list or conversation
   const showList = !conversationId;
   const showChat = !!conversationId;
 
   return (
     <div className="flex h-[calc(100vh-5rem)] -my-6 -mx-4 sm:mx-0 sm:my-0 sm:h-[calc(100vh-7rem)] bg-[var(--color-card)] sm:rounded-[var(--radius-card)] sm:border sm:border-[var(--color-border)] overflow-hidden">
-      {/* Conversation list */}
       <div className={`w-full sm:w-80 sm:border-r sm:border-[var(--color-border)] flex flex-col shrink-0 ${showChat ? "hidden sm:flex" : "flex"}`}>
         <div className="p-4 border-b border-[var(--color-border)]">
-          <h2 className="text-lg font-bold text-[var(--color-text-primary)]">Messages</h2>
+          <h2 className="text-lg font-bold text-[var(--color-text-primary)]">{t("messages.title")}</h2>
         </div>
         {loading ? (
           <div className="flex justify-center py-12"><div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary-600" /></div>
         ) : conversations.length === 0 ? (
           <div className="flex-1 flex items-center justify-center text-sm text-[var(--color-text-tertiary)] px-4 text-center">
-            Aucune conversation. Contactez un voisin depuis la page matériel ou membres !
+            {t("messages.empty")}
           </div>
         ) : (
           <div className="flex-1 overflow-y-auto">
             {conversations.map((c) => (
               <button
                 key={c.id}
-                onClick={() => navigate(`/messages/${c.id}`)}
+                onClick={() => navigate(`/app/messages/${c.id}`)}
                 className={`w-full flex items-center gap-3 px-4 py-3 text-left border-none cursor-pointer hover:bg-[var(--color-hover)] ${c.id === conversationId ? "bg-primary-50" : "bg-transparent"}`}
               >
                 <div className="relative shrink-0">
@@ -277,8 +269,8 @@ export function Messages() {
                   <div className="flex items-center justify-between mt-0.5">
                     <p className="text-xs text-[var(--color-text-secondary)] truncate">
                       {c.lastMessage
-                        ? (c.lastMessage.senderId === user?.id ? "Vous : " : "") + (c.lastMessage.content.length > 50 ? c.lastMessage.content.slice(0, 50) + "…" : c.lastMessage.content)
-                        : "Nouvelle conversation"
+                        ? (c.lastMessage.senderId === user?.id ? t("messages.you_prefix") : "") + (c.lastMessage.content.length > 50 ? c.lastMessage.content.slice(0, 50) + "\u2026" : c.lastMessage.content)
+                        : t("messages.new_conversation")
                       }
                     </p>
                     {c.unreadCount > 0 && (
@@ -295,17 +287,15 @@ export function Messages() {
         )}
       </div>
 
-      {/* Chat area */}
       <div className={`flex-1 flex flex-col min-w-0 ${showList ? "hidden sm:flex" : "flex"}`}>
         {!conversationId ? (
           <div className="flex-1 flex items-center justify-center text-sm text-[var(--color-text-tertiary)]">
-            Sélectionnez une conversation
+            {t("messages.select")}
           </div>
         ) : (
           <>
-            {/* Chat header */}
             <div className="px-4 py-3 border-b border-[var(--color-border)] flex items-center gap-3">
-              <button onClick={() => navigate("/messages")} className="sm:hidden text-[var(--color-text-secondary)] bg-transparent border-none cursor-pointer p-0">
+              <button onClick={() => navigate("/app/messages")} className="sm:hidden text-[var(--color-text-secondary)] bg-transparent border-none cursor-pointer p-0">
                 <ArrowLeft className="w-5 h-5" strokeWidth={1.5} />
               </button>
               {activeConv && (
@@ -317,38 +307,34 @@ export function Messages() {
                     {activeConv.online && <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-[var(--color-success)] rounded-full border-2 border-[var(--color-card)]" />}
                   </div>
                   <div>
-                    <Link to={`/users/${activeConv.other.id}`} className="text-sm font-medium text-[var(--color-text-primary)] no-underline hover:underline">
+                    <LocalizedLink to={`/app/users/${activeConv.other.id}`} className="text-sm font-medium text-[var(--color-text-primary)] no-underline hover:underline">
                       {activeConv.other.firstName} {activeConv.other.lastName}
-                    </Link>
+                    </LocalizedLink>
                     <p className="text-xs text-[var(--color-text-tertiary)]">
-                      {typingUserId ? "En train d'écrire..." : activeConv.online ? "En ligne" : activeConv.community.name}
+                      {typingUserId ? t("messages.typing") : activeConv.online ? t("messages.online") : activeConv.community.name}
                     </p>
                   </div>
                 </>
               )}
             </div>
 
-            {/* Equipment context banner */}
             {equipmentContext && messages.length === 0 && !msgLoading && (
               <div className="px-4 py-2 bg-primary-50 border-b border-primary-200 flex items-center gap-2">
                 <Package className="w-4 h-4 text-primary-600 shrink-0" strokeWidth={1.5} />
-                <p className="text-xs text-primary-700">
-                  À propos de <strong>{equipmentContext}</strong>
-                </p>
+                <p className="text-xs text-primary-700" dangerouslySetInnerHTML={{ __html: t("messages.equipment_context", { name: equipmentContext }) }} />
               </div>
             )}
 
-            {/* Messages */}
             <div ref={messagesContainerRef} className="flex-1 overflow-y-auto px-4 py-3 space-y-2">
               {nextCursor && (
                 <button onClick={loadOlderMessages} className="w-full text-xs text-primary-600 py-2 bg-transparent border-none cursor-pointer hover:underline">
-                  Charger les messages précédents
+                  {t("messages.load_older")}
                 </button>
               )}
               {msgLoading ? (
                 <div className="flex justify-center py-8"><div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary-600" /></div>
               ) : messages.length === 0 ? (
-                <p className="text-center text-sm text-[var(--color-text-tertiary)] py-8">Envoyez votre premier message !</p>
+                <p className="text-center text-sm text-[var(--color-text-tertiary)] py-8">{t("messages.first_message")}</p>
               ) : (
                 messages.map((m) => {
                   const isMine = m.senderId === user?.id;
@@ -368,7 +354,6 @@ export function Messages() {
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Input */}
             <div className="px-4 py-3 border-t border-[var(--color-border)]">
               <form
                 onSubmit={(e) => { e.preventDefault(); handleSend(); }}
@@ -378,7 +363,7 @@ export function Messages() {
                   type="text"
                   value={input}
                   onChange={(e) => handleInputChange(e.target.value)}
-                  placeholder="Écrire un message..."
+                  placeholder={t("messages.send_placeholder")}
                   className="flex-1 px-4 py-2 border border-[var(--color-border-strong)] rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary-400 bg-[var(--color-input)] text-[var(--color-text-primary)]"
                 />
                 <button

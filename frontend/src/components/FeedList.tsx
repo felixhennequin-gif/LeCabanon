@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
-import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { api } from "../lib/api";
 import { formatRelativeDate } from "../lib/date";
+import { LocalizedLink } from "./LocalizedLink";
 import { StarRating } from "./StarRating";
 import { Package, HardHat, UserPlus, Star, Trash2, Rss } from "lucide-react";
 
@@ -22,20 +23,20 @@ interface FeedResponse {
 
 function Avatar({ firstName, lastName, id }: { firstName: string; lastName: string; id: string }) {
   return (
-    <Link
-      to={`/users/${id}`}
+    <LocalizedLink
+      to={`/app/users/${id}`}
       className="w-9 h-9 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center text-sm font-medium shrink-0 no-underline"
     >
       {firstName[0]}{lastName[0]}
-    </Link>
+    </LocalizedLink>
   );
 }
 
 function ActorLink({ actor }: { actor: Activity["actor"] }) {
   return (
-    <Link to={`/users/${actor.id}`} className="font-medium text-[var(--color-text-primary)] no-underline hover:underline">
+    <LocalizedLink to={`/app/users/${actor.id}`} className="font-medium text-[var(--color-text-primary)] no-underline hover:underline">
       {actor.firstName} {actor.lastName}
-    </Link>
+    </LocalizedLink>
   );
 }
 
@@ -105,36 +106,38 @@ function ActivityContent({ type, actor, equipment, artisan, review }: {
   artisan: Activity["artisan"];
   review: Activity["review"];
 }) {
+  const { t } = useTranslation("app");
+
   switch (type) {
     case "MEMBER_JOINED":
-      return <><ActorLink actor={actor} />{" "}a rejoint la communauté</>;
+      return <><ActorLink actor={actor} /> {t("feed.member_joined")}</>;
 
     case "EQUIPMENT_ADDED":
       return (
         <>
-          <ActorLink actor={actor} />{" "}a ajouté du matériel :{" "}
-          <span className="font-medium">{equipment?.name ?? "Élément supprimé"}</span>
+          <ActorLink actor={actor} /> {t("feed.equipment_added")}{" "}
+          <span className="font-medium">{equipment?.name ?? t("feed.deleted_item")}</span>
         </>
       );
 
     case "EQUIPMENT_REMOVED":
       return (
         <>
-          <ActorLink actor={actor} />{" "}a retiré du matériel :{" "}
-          <span className="font-medium">{equipment?.name ?? "Élément supprimé"}</span>
+          <ActorLink actor={actor} /> {t("feed.equipment_removed")}{" "}
+          <span className="font-medium">{equipment?.name ?? t("feed.deleted_item")}</span>
         </>
       );
 
     case "ARTISAN_ADDED":
       return (
         <>
-          <ActorLink actor={actor} />{" "}a recommandé un artisan :{" "}
+          <ActorLink actor={actor} /> {t("feed.artisan_added")}{" "}
           {artisan ? (
-            <Link to={`/artisans/${artisan.id}`} className="font-medium text-primary-600 no-underline hover:underline">
+            <LocalizedLink to={`/app/artisans/${artisan.id}`} className="font-medium text-primary-600 no-underline hover:underline">
               {artisan.company || artisan.name}
-            </Link>
+            </LocalizedLink>
           ) : (
-            <span className="font-medium text-[var(--color-text-tertiary)]">Artisan supprimé</span>
+            <span className="font-medium text-[var(--color-text-tertiary)]">{t("feed.deleted_artisan")}</span>
           )}
         </>
       );
@@ -142,21 +145,21 @@ function ActivityContent({ type, actor, equipment, artisan, review }: {
     case "ARTISAN_REMOVED":
       return (
         <>
-          <ActorLink actor={actor} />{" "}a retiré un artisan :{" "}
-          <span className="font-medium">{artisan?.company || artisan?.name || "Artisan supprimé"}</span>
+          <ActorLink actor={actor} /> {t("feed.artisan_removed")}{" "}
+          <span className="font-medium">{artisan?.company || artisan?.name || t("feed.deleted_artisan")}</span>
         </>
       );
 
     case "REVIEW_ADDED": {
-      const artisanName = review?.artisan?.name ?? artisan?.name ?? "Artisan supprimé";
+      const artisanName = review?.artisan?.name ?? artisan?.name ?? t("feed.deleted_artisan");
       const artisanId = review?.artisan?.id ?? artisan?.id;
       return (
         <>
-          <ActorLink actor={actor} />{" "}a laissé un avis sur{" "}
+          <ActorLink actor={actor} /> {t("feed.review_added")}{" "}
           {artisanId ? (
-            <Link to={`/artisans/${artisanId}`} className="font-medium text-primary-600 no-underline hover:underline">
+            <LocalizedLink to={`/app/artisans/${artisanId}`} className="font-medium text-primary-600 no-underline hover:underline">
               {artisanName}
-            </Link>
+            </LocalizedLink>
           ) : (
             <span className="font-medium text-[var(--color-text-tertiary)]">{artisanName}</span>
           )}
@@ -165,11 +168,13 @@ function ActivityContent({ type, actor, equipment, artisan, review }: {
     }
 
     default:
-      return <><ActorLink actor={actor} />{" "}a effectué une action</>;
+      return <><ActorLink actor={actor} /> {t("feed.action_performed")}</>;
   }
 }
 
 export function FeedList({ communityId }: { communityId: string }) {
+  const { t } = useTranslation("app");
+  const { t: tc } = useTranslation("common");
   const [activities, setActivities] = useState<Activity[]>([]);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -210,8 +215,8 @@ export function FeedList({ communityId }: { communityId: string }) {
     return (
       <div className="text-center py-16 text-[var(--color-text-secondary)]">
         <Rss className="w-12 h-12 mx-auto mb-3 text-[var(--color-text-tertiary)]" strokeWidth={1.5} />
-        <p className="text-lg font-medium">Rien de nouveau pour le moment</p>
-        <p className="text-sm mt-1">Ajoutez du matériel ou recommandez un artisan pour lancer la communauté !</p>
+        <p className="text-lg font-medium">{t("feed.empty")}</p>
+        <p className="text-sm mt-1">{t("feed.empty_hint")}</p>
       </div>
     );
   }
@@ -228,7 +233,7 @@ export function FeedList({ communityId }: { communityId: string }) {
             disabled={loadingMore}
             className="px-4 py-2 text-sm text-primary-600 border border-[var(--color-border)] rounded-[var(--radius-button)] hover:bg-primary-50 cursor-pointer disabled:opacity-50 bg-[var(--color-card)]"
           >
-            {loadingMore ? "Chargement..." : "Charger plus"}
+            {loadingMore ? tc("actions.loading_more") : tc("actions.load_more")}
           </button>
         </div>
       )}

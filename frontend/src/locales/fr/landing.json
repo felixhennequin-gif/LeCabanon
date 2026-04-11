@@ -1,0 +1,50 @@
+{
+  "hero": {
+    "title": "Partagez entre voisins.",
+    "subtitle": "Empruntez du materiel, recommandez vos artisans de confiance. Votre communaute locale, simplement.",
+    "cta_primary": "Rejoindre ma communaute",
+    "cta_secondary": "En savoir plus"
+  },
+  "features": {
+    "title": "Tout ce dont votre quartier a besoin",
+    "equipment": {
+      "title": "Materiel partage",
+      "description": "Listez et empruntez les outils de vos voisins. Perceuse, karcher, remorque \u2014 tout est a portee de main."
+    },
+    "artisans": {
+      "title": "Artisans de confiance",
+      "description": "Recommandations verifiees par votre communaute. Fini les recherches hasardeuses."
+    },
+    "messaging": {
+      "title": "Messagerie directe",
+      "description": "Echangez en temps reel avec vos voisins. Simple, rapide, sans quitter l\u2019app."
+    }
+  },
+  "pricing": {
+    "title": "Tarifs",
+    "subtitle": "LeCabanon est pense pour les communautes locales.",
+    "free": {
+      "name": "Communaute",
+      "price": "Gratuit",
+      "description": "Pour les quartiers et impasses",
+      "features": [
+        "Jusqu\u2019a 50 membres",
+        "Materiel illimite",
+        "Artisans illimites",
+        "Messagerie temps reel"
+      ]
+    },
+    "coming_soon": "Plus de plans a venir"
+  },
+  "about": {
+    "title": "A propos",
+    "story": "LeCabanon est ne d\u2019un besoin simple : dans une impasse d\u2019une trentaine de foyers, savoir qui a une perceuse et recommander un bon plombier.",
+    "vision_title": "Notre vision",
+    "vision": "Nous croyons que les meilleures recommandations viennent de ceux qu\u2019on connait. LeCabanon rend le partage entre voisins aussi simple qu\u2019un message."
+  },
+  "cta": {
+    "title": "Pret a commencer ?",
+    "subtitle": "Rejoignez votre communaute de voisins ou creez la votre.",
+    "button": "Creer un compte gratuitement"
+  }
+}

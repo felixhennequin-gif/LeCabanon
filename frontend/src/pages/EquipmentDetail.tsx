@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { api } from "../lib/api";
 import { useAuth } from "../contexts/AuthContext";
+import { useLocalizedNavigate } from "../hooks/useLocalizedNavigate";
+import { LocalizedLink } from "../components/LocalizedLink";
 import { ArrowLeft, Package, MessageCircle, Trash2 } from "lucide-react";
 
 interface EquipmentData {
@@ -17,9 +20,11 @@ interface EquipmentData {
 }
 
 export function EquipmentDetail() {
+  const { t } = useTranslation("app");
+  const { t: tc } = useTranslation("common");
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
-  const navigate = useNavigate();
+  const navigate = useLocalizedNavigate();
   const [equipment, setEquipment] = useState<EquipmentData | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -32,7 +37,7 @@ export function EquipmentDetail() {
   }, [id]);
 
   async function handleDelete() {
-    if (!equipment || !confirm("Supprimer ce matériel ?")) return;
+    if (!equipment || !confirm(t("equipment.delete_confirm"))) return;
     await api(`/equipment/${equipment.id}`, { method: "DELETE" });
     navigate(-1);
   }
@@ -43,24 +48,23 @@ export function EquipmentDetail() {
       method: "POST",
       body: JSON.stringify({ recipientId: equipment.ownerId, communityId: equipment.communityId }),
     });
-    navigate(`/messages/${conv.id}?context=equipment&equipmentName=${encodeURIComponent(equipment.name)}`);
+    navigate(`/app/messages/${conv.id}?context=equipment&equipmentName=${encodeURIComponent(equipment.name)}`);
   }
 
   if (loading) {
     return <div className="flex justify-center py-12"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600" /></div>;
   }
 
-  if (!equipment) return <div className="text-center py-12 text-[var(--color-text-secondary)]">Matériel introuvable</div>;
+  if (!equipment) return <div className="text-center py-12 text-[var(--color-text-secondary)]">{t("equipment.not_found")}</div>;
 
   const isOwner = equipment.ownerId === user?.id;
 
   return (
     <div className="max-w-2xl mx-auto">
       <button onClick={() => navigate(-1)} className="inline-flex items-center gap-1 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] mb-4 bg-transparent border-none cursor-pointer p-0">
-        <ArrowLeft className="w-4 h-4" strokeWidth={1.5} /> Retour
+        <ArrowLeft className="w-4 h-4" strokeWidth={1.5} /> {tc("actions.back")}
       </button>
 
-      {/* Photo */}
       <div className="h-56 sm:h-72 bg-[var(--color-input)] rounded-[var(--radius-card)] overflow-hidden mb-6 flex items-center justify-center">
         {equipment.photos[0] ? (
           <img src={equipment.photos[0]} alt={equipment.name} className="w-full h-full object-cover" />
@@ -69,7 +73,6 @@ export function EquipmentDetail() {
         )}
       </div>
 
-      {/* Info card */}
       <div className="bg-[var(--color-card)] rounded-[var(--radius-card)] border border-[var(--color-border)] p-6 mb-6">
         <div className="flex items-start justify-between">
           <div>
@@ -90,15 +93,15 @@ export function EquipmentDetail() {
         )}
 
         <div className="flex items-center justify-between mt-6 pt-4 border-t border-[var(--color-border)]">
-          <Link to={`/users/${equipment.owner.id}`} className="flex items-center gap-3 no-underline hover:underline">
+          <LocalizedLink to={`/app/users/${equipment.owner.id}`} className="flex items-center gap-3 no-underline hover:underline">
             <div className="w-10 h-10 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center text-sm font-medium">
               {equipment.owner.firstName[0]}{equipment.owner.lastName[0]}
             </div>
             <div>
               <p className="text-sm font-medium text-[var(--color-text-primary)]">{equipment.owner.firstName} {equipment.owner.lastName}</p>
-              <p className="text-xs text-[var(--color-text-tertiary)]">Propriétaire</p>
+              <p className="text-xs text-[var(--color-text-tertiary)]">{t("equipment.owner")}</p>
             </div>
-          </Link>
+          </LocalizedLink>
 
           {!isOwner && (
             <button
@@ -106,14 +109,14 @@ export function EquipmentDetail() {
               className="flex items-center gap-2 px-4 py-2 text-sm bg-primary-600 text-[var(--color-page)] rounded-[var(--radius-button)] hover:bg-primary-700 cursor-pointer"
             >
               <MessageCircle className="w-4 h-4" strokeWidth={1.5} />
-              Contacter
+              {t("equipment.contact")}
             </button>
           )}
         </div>
       </div>
 
       <p className="text-xs text-[var(--color-text-tertiary)] text-center">
-        Ajouté le {new Date(equipment.createdAt).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
+        {t("equipment.added_on", { date: new Date(equipment.createdAt).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }) })}
       </p>
     </div>
   );
