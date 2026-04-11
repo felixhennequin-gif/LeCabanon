@@ -62,15 +62,6 @@
       "description": "Partagez vos bonnes adresses, consultez les avis vérifiés."
     }
   },
-  "stats": {
-    "households": "foyers",
-    "households_count": "30+",
-    "tools": "outils partagés",
-    "tools_count": "50+",
-    "artisans": "artisans recommandés",
-    "artisans_count": "10+",
-    "source": "Données de la communauté Avenue Guillon"
-  },
   "pricing": {
     "title": "Tarifs",
     "subtitle": "LeCabanon est pensé pour les communautés locales.",

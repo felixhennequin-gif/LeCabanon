@@ -8,7 +8,6 @@ import {
   DoorOpen,
   ArrowLeftRight,
   Star,
-  Home,
   ArrowRight,
 } from "lucide-react";
 
@@ -71,24 +70,6 @@ export function LandingPage() {
       number: "3",
       title: t("howItWorks.step3.title"),
       description: t("howItWorks.step3.description"),
-    },
-  ];
-
-  const stats = [
-    {
-      icon: <Home className="w-5 h-5" strokeWidth={1.5} />,
-      value: t("stats.households_count"),
-      label: t("stats.households"),
-    },
-    {
-      icon: <Wrench className="w-5 h-5" strokeWidth={1.5} />,
-      value: t("stats.tools_count"),
-      label: t("stats.tools"),
-    },
-    {
-      icon: <Star className="w-5 h-5" strokeWidth={1.5} />,
-      value: t("stats.artisans_count"),
-      label: t("stats.artisans"),
     },
   ];
 
@@ -183,26 +164,6 @@ export function LandingPage() {
               </div>
             </Section>
           ))}
-        </div>
-      </section>
-
-      {/* Stats banner */}
-      <section className="bg-primary-50">
-        <div className="max-w-[1120px] mx-auto px-4 py-12 md:py-16">
-          <Section>
-            <div className="grid grid-cols-3 gap-4 md:gap-8 text-center">
-              {stats.map((stat, i) => (
-                <div key={i} className="flex flex-col items-center gap-1">
-                  <div className="text-primary-600 mb-1">{stat.icon}</div>
-                  <span className="text-2xl md:text-3xl font-bold text-primary-700">
-                    {stat.value}
-                  </span>
-                  <span className="text-xs md:text-sm text-primary-600">{stat.label}</span>
-                </div>
-              ))}
-            </div>
-            <p className="text-center text-xs text-primary-400 mt-6">{t("stats.source")}</p>
-          </Section>
         </div>
       </section>
 
