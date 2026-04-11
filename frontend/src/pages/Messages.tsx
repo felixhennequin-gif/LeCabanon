@@ -165,7 +165,6 @@ export function Messages() {
     setInput("");
     setSending(true);
     if (equipmentCtx) {
-      setEquipmentCtx(null);
       window.history.replaceState({}, '');
     }
 
@@ -183,11 +182,11 @@ export function Messages() {
       const { getSocket } = await import("../lib/socket.js");
       const socket = getSocket();
       if (socket?.connected) {
-        socket.emit("send_message", { conversationId, content });
+        socket.emit("send_message", { conversationId, content, ...(equipmentCtx && { equipmentId: equipmentCtx.id }) });
       } else {
         const msg = await api<MessageData>(`/conversations/${conversationId}/messages`, {
           method: "POST",
-          body: JSON.stringify({ content }),
+          body: JSON.stringify({ content, ...(equipmentCtx && { equipmentId: equipmentCtx.id }) }),
         });
         setMessages((prev) => prev.map((m) => m.id === "pending" ? msg : m));
       }
