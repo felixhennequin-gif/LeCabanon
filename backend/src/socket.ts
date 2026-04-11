@@ -82,6 +82,7 @@ export function setupSocket(httpServer: HttpServer) {
 
         const otherId = conversation.participant1Id === userId ? conversation.participant2Id : conversation.participant1Id;
         io.to(`user:${otherId}`).emit("messages_read", { conversationId: data.conversationId, readBy: userId });
+        socket.emit("conversation_read", { conversationId: data.conversationId });
       } catch (err) {
         console.error("mark_read error:", err);
       }

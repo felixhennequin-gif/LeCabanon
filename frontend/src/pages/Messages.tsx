@@ -79,6 +79,9 @@ export function Messages() {
         setMessages(data.messages.reverse());
         setNextCursor(data.nextCursor);
         setConversations((prev) => prev.map((c) => c.id === conversationId ? { ...c, unreadCount: 0 } : c));
+        import("../lib/socket.js").then(({ getSocket }) => {
+          getSocket()?.emit("mark_read", { conversationId });
+        }).catch(() => {});
       })
       .finally(() => setMsgLoading(false));
   }, [conversationId]);

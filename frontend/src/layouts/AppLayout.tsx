@@ -36,11 +36,14 @@ export function AppLayout() {
       const s = connectSocket();
       const onNewMessage = () => fetchUnread();
       const onMessageSent = () => fetchUnread();
+      const onConversationRead = () => fetchUnread();
       s.on("new_message", onNewMessage);
       s.on("message_sent", onMessageSent);
+      s.on("conversation_read", onConversationRead);
       cleanup = () => {
         s.off("new_message", onNewMessage);
         s.off("message_sent", onMessageSent);
+        s.off("conversation_read", onConversationRead);
       };
     }).catch(() => {});
 
