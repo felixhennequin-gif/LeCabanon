@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { SEO } from "../../components/SEO";
 
 interface SitePageData {
   id: string;
@@ -12,6 +14,8 @@ interface SitePageData {
 export function SitePageView({ slug: slugProp }: { slug?: string }) {
   const params = useParams<{ slug: string }>();
   const slug = slugProp || params.slug;
+  const { t } = useTranslation("common");
+  const seoKey = slug === "cgu" ? "terms" : slug === "mentions-legales" ? "legal" : null;
 
   const [state, setState] = useState<{
     slug: string | undefined;
@@ -75,6 +79,12 @@ export function SitePageView({ slug: slugProp }: { slug?: string }) {
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-16">
+      {seoKey && (
+        <SEO
+          title={t(`seo.${seoKey}.title`)}
+          description={t(`seo.${seoKey}.description`)}
+        />
+      )}
       <h1 className="text-3xl font-bold text-[var(--color-text-primary)] mb-8">
         {page.title}
       </h1>

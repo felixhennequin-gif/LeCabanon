@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { LocalizedLink } from "../../components/LocalizedLink";
+import { SEO } from "../../components/SEO";
 import { useInView } from "../../hooks/useInView";
 import { Mail } from "lucide-react";
 
@@ -19,9 +20,11 @@ function Section({ children, className = "" }: { children: React.ReactNode; clas
 
 export function AboutPage() {
   const { t } = useTranslation("landing");
+  const { t: tc } = useTranslation("common");
 
   return (
     <div>
+      <SEO title={tc("seo.about.title")} description={tc("seo.about.description")} />
       {/* Hero */}
       <section className="max-w-[1120px] mx-auto px-4 py-16 md:py-20 text-center">
         <Section>

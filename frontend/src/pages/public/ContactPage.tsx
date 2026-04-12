@@ -4,6 +4,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslation } from "react-i18next";
 import { Send } from "lucide-react";
+import { SEO } from "../../components/SEO";
 
 const contactSchema = z.object({
   name: z.string().min(2).max(100),
@@ -61,6 +62,7 @@ export function ContactPage() {
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-16">
+      <SEO title={t("seo.contact.title")} description={t("seo.contact.description")} />
       <h1 className="text-3xl font-bold text-[var(--color-text-primary)] mb-6">
         Contact
       </h1>

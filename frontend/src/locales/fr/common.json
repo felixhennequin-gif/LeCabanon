@@ -61,6 +61,50 @@
   "time": {
     "yesterday": "Hier"
   },
+  "notFound": {
+    "title": "Page introuvable",
+    "description": "La page que vous cherchez n'existe pas ou a été déplacée.",
+    "backHome": "Retour à l'accueil",
+    "seoTitle": "Page introuvable — LeCabanon"
+  },
+  "seo": {
+    "landing": {
+      "title": "LeCabanon — Partagez entre voisins",
+      "description": "Empruntez du matériel, recommandez vos artisans de confiance. La plateforme de partage pour votre communauté locale."
+    },
+    "features": {
+      "title": "Fonctionnalités — LeCabanon",
+      "description": "Découvrez tout ce que LeCabanon apporte à votre communauté de voisins : partage de matériel, artisans recommandés, messagerie."
+    },
+    "pricing": {
+      "title": "Tarifs — LeCabanon",
+      "description": "LeCabanon est gratuit pour les communautés de quartier. Découvrez nos offres."
+    },
+    "about": {
+      "title": "À propos — LeCabanon",
+      "description": "L'histoire d'un besoin simple devenu une application. Découvrez le projet LeCabanon."
+    },
+    "legal": {
+      "title": "Mentions légales — LeCabanon",
+      "description": "Mentions légales du site LeCabanon."
+    },
+    "terms": {
+      "title": "Conditions Générales d'Utilisation — LeCabanon",
+      "description": "Conditions générales d'utilisation de la plateforme LeCabanon."
+    },
+    "contact": {
+      "title": "Contact — LeCabanon",
+      "description": "Contactez l'équipe LeCabanon."
+    },
+    "login": {
+      "title": "Connexion — LeCabanon",
+      "description": "Connectez-vous à votre compte LeCabanon."
+    },
+    "register": {
+      "title": "Inscription — LeCabanon",
+      "description": "Créez votre compte LeCabanon et rejoignez votre communauté."
+    }
+  },
   "contact": {
     "name": "Votre nom",
     "name_placeholder": "Jean Dupont",

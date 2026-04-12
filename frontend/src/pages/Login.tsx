@@ -4,10 +4,12 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "../contexts/AuthContext";
 import { useLocalizedNavigate } from "../hooks/useLocalizedNavigate";
 import { LocalizedLink } from "../components/LocalizedLink";
+import { SEO } from "../components/SEO";
 import { Warehouse } from "lucide-react";
 
 export function Login() {
   const { t } = useTranslation("auth");
+  const { t: tc } = useTranslation("common");
   const { login } = useAuth();
   const navigate = useLocalizedNavigate();
   const [searchParams] = useSearchParams();
@@ -33,6 +35,7 @@ export function Login() {
 
   return (
     <div className="w-full max-w-md">
+      <SEO title={tc("seo.login.title")} description={tc("seo.login.description")} />
       <div className="text-center mb-8">
         <Warehouse className="w-12 h-12 text-primary-600 mx-auto mb-3" strokeWidth={1.5} />
         <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">{t("login.title")}</h1>

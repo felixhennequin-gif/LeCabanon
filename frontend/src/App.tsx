@@ -1,12 +1,7 @@
-import { BrowserRouter, Routes, Route, Navigate, useParams } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import { LanguageRouter } from "./components/LanguageRouter";
 import { ProtectedRoute } from "./components/ProtectedRoute";
-
-function LangCatchAllRedirect() {
-  const { lang = "fr" } = useParams<{ lang: string }>();
-  return <Navigate to={`/${lang}/app`} replace />;
-}
 
 // Layouts
 import { PublicLayout } from "./layouts/PublicLayout";
@@ -20,6 +15,7 @@ import { PricingPage } from "./pages/public/PricingPage";
 import { AboutPage } from "./pages/public/AboutPage";
 import { SitePageView } from "./pages/public/SitePageView";
 import { ContactPage } from "./pages/public/ContactPage";
+import { NotFoundPage } from "./pages/public/NotFoundPage";
 
 // Auth pages
 import { Login } from "./pages/Login";
@@ -62,6 +58,7 @@ export default function App() {
               <Route path="mentions-legales" element={<SitePageView slug="mentions-legales" />} />
               <Route path="cgu" element={<SitePageView slug="cgu" />} />
               <Route path="contact" element={<ContactPage />} />
+              <Route path="*" element={<NotFoundPage />} />
             </Route>
 
             {/* Auth pages — AuthLayout */}
@@ -92,9 +89,10 @@ export default function App() {
               <Route path="site-admin" element={<SiteAdmin />} />
             </Route>
 
-            {/* Catch-all within lang — redirect to app */}
-            <Route path="*" element={<LangCatchAllRedirect />} />
           </Route>
+
+          {/* Root-level catch-all → 404 under default lang */}
+          <Route path="*" element={<Navigate to="/fr/404" replace />} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>

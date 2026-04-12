@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { LocalizedLink } from "../../components/LocalizedLink";
+import { SEO } from "../../components/SEO";
 import { useInView } from "../../hooks/useInView";
 import { Check, ChevronDown } from "lucide-react";
 
@@ -50,6 +51,7 @@ function FaqItem({ question, answer }: { question: string; answer: string }) {
 
 export function PricingPage() {
   const { t } = useTranslation("landing");
+  const { t: tc } = useTranslation("common");
 
   const freeFeatures = t("pricing.free.features", { returnObjects: true }) as string[];
   const faqItems = t("pricing.faq.items", { returnObjects: true }) as Array<{
@@ -59,6 +61,7 @@ export function PricingPage() {
 
   return (
     <div>
+      <SEO title={tc("seo.pricing.title")} description={tc("seo.pricing.description")} />
       {/* Hero */}
       <section className="max-w-[1120px] mx-auto px-4 py-16 md:py-20 text-center">
         <Section>

@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { LocalizedLink } from "../../components/LocalizedLink";
+import { SEO } from "../../components/SEO";
 import { useInView } from "../../hooks/useInView";
 import {
   Wrench,
@@ -27,6 +28,7 @@ function Section({ children, className = "" }: { children: React.ReactNode; clas
 
 export function LandingPage() {
   const { t } = useTranslation("landing");
+  const { t: tc } = useTranslation("common");
 
   const features = [
     {
@@ -79,8 +81,9 @@ export function LandingPage() {
 
   return (
     <div>
+      <SEO title={tc("seo.landing.title")} description={tc("seo.landing.description")} />
       {/* Hero */}
-      <section className="max-w-[1120px] mx-auto px-4 py-20 md:py-32 text-center">
+      <section className="max-w-[1120px] mx-auto px-4 py-16 md:py-24 text-center">
         <Section>
           <h1 className="text-4xl md:text-[56px] font-bold text-[var(--color-text-primary)] leading-tight">
             {t("hero.title")}
