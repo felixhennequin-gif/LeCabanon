@@ -9,9 +9,7 @@ import {
 
 export const messageRouter = Router();
 
-messageRouter.use(authenticate);
-
-messageRouter.get("/conversations", listConversations);
-messageRouter.post("/conversations", createConversation);
-messageRouter.get("/conversations/:id/messages", getMessages);
-messageRouter.post("/conversations/:id/messages", sendMessage);
+messageRouter.get("/conversations", authenticate, listConversations);
+messageRouter.post("/conversations", authenticate, createConversation);
+messageRouter.get("/conversations/:id/messages", authenticate, getMessages);
+messageRouter.post("/conversations/:id/messages", authenticate, sendMessage);
