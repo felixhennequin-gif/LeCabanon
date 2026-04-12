@@ -7,8 +7,8 @@ import { Avatar } from "../components/Avatar";
 import { Plus, ArrowLeft, Package, User } from "lucide-react";
 
 const EQUIPMENT_CATEGORIES = [
-  "Jardinage", "Bricolage", "Nettoyage", "Electroportatif",
-  "Echelles & echafaudages", "Automobile", "Demenagement", "Cuisine / Reception",
+  "Jardinage", "Bricolage", "Nettoyage", "Électroportatif",
+  "Échelles & échafaudages", "Automobile", "Déménagement", "Cuisine / Réception",
 ];
 
 interface EquipmentPhoto {
