@@ -279,3 +279,21 @@ enum ActivityType {
   ARTISAN_REMOVED
   REVIEW_ADDED
 }
+
+model SitePage {
+  id        String   @id @default(uuid())
+  slug      String   @unique
+  title     String
+  content   String   @db.Text
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+}
+
+model ContactMessage {
+  id        String    @id @default(uuid())
+  name      String
+  email     String
+  message   String    @db.Text
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+}

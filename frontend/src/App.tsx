@@ -18,6 +18,8 @@ import { LandingPage } from "./pages/public/LandingPage";
 import { FeaturesPage } from "./pages/public/FeaturesPage";
 import { PricingPage } from "./pages/public/PricingPage";
 import { AboutPage } from "./pages/public/AboutPage";
+import { SitePageView } from "./pages/public/SitePageView";
+import { ContactPage } from "./pages/public/ContactPage";
 
 // Auth pages
 import { Login } from "./pages/Login";
@@ -38,6 +40,7 @@ import { Messages } from "./pages/Messages";
 import { ArtisanPublicProfile } from "./pages/ArtisanPublicProfile";
 import { VerifyClaim } from "./pages/VerifyClaim";
 import { InvitationLanding } from "./pages/InvitationLanding";
+import { SiteAdmin } from "./pages/SiteAdmin";
 
 export default function App() {
   return (
@@ -56,6 +59,9 @@ export default function App() {
               <Route path="fonctionnalites" element={<FeaturesPage />} />
               <Route path="tarifs" element={<PricingPage />} />
               <Route path="a-propos" element={<AboutPage />} />
+              <Route path="mentions-legales" element={<SitePageView slug="mentions-legales" />} />
+              <Route path="cgu" element={<SitePageView slug="cgu" />} />
+              <Route path="contact" element={<ContactPage />} />
             </Route>
 
             {/* Auth pages — AuthLayout */}
@@ -83,6 +89,7 @@ export default function App() {
               <Route path="messages/:conversationId" element={<Messages />} />
               <Route path="profile" element={<Profile />} />
               <Route path="users/:id" element={<UserProfile />} />
+              <Route path="site-admin" element={<SiteAdmin />} />
             </Route>
 
             {/* Catch-all within lang — redirect to app */}

@@ -15,6 +15,8 @@ async function main() {
 
   // ─── Clean ALL data (order matters for FK constraints) ──────
   console.log("🗑️  Nettoyage de la base...");
+  await prisma.contactMessage.deleteMany();
+  await prisma.sitePage.deleteMany();
   await prisma.reviewReply.deleteMany();
   await prisma.message.deleteMany();
   await prisma.conversation.deleteMany();
@@ -476,6 +478,70 @@ async function main() {
 
   console.log(`✅ 3 conversations, ${conv1Messages.length + conv2Messages.length + conv3Messages.length} messages`);
 
+  // ─── Site Pages ─────────────────────────────────────────────
+  const sitePages = [
+    {
+      slug: "mentions-legales",
+      title: "Mentions légales",
+      content: `<h2>Éditeur du site</h2>
+<p>LeCabanon est un projet personnel développé par Félix Hennequin.</p>
+<p>Contact : via le <a href="/fr/contact">formulaire de contact</a></p>
+
+<h2>Hébergement</h2>
+<p>Ce site est hébergé sur un serveur personnel situé en France.</p>
+
+<h2>Propriété intellectuelle</h2>
+<p>L'ensemble du contenu de ce site (textes, images, code source) est la propriété de l'éditeur, sauf mention contraire. Toute reproduction est interdite sans autorisation préalable.</p>
+
+<h2>Données personnelles</h2>
+<p>Les données collectées (nom, email, adresse) sont nécessaires au fonctionnement du service. Elles ne sont ni vendues ni partagées avec des tiers. Conformément au RGPD, vous pouvez demander l'accès, la rectification ou la suppression de vos données en nous contactant.</p>
+
+<h2>Cookies</h2>
+<p>Ce site utilise uniquement des cookies techniques nécessaires au fonctionnement (authentification, préférences de thème). Aucun cookie de traçage ou publicitaire n'est utilisé.</p>`,
+    },
+    {
+      slug: "cgu",
+      title: "Conditions Générales d'Utilisation",
+      content: `<h2>Objet</h2>
+<p>LeCabanon est une plateforme de partage entre voisins permettant de référencer du matériel à prêter et de recommander des artisans de confiance. L'accès à une communauté se fait par code d'invitation.</p>
+
+<h2>Inscription</h2>
+<p>L'inscription est gratuite. Chaque utilisateur doit fournir un nom, un prénom et une adresse email valide. L'accès à une communauté nécessite un code d'invitation fourni par un membre existant ou l'administrateur.</p>
+
+<h2>Utilisation du service</h2>
+<p>Les utilisateurs s'engagent à :</p>
+<ul>
+  <li>Fournir des informations exactes sur le matériel qu'ils proposent</li>
+  <li>Rédiger des avis honnêtes et constructifs sur les artisans</li>
+  <li>Respecter les autres membres de leur communauté</li>
+  <li>Ne pas utiliser la plateforme à des fins commerciales ou publicitaires</li>
+</ul>
+
+<h2>Responsabilité</h2>
+<p>LeCabanon facilite la mise en relation entre voisins mais n'est pas partie prenante des prêts de matériel ni des relations avec les artisans. L'éditeur ne peut être tenu responsable des dommages résultant de l'utilisation du service.</p>
+
+<h2>Modération</h2>
+<p>L'administrateur d'une communauté se réserve le droit de supprimer tout contenu inapproprié et de révoquer l'accès d'un membre en cas de non-respect des présentes conditions.</p>
+
+<h2>Modification des CGU</h2>
+<p>Les présentes conditions peuvent être modifiées à tout moment. Les utilisateurs seront informés des changements significatifs.</p>`,
+    },
+    {
+      slug: "contact",
+      title: "Contact",
+      content: `<p>Une question, une suggestion, un problème ? N'hésitez pas à nous contacter via le formulaire ci-dessous. Nous vous répondrons dans les meilleurs délais.</p>`,
+    },
+  ];
+
+  for (const page of sitePages) {
+    await prisma.sitePage.upsert({
+      where: { slug: page.slug },
+      update: { title: page.title, content: page.content },
+      create: page,
+    });
+  }
+  console.log(`✅ ${sitePages.length} pages du site`);
+
   // ─── Summary ────────────────────────────────────────────────
   const counts = await Promise.all([
     prisma.user.count(),
@@ -490,6 +556,7 @@ async function main() {
     prisma.invitation.count(),
     prisma.conversation.count(),
     prisma.message.count(),
+    prisma.sitePage.count(),
   ]);
 
   console.log("\n📊 Résumé de la base :");
@@ -505,6 +572,7 @@ async function main() {
   console.log(`   Invitations        : ${counts[9]}`);
   console.log(`   Conversations      : ${counts[10]}`);
   console.log(`   Messages           : ${counts[11]}`);
+  console.log(`   Pages du site      : ${counts[12]}`);
   console.log("\n✨ Seed terminé !");
 }
 

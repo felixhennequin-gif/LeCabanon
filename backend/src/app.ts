@@ -12,6 +12,8 @@ import { feedRouter } from "./routes/feed.js";
 import { invitationRouter } from "./routes/invitations.js";
 import { opengraphRouter } from "./routes/opengraph.js";
 import { messageRouter } from "./routes/messages.js";
+import { pageRouter } from "./routes/pages.js";
+import { contactRouter, adminContactRouter } from "./routes/contact.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -38,6 +40,9 @@ app.use("/api/communities", feedRouter);
 app.use("/api", invitationRouter);
 app.use("/api/opengraph", opengraphRouter);
 app.use("/api", messageRouter);
+app.use("/api/pages", pageRouter);
+app.use("/api/contact", contactRouter);
+app.use("/api/admin", adminContactRouter);
 
 // Health check
 app.get("/api/health", (_req, res) => {
