@@ -7,8 +7,11 @@ import { LocalizedLink } from "../components/LocalizedLink";
 import { Plus, ArrowLeft, HardHat, Phone, MapPin, Globe, BadgeCheck } from "lucide-react";
 
 const ARTISAN_CATEGORIES = [
-  "Plomberie", "Electricite", "Maconnerie", "Peinture", "Menuiserie",
+  "Plomberie", "Électricité", "Maçonnerie", "Peinture", "Menuiserie",
   "Paysagisme", "Couverture / Toiture", "Serrurerie", "Chauffage / Climatisation", "Nettoyage",
+  "Architecture", "Maîtrise d'œuvre", "Carrelage / Revêtement de sol",
+  "Couverture / Charpente / Isolation", "Enduit / Isolation extérieur / Peinture",
+  "Maçonnerie / Rénovation / Couverture",
 ];
 
 interface ArtisanItem {

@@ -185,17 +185,17 @@ async function main() {
     { createdById: catherine.id, name: "Yann Kervella", company: "Kervella Paysage", category: "Paysagisme", zone: "Maisons-Laffitte et alentours", phone: "06 67 89 01 23", email: "yann@kervella-paysage.fr" },
     { createdById: felix.id, name: "David Costa", company: "Costa Serrurerie", category: "Serrurerie", zone: "Secteur 78", phone: "06 78 90 12 34", email: "david.costa.serrurier@gmail.com" },
     { createdById: marie.id, name: "Stéphane Roux", company: "Roux Chauffage", category: "Chauffage / Climatisation", zone: "Yvelines Nord", phone: "06 89 01 23 45", email: "s.roux@roux-chauffage.fr" },
-    { createdById: jacques.id, name: "Nicolas Cheneau", company: "SARL NC & CO", category: "Maçonnerie", zone: "Nantes et environs", phone: "07 68 94 38 38", email: "n.cheneau@ncco.fr" },
-    { createdById: jacques.id, name: "Arki-Dea", company: "Arki-Dea", category: "Maçonnerie", zone: "Nantes", phone: "06 16 38 73 81", email: "" },
+    { createdById: jacques.id, name: "Nicolas Cheneau", company: "SARL NC & CO", category: "Maîtrise d'œuvre", zone: "Nantes et environs", phone: "07 68 94 38 38", email: "n.cheneau@ncco.fr" },
+    { createdById: jacques.id, name: "Arki-Dea", company: "Arki-Dea", category: "Architecture", zone: "Nantes", phone: "06 16 38 73 81", email: "" },
     { createdById: jacques.id, name: "Chauvet Elec", company: "Chauvet Elec", category: "Électricité", zone: "Nantes", phone: "02 40 29 38 35", email: "chauvet-elec@orange.fr" },
     { createdById: jacques.id, name: "ACE Electro", company: "ACE Electro", category: "Électricité", zone: "St Mars de Coutais (44)", phone: "02 28 21 07 05", email: "ace.44@ace-electro.fr" },
     { createdById: jacques.id, name: "CB CADJ", company: "CB CADJ", category: "Menuiserie", zone: "Savenay (44)", phone: "02 40 58 10 82", email: "contact@cbcadj.fr" },
-    { createdById: jacques.id, name: "Batard SARL", company: "Batard", category: "Maçonnerie", zone: "La Planche (44)", phone: "02 40 31 91 60", email: "batard.sarl@wanadoo.fr" },
+    { createdById: jacques.id, name: "Batard SARL", company: "Batard", category: "Maçonnerie / Rénovation / Couverture", zone: "La Planche (44)", phone: "02 40 31 91 60", email: "batard.sarl@wanadoo.fr" },
     { createdById: jacques.id, name: "3CSM Plomberie", company: "3CSM Plomberie", category: "Plomberie", zone: "Port Saint Père (44)", phone: "09 63 59 86 19", email: "depannage@3csm-plomberie.fr" },
     { createdById: jacques.id, name: "Cameleon", company: "Entreprise Cameleon", category: "Peinture", zone: "Les Sorinières (44)", phone: "02 53 97 10 80", email: "entreprise.cameleon@gmail.com" },
-    { createdById: jacques.id, name: "Laloi", company: "Laloi", category: "Peinture", zone: "Les Sorinières (44)", phone: "02 53 97 10 80", email: "contact.laloi@gmail.com" },
-    { createdById: jacques.id, name: "Talet SARL", company: "Talet", category: "Couverture / Toiture", zone: "Coueron (44)", phone: "02 40 57 18 01", email: "sarl.talet@free.fr" },
-    { createdById: jacques.id, name: "Lift Face", company: "Lift Face", category: "Peinture", zone: "Montaigu (85)", phone: "02 51 06 42 82", email: "contact@liftface.fr" },
+    { createdById: jacques.id, name: "Laloi", company: "Laloi", category: "Carrelage / Revêtement de sol", zone: "Les Sorinières (44)", phone: "02 53 97 10 80", email: "contact.laloi@gmail.com" },
+    { createdById: jacques.id, name: "Talet SARL", company: "Talet", category: "Couverture / Charpente / Isolation", zone: "Coueron (44)", phone: "02 40 57 18 01", email: "sarl.talet@free.fr" },
+    { createdById: jacques.id, name: "Lift Face", company: "Lift Face", category: "Enduit / Isolation extérieur / Peinture", zone: "Montaigu (85)", phone: "02 51 06 42 82", email: "contact@liftface.fr" },
   ];
 
   const artisans: Record<string, { id: string }> = {};
