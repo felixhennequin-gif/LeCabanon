@@ -6,7 +6,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { useLocalizedNavigate } from "../hooks/useLocalizedNavigate";
 import { LocalizedLink } from "../components/LocalizedLink";
 import { Avatar } from "../components/Avatar";
-import { ArrowLeft, Send, Check, CheckCheck, Wrench, X } from "lucide-react";
+import { ArrowLeft, Send, Check, CheckCheck, Wrench, X, Reply } from "lucide-react";
 
 interface ConversationSummary {
   id: string;
@@ -18,6 +18,12 @@ interface ConversationSummary {
   updatedAt: string;
 }
 
+interface MessageReplyRef {
+  id: string;
+  content: string;
+  sender: { id: string; firstName: string; lastName: string };
+}
+
 interface MessageData {
   id: string;
   content: string;
@@ -25,6 +31,7 @@ interface MessageData {
   createdAt: string;
   senderId: string;
   sender: { id: string; firstName: string; lastName: string; photo?: string | null };
+  replyTo?: MessageReplyRef | null;
 }
 
 export function Messages() {
@@ -43,6 +50,8 @@ export function Messages() {
   const [msgLoading, setMsgLoading] = useState(false);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
+  const [replyTo, setReplyTo] = useState<MessageData | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [typingUserId, setTypingUserId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -70,6 +79,7 @@ export function Messages() {
     setMsgLoading(true);
     setMessages([]);
     setNextCursor(null);
+    setReplyTo(null);
     api<{ messages: MessageData[]; nextCursor: string | null }>(`/conversations/${conversationId}/messages`)
       .then((data) => {
         setMessages(data.messages.reverse());
@@ -163,7 +173,12 @@ export function Messages() {
   async function handleSend() {
     if (!input.trim() || !conversationId || sending) return;
     const content = input.trim();
+    const replyToId = replyTo?.id;
+    const replyToSnapshot = replyTo
+      ? { id: replyTo.id, content: replyTo.content, sender: { id: replyTo.sender.id, firstName: replyTo.sender.firstName, lastName: replyTo.sender.lastName } }
+      : null;
     setInput("");
+    setReplyTo(null);
     setSending(true);
     if (equipmentCtx) {
       window.history.replaceState({}, '');
@@ -176,6 +191,7 @@ export function Messages() {
       createdAt: new Date().toISOString(),
       senderId: user!.id,
       sender: { id: user!.id, firstName: user!.firstName, lastName: user!.lastName, photo: user!.photo },
+      replyTo: replyToSnapshot,
     };
     setMessages((prev) => [...prev, optimisticMsg]);
 
@@ -183,11 +199,11 @@ export function Messages() {
       const { getSocket } = await import("../lib/socket.js");
       const socket = getSocket();
       if (socket?.connected) {
-        socket.emit("send_message", { conversationId, content, ...(equipmentCtx && { equipmentId: equipmentCtx.id }) });
+        socket.emit("send_message", { conversationId, content, ...(replyToId && { replyToId }), ...(equipmentCtx && { equipmentId: equipmentCtx.id }) });
       } else {
         const msg = await api<MessageData>(`/conversations/${conversationId}/messages`, {
           method: "POST",
-          body: JSON.stringify({ content, ...(equipmentCtx && { equipmentId: equipmentCtx.id }) }),
+          body: JSON.stringify({ content, ...(replyToId && { replyToId }), ...(equipmentCtx && { equipmentId: equipmentCtx.id }) }),
         });
         setMessages((prev) => prev.map((m) => m.id === "pending" ? msg : m));
       }
@@ -196,6 +212,11 @@ export function Messages() {
     } finally {
       setSending(false);
     }
+  }
+
+  function handleReplyClick(m: MessageData) {
+    setReplyTo(m);
+    inputRef.current?.focus();
   }
 
   function handleInputChange(value: string) {
@@ -330,14 +351,47 @@ export function Messages() {
                 messages.map((m) => {
                   const isMine = m.senderId === user?.id;
                   return (
-                    <div key={m.id} className={`flex ${isMine ? "justify-end" : "justify-start"}`}>
+                    <div key={m.id} className={`group flex items-center gap-1.5 ${isMine ? "justify-end" : "justify-start"}`}>
+                      {isMine && (
+                        <button
+                          type="button"
+                          onClick={() => handleReplyClick(m)}
+                          className="opacity-0 group-hover:opacity-100 transition-opacity text-[var(--color-text-tertiary)] hover:text-primary-600 bg-transparent border-none cursor-pointer p-1"
+                          title={tc("actions.reply")}
+                        >
+                          <Reply className="w-3.5 h-3.5" strokeWidth={1.5} />
+                        </button>
+                      )}
                       <div className={`max-w-[75%] px-3 py-2 rounded-2xl ${isMine ? "bg-primary-600 text-[var(--color-page)] rounded-br-sm" : "bg-[var(--color-input)] text-[var(--color-text-primary)] rounded-bl-sm"}`}>
+                        {m.replyTo && (
+                          <div
+                            className={`mb-1.5 px-2 py-1 rounded text-xs ${isMine ? "bg-primary-700/40" : "bg-[var(--color-card)]"}`}
+                            style={{ borderLeft: `3px solid ${isMine ? "var(--color-page)" : "var(--color-primary-400)"}` }}
+                          >
+                            <div className={`font-medium ${isMine ? "text-primary-100" : "text-primary-600"}`}>
+                              {m.replyTo.sender.firstName}
+                            </div>
+                            <div className={`line-clamp-1 ${isMine ? "text-primary-50" : "text-[var(--color-text-secondary)]"}`}>
+                              {m.replyTo.content}
+                            </div>
+                          </div>
+                        )}
                         <p className="text-sm whitespace-pre-wrap break-words">{m.content}</p>
                         <div className={`flex items-center gap-1 justify-end mt-0.5 ${isMine ? "text-primary-200" : "text-[var(--color-text-tertiary)]"}`}>
                           <span className="text-xs">{formatTime(m.createdAt)}</span>
                           {isMine && <StatusIcon status={m.status} />}
                         </div>
                       </div>
+                      {!isMine && (
+                        <button
+                          type="button"
+                          onClick={() => handleReplyClick(m)}
+                          className="opacity-0 group-hover:opacity-100 transition-opacity text-[var(--color-text-tertiary)] hover:text-primary-600 bg-transparent border-none cursor-pointer p-1"
+                          title={tc("actions.reply")}
+                        >
+                          <Reply className="w-3.5 h-3.5" strokeWidth={1.5} />
+                        </button>
+                      )}
                     </div>
                   );
                 })
@@ -346,6 +400,29 @@ export function Messages() {
             </div>
 
             <div className="px-4 py-3 border-t border-[var(--color-border)]">
+              {replyTo && (
+                <div
+                  className="flex items-start gap-2 mb-2 px-3 py-2 bg-[var(--color-card)] rounded-[var(--radius-input)]"
+                  style={{ borderLeft: '3px solid var(--color-primary-400)' }}
+                >
+                  <div className="flex-1 min-w-0">
+                    <div className="text-[11px] font-medium text-primary-600">
+                      {t("messages.reply_to", { name: replyTo.sender.firstName })}
+                    </div>
+                    <div className="text-[13px] text-[var(--color-text-secondary)] truncate">
+                      {replyTo.content}
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setReplyTo(null)}
+                    className="p-0.5 text-[var(--color-text-tertiary)] bg-transparent border-none cursor-pointer flex shrink-0"
+                    title={t("messages.cancel_reply")}
+                  >
+                    <X className="w-3.5 h-3.5" strokeWidth={1.5} />
+                  </button>
+                </div>
+              )}
               {equipmentCtx && (
                 <div
                   className="flex items-center gap-2 mb-2 px-3 py-2 bg-[var(--color-primary-50)] text-[var(--color-primary-800)] rounded-[var(--radius-input)]"
@@ -369,6 +446,7 @@ export function Messages() {
                 className="flex items-center gap-2"
               >
                 <input
+                  ref={inputRef}
                   type="text"
                   value={input}
                   onChange={(e) => handleInputChange(e.target.value)}

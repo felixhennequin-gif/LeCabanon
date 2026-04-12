@@ -48,15 +48,29 @@ export function setupSocket(httpServer: HttpServer) {
     }
 
     // Send message
-    socket.on("send_message", async (data: { conversationId: string; content: string }) => {
+    socket.on("send_message", async (data: { conversationId: string; content: string; replyToId?: string }) => {
       try {
         const conversation = await prisma.conversation.findUnique({ where: { id: data.conversationId } });
         if (!conversation || (conversation.participant1Id !== userId && conversation.participant2Id !== userId)) return;
 
         const [message] = await prisma.$transaction([
           prisma.message.create({
-            data: { content: data.content, senderId: userId, conversationId: data.conversationId },
-            include: { sender: { select: { id: true, firstName: true, lastName: true, photo: true } } },
+            data: {
+              content: data.content,
+              senderId: userId,
+              conversationId: data.conversationId,
+              replyToId: data.replyToId ?? null,
+            },
+            include: {
+              sender: { select: { id: true, firstName: true, lastName: true, photo: true } },
+              replyTo: {
+                select: {
+                  id: true,
+                  content: true,
+                  sender: { select: { id: true, firstName: true, lastName: true } },
+                },
+              },
+            },
           }),
           prisma.conversation.update({ where: { id: data.conversationId }, data: { updatedAt: new Date() } }),
         ]);

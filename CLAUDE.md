@@ -1,278 +1,282 @@
 # CLAUDE.md — LeCabanon
 
-## Projet
+Plateforme de partage entre voisins : annuaire de matériel à prêter + annuaire d'artisans recommandés, organisé par communautés (avenue, quartier, ville). Chaque communauté est protégée par un code d'accès ; un utilisateur peut rejoindre plusieurs communautés avec un même compte. Messagerie temps réel entre membres, pages publiques d'artisans, i18n FR/EN via préfixe d'URL.
 
-LeCabanon est une plateforme de partage entre voisins : annuaire de matériel à prêter + annuaire d'artisans recommandés, organisé par communautés (avenue, quartier, ville). Chaque communauté est protégée par un code d'accès. Un utilisateur peut rejoindre plusieurs communautés avec un même compte.
-
-**Repo** : `felixhennequin-gif/LeCabanon`
-**Structure** : monorepo avec `/backend` et `/frontend` à la racine
-
-## Branching strategy
-
-- **`main`** = production, jamais de push direct. Toutes les modifications passent par une PR.
-- **`dev`** = branche d'intégration. Les PRs vers `main` partent de `dev`.
-- **`feature/<nom>`** = créées depuis `dev`, mergées dans `dev` via PR.
-- **`hotfix/<nom>`** = créées depuis `main`, mergées dans `main` ET `dev`.
-
-### Workflow
-
-1. Créer une branche `feature/<nom>` depuis `dev`
-2. Développer, commiter, pusher
-3. Ouvrir une PR vers `dev`
-4. La CI doit passer (backend + frontend)
-5. Merger dans `dev`
-6. Quand `dev` est stable, ouvrir une PR `dev` → `main`
-7. Merger = release
-
-## CI / GitHub Actions
-
-Le workflow `.github/workflows/ci.yml` est déclenché sur `push` et `pull_request` vers `main` et `dev`. Deux jobs tournent **en parallèle** :
-
-### Job `backend`
-- Service PostgreSQL 16 (user: test, password: test, db: lecabanon_test) avec health check
-- Install → `npx prisma generate` → `npx prisma migrate deploy` → `npx tsc --noEmit` → `npm run build`
-- Tests commentés pour plus tard (`npm test`)
-
-### Job `frontend`
-- Install → `npm run lint` (ESLint) → `npx tsc -b` (type-check) → `npm run build` (Vite)
-
-## Déploiement
-
-### Architecture prod
-- Le backend Express sert le frontend (build Vite dans `../frontend/dist`) en production via `express.static` + fallback SPA
-- pm2 gère le process Node.js via `ecosystem.config.cjs` à la racine
-- Port **3002** en production (pour ne pas conflicte avec cocktail-app sur 3000)
-
-### Scripts
-- `scripts/deploy.sh` — déploiement complet : git pull, npm ci, prisma migrate, build backend + frontend, pm2 restart
-- `scripts/setup-db.sh` — premier setup de la base PostgreSQL (create db + user)
-
-### Commandes pm2
-```bash
-pm2 start ecosystem.config.cjs   # Premier lancement
-pm2 restart lecabanon-api         # Redémarrer après deploy
-pm2 logs lecabanon-api            # Voir les logs
-pm2 save                          # Sauvegarder la liste de process
-pm2 startup                       # Configurer le démarrage auto au boot
-```
+**Repo** : `felixhennequin-gif/LeCabanon` — monorepo `/backend` + `/frontend` à la racine.
 
 ## Stack
 
-### Backend (`/backend`)
-- **Runtime** : Node.js (ESM, `"type": "module"`)
-- **Framework** : Express 5
-- **ORM** : Prisma 7 avec `@prisma/adapter-pg` (PostgreSQL)
-- **Auth** : JWT (access + refresh tokens) via `jsonwebtoken`, bcryptjs pour le hash
-- **OAuth** : Google OAuth 2.0 via Passport (`passport-google-oauth20`)
-- **Validation** : Zod 4
-- **Upload** : Multer 2 + Sharp pour le resize (Minio prévu mais pas encore branché)
-- **TypeScript** : v6, compilé via tsx en dev
-- **Base de données** : PostgreSQL (`lecabanon`)
+| Couche | Techno |
+|---|---|
+| Backend runtime | Node.js ESM (`"type": "module"`) |
+| Backend framework | Express 5 + Socket.io |
+| ORM | Prisma 7 + `@prisma/adapter-pg` (PostgreSQL) |
+| Auth | JWT (access + refresh) via `jsonwebtoken`, bcryptjs, Google OAuth 2.0 (`passport-google-oauth20`) |
+| Validation | Zod 4 (attention : `.issues` et pas `.errors`) |
+| Upload | Multer 2 + Sharp (stockage local `backend/uploads/`) |
+| Frontend framework | React 19 |
+| Frontend build | Vite 8 |
+| Routing | React Router v7 |
+| Styling | Tailwind CSS v4 via `@tailwindcss/vite` (pas de `tailwind.config.js`) |
+| i18n | `react-i18next` + préfixe `/:lang/` |
+| SEO | `react-helmet-async` |
+| Forms | React Hook Form + Zod |
+| Icons | Lucide React (toujours `strokeWidth={1.5}`) |
+| TypeScript | v6 des deux côtés |
 
-### Frontend (`/frontend`)
-- **Framework** : React 19
-- **Build** : Vite 8
-- **Routing** : React Router v7
-- **Styling** : Tailwind CSS v4 (via `@tailwindcss/vite`)
-- **Forms** : React Hook Form + `@hookform/resolvers` + Zod
-- **Icons** : Lucide React
-- **TypeScript** : v6
+### Environnement de déploiement
+
+- **Serveur Debian** : `192.168.1.85` (home lab)
+- **Dev** : backend `:3001`, frontend Vite `:5173`
+- **Prod** : Express sert le build Vite (`../frontend/dist`) via `express.static` + fallback SPA, port `:3002` (géré par pm2 via `ecosystem.config.cjs`)
+- **Domaine public** : https://lecabanon.fr (Cloudflare Tunnel → `:3002`)
+- **Base de données** : PostgreSQL `lecabanon` (`postgresql://lecabanon_user:lecabanon123@localhost:5432/lecabanon`)
+
+## Branching strategy
+
+- **`main`** = production, jamais de push direct, tout passe par PR.
+- **`dev`** = intégration, c'est la base des PRs vers `main`.
+- **`feature/<nom>`** = créées depuis `dev`, mergées dans `dev`.
+- **`hotfix/<nom>`** = créées depuis `main`, mergées dans `main` ET `dev`.
+
+Workflow : `dev` → `feature/x` → PR → CI verte → merge `dev` → quand stable, PR `dev` → `main`.
+
+### CI (`.github/workflows/ci.yml`)
+
+Déclenchée sur push/PR vers `main` et `dev`. Deux jobs en parallèle :
+- **backend** : service PostgreSQL 16 → `prisma generate` → `prisma migrate deploy` → `tsc --noEmit` → `npm run build`
+- **frontend** : `npm run lint` → `tsc -b` → `npm run build`
 
 ## Architecture backend
 
 ```
 backend/
 ├── prisma/
-│   ├── schema.prisma        # Source of truth pour le modèle de données
-│   ├── migrations/
-│   └── seed.ts              # Catégories en dur (pas de table dédiée)
+│   ├── schema.prisma         # Source of truth
+│   ├── migrations/           # Migrations SQL
+│   └── seed.ts               # Catégories informatives
 ├── src/
-│   ├── app.ts               # Config Express (cors, json, cookieParser, routes)
-│   ├── server.ts            # Point d'entrée (listen)
-│   ├── controllers/         # Logique métier par domaine
-│   │   ├── auth.ts          # register, login, refreshToken, getMe
-│   │   ├── google-auth.ts   # Google OAuth callback
-│   │   ├── communities.ts   # CRUD communautés + join + remove member
-│   │   ├── equipment.ts     # CRUD matériel (scoped à la communauté)
-│   │   └── artisans.ts      # CRUD artisans + reviews
+│   ├── app.ts                # Express (cors, json, cookieParser, routes, static uploads)
+│   ├── server.ts             # HTTP + Socket.io + listen
+│   ├── socket.ts             # Socket.io : auth JWT, send/typing/read/online
+│   ├── controllers/
+│   │   ├── auth.ts           # register/login/refresh/me
+│   │   ├── google-auth.ts    # Google OAuth callback
+│   │   ├── communities.ts    # CRUD communautés
+│   │   ├── equipment.ts      # CRUD matériel
+│   │   ├── artisans.ts       # CRUD artisans + reviews
+│   │   ├── reviewReplies.ts  # Réponses artisan aux avis
+│   │   ├── claim.ts          # Revendication fiche artisan (token email)
+│   │   ├── messages.ts       # Conversations, messages (cursor), replies
+│   │   ├── feed.ts           # Flux d'activité communauté
+│   │   ├── invitations.ts    # Liens d'invitation
+│   │   ├── contact.ts        # Formulaire contact site
+│   │   ├── pages.ts          # Pages statiques éditables (site admin)
+│   │   └── opengraph.ts      # Aperçus de liens externes
 │   ├── middlewares/
-│   │   ├── authenticate.ts  # Vérifie le JWT, injecte req.userId
-│   │   ├── requireMember.ts # Vérifie l'appartenance à la communauté, injecte req.communityRole
-│   │   └── errorHandler.ts  # Middleware d'erreur global (AppError)
-│   ├── routes/              # Déclaration des routes Express
-│   │   ├── auth.ts
-│   │   ├── users.ts
-│   │   ├── communities.ts
-│   │   ├── equipment.ts
-│   │   └── artisans.ts
+│   │   ├── authenticate.ts   # JWT → req.userId
+│   │   ├── requireMember.ts  # Membership → req.communityRole
+│   │   ├── requireSiteAdmin.ts
+│   │   └── errorHandler.ts   # AppError + Zod
+│   ├── routes/               # auth, users, communities, equipment, artisans, messages, feed, invitations, contact, pages, opengraph
 │   └── utils/
-│       ├── jwt.ts           # generateAccessToken, generateRefreshToken, verify*
-│       └── prisma.ts        # Instance Prisma singleton
-└── generated/prisma/        # Client Prisma généré (gitignored)
+│       ├── jwt.ts            # generate/verify access & refresh
+│       ├── prisma.ts         # Instance singleton (../generated/prisma)
+│       └── upload.ts         # Multer + Sharp resize
+└── generated/prisma/         # Client Prisma généré (gitignored)
 ```
 
 ## Architecture frontend
 
 ```
 frontend/
-├── index.html               # Plus Jakarta Sans (Google Fonts) + script anti-flash dark mode
+├── index.html                # Plus Jakarta Sans + script anti-flash dark mode
 ├── src/
-│   ├── App.tsx              # Routes principales (BrowserRouter)
-│   ├── main.tsx             # Point d'entrée React
-│   ├── index.css            # Design system complet (CSS variables, @theme, :root/.dark)
+│   ├── main.tsx
+│   ├── App.tsx               # Routes (i18n prefix, layouts)
+│   ├── index.css             # Design system : @theme, :root, .dark (CSS vars)
+│   ├── i18n.ts               # react-i18next init
+│   ├── layouts/
+│   │   ├── PublicLayout.tsx  # Landing / pages marketing / pages publiques artisans
+│   │   ├── AuthLayout.tsx    # Login / Register
+│   │   └── AppLayout.tsx     # App authentifiée (header + drawer)
 │   ├── lib/
-│   │   ├── api.ts           # Wrapper fetch avec auth auto (Bearer token, refresh auto, redirect 401)
-│   │   └── socket.ts        # Client Socket.io
+│   │   ├── api.ts            # fetch wrapper + refresh auto sur 401
+│   │   └── socket.ts         # Client Socket.io
 │   ├── hooks/
-│   │   └── useTheme.ts      # Dark mode hook (system pref + toggle manuel)
+│   │   ├── useTheme.ts       # Dark mode
+│   │   └── useLocalizedNavigate.ts
 │   ├── contexts/
-│   │   └── AuthContext.tsx   # Provider auth global (user, login, register, logout)
+│   │   └── AuthContext.tsx
 │   ├── components/
-│   │   ├── Layout.tsx       # Header + Outlet (nav: Communautés, Messages, Profil, Logout)
-│   │   ├── MobileDrawer.tsx # Navigation mobile (burger menu)
-│   │   ├── ProtectedRoute.tsx # Redirect vers /login si pas connecté
-│   │   ├── StarRating.tsx   # Composant étoiles (display + input)
-│   │   ├── FeedList.tsx     # Flux d'activité communauté
-│   │   └── LinkPreview.tsx  # Aperçu lien URL (pour sites artisans)
-│   └── pages/
-│       ├── Login.tsx
-│       ├── Register.tsx
-│       ├── Communities.tsx   # Liste mes communautés + modals Créer/Rejoindre + AccessCodeBadge
-│       ├── CommunityDetail.tsx # Hub communauté (cards matériel/artisans/membres + feed)
-│       ├── CommunityAdmin.tsx  # Administration communauté (infos, code, invitations, membres, danger zone)
-│       ├── Equipment.tsx     # Liste matériel + filtre catégorie + formulaire ajout
-│       ├── EquipmentDetail.tsx # Fiche matériel + bouton contact
-│       ├── Artisans.tsx      # Liste artisans + filtre catégorie + formulaire ajout
-│       ├── ArtisanDetail.tsx # Fiche artisan + avis + claim + réponses + profil edit
-│       ├── ArtisanPublicProfile.tsx # Fiche artisan publique (sans auth)
-│       ├── Members.tsx       # Liste membres communauté + recherche
-│       ├── Messages.tsx      # Messagerie temps réel (liste conversations + chat)
-│       ├── Profile.tsx       # Mon profil (édition nom/prénom + mes communautés)
-│       ├── UserProfile.tsx   # Profil public d'un membre
-│       ├── InvitationLanding.tsx # Page d'invitation (lien partagé)
-│       └── VerifyClaim.tsx   # Vérification claim artisan
-└── public/
-    ├── favicon.svg
-    └── icons.svg
+│   │   ├── LanguageRouter.tsx  # Parse /:lang/ prefix
+│   │   ├── LocalizedLink.tsx   # <Link> qui préserve la langue
+│   │   ├── LanguageSelector.tsx
+│   │   ├── SEO.tsx             # react-helmet-async wrapper
+│   │   ├── Avatar.tsx
+│   │   ├── StarRating.tsx
+│   │   ├── FeedList.tsx
+│   │   ├── LinkPreview.tsx
+│   │   ├── MobileDrawer.tsx
+│   │   └── ProtectedRoute.tsx
+│   ├── pages/
+│   │   ├── public/            # Landing, Features, Pricing, About, Legal, Terms, Contact, NotFound
+│   │   ├── Login.tsx / Register.tsx
+│   │   ├── Communities.tsx / CommunityDetail.tsx / CommunityAdmin.tsx
+│   │   ├── Equipment.tsx / EquipmentDetail.tsx
+│   │   ├── Artisans.tsx / ArtisanDetail.tsx / ArtisanPublicProfile.tsx
+│   │   ├── Members.tsx / UserProfile.tsx / Profile.tsx
+│   │   ├── Messages.tsx       # Temps réel, reply/quote
+│   │   ├── InvitationLanding.tsx / VerifyClaim.tsx
+│   │   └── SiteAdmin.tsx      # Admin global (pages, contact messages)
+│   └── locales/
+│       ├── fr/{common,app}.json
+│       └── en/{common,app}.json
+└── public/                    # favicon, icons, manifest
 ```
 
-## Modèle de données
+## Modèle de données (Prisma)
 
-### Entités principales
-- **User** : email, password (nullable si Google), firstName, lastName, photo, googleId
-- **Community** : name, description, accessCode (unique), createdById
-- **CommunityMember** : userId + communityId (clé composite), role (ADMIN | MEMBER)
-- **Equipment** : name, description, category (string libre), photos (String[]), ownerId, communityId
-- **Artisan** : name, company, category, zone, phone, email, createdById, communityId
-- **Review** : rating (1-5), comment, visibility (PUBLIC | COMMUNITY), artisanId, authorId
-- **ReviewMedia** : url, type (IMAGE | VIDEO), reviewId
-- **ArtisanReply** : réponse artisan à un avis (si fiche claimed)
-- **ArtisanCommunity** : table de jonction artisan↔communauté (multi-communauté)
-- **Activity** : flux d'activité par communauté
-- **Invitation** : liens d'invitation avec expiration et max uses
-- **Conversation / Message** : messagerie temps réel entre membres
-
-### Relations clés
-- Un User peut être membre de plusieurs Communities (many-to-many via CommunityMember)
-- Equipment est scopé à une Community, Artisan peut être partagé entre communautés (via ArtisanCommunity)
-- Reviews sont liées à un Artisan et un auteur User
-- Le créateur d'une Community est automatiquement ADMIN
-- Les artisans peuvent revendiquer leur fiche (claimed) pour enrichir leur profil et répondre aux avis
+| Modèle | Champs clés | Notes |
+|---|---|---|
+| **User** | email, password?, firstName, lastName, photo?, googleId?, bio?, isSiteAdmin | password nullable (Google OAuth) |
+| **Community** | name, description, accessCode (unique), createdById | Code auto-généré, régénérable |
+| **CommunityMember** | userId + communityId (composite), role (ADMIN \| MEMBER) | Créateur = ADMIN auto |
+| **Invitation** | token, communityId, expiresAt, maxUses, usedCount, revoked | Liens partagés |
+| **Equipment** | name, description, category, photos[], ownerId, communityId | Scoped à une communauté |
+| **EquipmentPhoto** | url, equipmentId | Multi-photos |
+| **Artisan** | name, company?, category, zone?, phone?, email?, website?, bio?, certifications[], hours?, claimed | Multi-communauté via jonction |
+| **ArtisanCommunity** | artisanId + communityId | Partage entre communautés |
+| **ArtisanPhoto** | url, artisanId | Galerie profil |
+| **ArtisanClaim** | artisanId, token, expiresAt, email | Vérification par email |
+| **Review** | rating (1-5), comment, visibility (PUBLIC \| COMMUNITY), artisanId, authorId | Visibility = avis, pas artisan |
+| **ReviewMedia** | url, type (IMAGE \| VIDEO), reviewId, createdAt | |
+| **ArtisanReply** | content, reviewId | Réponse artisan (si claimed) |
+| **Activity** | type, actorId, communityId, payload JSON | Flux communauté |
+| **Conversation** | participant1Id, participant2Id, communityId | Unique triple, participants normalisés (a<b) |
+| **Message** | content, status (SENT/DELIVERED/READ), senderId, conversationId, **replyToId?** | Self-relation `MessageReply` |
+| **ContactMessage** | name, email, message, read | Formulaire site |
+| **SitePage** | slug, titleFr, titleEn, contentFr, contentEn | Pages statiques éditables |
 
 ## Routes API
 
-### Auth (`/api/auth`)
-- `POST /register` — inscription email
-- `POST /login` — connexion email → { user, accessToken, refreshToken }
-- `POST /refresh` — renouveler l'access token
-- `GET /me` — profil connecté (protégé)
-- `POST /google` — callback Google OAuth
+Markers : `[public]` aucune auth, `[auth]` JWT requis, `[member]` + `requireMember`, `[admin]` ADMIN de la communauté, `[siteAdmin]` isSiteAdmin user.
 
-### Communities (`/api/communities`) — toutes protégées
-- `POST /` — créer une communauté (code auto-généré)
-- `POST /join` — rejoindre avec un code d'accès
-- `GET /` — mes communautés
-- `GET /:id` — détail (avec membres, counts)
-- `PATCH /:id` — modifier (admin only)
-- `DELETE /:id/members/:userId` — retirer un membre (admin only)
+### Auth — `/api/auth`
+- `POST /register` `[public]` — inscription email
+- `POST /login` `[public]` — → `{ user, accessToken, refreshToken }`
+- `POST /refresh` `[public]` — renouveler l'access token
+- `GET /me` `[auth]` — profil courant
+- `GET /google` + `GET /google/callback` `[public]` — OAuth flow
 
-### Equipment (`/api/equipment`) — toutes protégées
-- `POST /community/:communityId` — ajouter (requireMember)
-- `GET /community/:communityId` — lister (filtrable par `?category=`)
-- `GET /:id` — détail
-- `PATCH /:id` — modifier (proprio ou admin)
-- `DELETE /:id` — supprimer (proprio ou admin)
+### Users — `/api/users`
+- `PATCH /me` `[auth]` — éditer nom/prénom/bio/photo
+- `GET /:id/profile` `[auth]` — profil public d'un membre
 
-### Artisans (`/api/artisans`) — toutes protégées
-- `POST /community/:communityId` — ajouter (requireMember)
-- `GET /community/:communityId` — lister (filtrable par `?category=`)
-- `GET /:id` — détail (avec reviews)
-- `GET /:id/public` — fiche publique (sans auth)
-- `PATCH /:id` — modifier
-- `DELETE /:id` — supprimer (créateur ou admin)
-- `POST /:id/reviews` — poster un avis
-- `GET /:id/reviews` — lister les avis
-- `POST /:id/claim` — revendiquer une fiche artisan
-- `POST /:id/verify-claim` — vérifier le claim (token email)
-- `POST /:id/reviews/:reviewId/reply` — répondre à un avis (artisan claimed)
+### Communities — `/api/communities`
+- `POST /` `[auth]` — créer (code auto)
+- `POST /join` `[auth]` — rejoindre via code
+- `GET /` `[auth]` — mes communautés
+- `GET /:id` `[member]` — détail + membres
+- `PATCH /:id` `[admin]` — renommer
+- `DELETE /:id` `[admin]` — supprimer définitivement
+- `POST /:id/regenerate-code` `[admin]`
+- `DELETE /:id/members/:userId` `[admin]`
 
-### Conversations (`/api/conversations`) — toutes protégées
-- `POST /` — créer une conversation
-- `GET /` — lister mes conversations
-- `GET /:id/messages` — lister les messages (cursor-based)
-- `POST /:id/messages` — envoyer un message (fallback REST)
+### Equipment — `/api/equipment`
+- `POST /community/:communityId` `[member]` — ajouter (multipart photos)
+- `GET /community/:communityId` `[member]` — liste (`?category=` filter)
+- `GET /:id` `[member]` — détail
+- `PATCH /:id` `[auth]` — proprio ou admin
+- `DELETE /:id` `[auth]` — proprio ou admin
 
-### Invitations (`/api/invite`)
-- `GET /:token` — info invitation (public)
-- `POST /:token/join` — rejoindre via invitation (protégé)
+### Artisans — `/api/artisans`
+- `POST /community/:communityId` `[member]`
+- `GET /community/:communityId` `[member]` — `?category=` filter
+- `GET /:id` `[member]` — détail + avis
+- `GET /:id/public` `[public]` — fiche publique
+- `PATCH /:id` `[auth]` — créateur / admin / artisan claimed
+- `DELETE /:id` `[auth]`
+- `POST /:id/reviews` `[member]` — poster avis (+ photos)
+- `GET /:id/reviews` `[member]`
+- `POST /:id/claim` `[auth]` — revendiquer → email token
+- `POST /:id/verify-claim` `[public]` — valider le token
+- `POST /:id/reviews/:reviewId/reply` `[auth]` — artisan claimed
 
-### Users (`/api/users`) — toutes protégées
-- `PATCH /me` — modifier mon profil
-- `GET /:id/profile` — profil public d'un membre
+### Messages — `/api/conversations`
+- `GET /` `[auth]` — mes conversations (avec unread + online)
+- `POST /` `[auth]` — créer (body : recipientId, communityId)
+- `GET /:id/messages` `[auth]` — cursor-based, `?cursor=` `?limit=`. Inclut `replyTo { id, content, sender }`. Marque aussi les reçus comme lus.
+- `POST /:id/messages` `[auth]` — fallback REST avec `{ content, replyToId? }`
+
+**Socket.io** events (auth JWT via `handshake.auth.token`) :
+- `send_message` `{ conversationId, content, replyToId? }`
+- `mark_read` `{ conversationId }`
+- `typing` `{ conversationId }`
+- Émissions serveur : `new_message`, `message_sent`, `messages_read`, `conversation_read`, `user_typing`, `user_online`, `user_offline`
+
+### Feed — `/api/feed`
+- `GET /community/:id` `[member]` — flux cursor-based
+
+### Invitations — `/api/invite`
+- `POST /community/:id` `[admin]` — générer un lien
+- `GET /community/:id` `[admin]` — lister
+- `DELETE /:token` `[admin]` — révoquer
+- `GET /:token` `[public]` — info invitation
+- `POST /:token/join` `[auth]` — rejoindre via lien
+
+### Contact — `/api/contact`
+- `POST /` `[public]` — message depuis formulaire
+- `GET /` `[siteAdmin]` — liste
+- `PATCH /:id/read` `[siteAdmin]`
+
+### Pages — `/api/pages`
+- `GET /:slug` `[public]` — contenu localisé
+- `PATCH /:slug` `[siteAdmin]`
+
+### OpenGraph — `/api/opengraph`
+- `GET /?url=` `[auth]` — preview lien (pour sites d'artisans)
 
 ## Catégories (hardcoded)
 
-### Matériel
-Jardinage, Bricolage, Nettoyage, Électroportatif, Échelles & échafaudages, Automobile, Déménagement, Cuisine / Réception
+**Matériel** : Jardinage, Bricolage, Nettoyage, Électroportatif, Échelles & échafaudages, Automobile, Déménagement, Cuisine / Réception
 
-### Artisans
-Plomberie, Électricité, Maçonnerie, Peinture, Menuiserie, Paysagisme, Couverture / Toiture, Serrurerie, Chauffage / Climatisation, Nettoyage
+**Artisans** : Plomberie, Électricité, Maçonnerie, Peinture, Menuiserie, Paysagisme, Couverture / Toiture, Serrurerie, Chauffage / Climatisation, Nettoyage
+
+Les catégories sont des strings libres en DB, définies en dur côté frontend (i18n keys `equipment.categories.*` et `artisans.categories.*`). Le seed est informatif uniquement.
 
 ## Patterns & conventions
 
-- **Tokens** : stockés en localStorage (accessToken + refreshToken). Le wrapper `api()` gère le refresh auto sur 401.
-- **Erreurs backend** : classe `AppError` avec statusCode, attrapée par `errorHandler`. Les erreurs Zod renvoient 400 avec le premier message.
-- **Membership check** : le middleware `requireMember()` vérifie l'appartenance ET injecte `req.communityRole` pour les checks admin downstream.
-- **Prisma output** : le client est généré dans `backend/generated/prisma/` (pas dans node_modules).
-- **CSS / Design system** : Tailwind v4 via le plugin Vite. Toutes les couleurs sont définies comme CSS variables dans `index.css` (`:root` pour light, `.dark` pour dark). Les composants utilisent `bg-[var(--color-card)]`, `text-[var(--color-text-primary)]`, etc. — **jamais** de classes `dark:*` dans les `.tsx`. Les couleurs `primary-*`, `accent-*`, `warm-*` sont déclarées dans `@theme` pour générer les utility classes Tailwind, et overridées dans `.dark`. Typographie : Plus Jakarta Sans via Google Fonts.
-- **Modals** : pattern overlay `fixed inset-0 bg-[var(--color-overlay)]` + `stopPropagation` sur le form intérieur.
-- **Pas de table catégories** : les catégories sont des strings libres côté DB, définies en dur côté frontend. Le seed est informatif uniquement.
-- **Icons** : Lucide React, toujours avec `strokeWidth={1.5}`.
+- **Tokens** : `accessToken` + `refreshToken` en localStorage. `api()` refresh auto sur 401.
+- **Erreurs backend** : `AppError(statusCode, message)` interceptée par `errorHandler`. Zod → 400 avec `.issues[0].message`.
+- **Membership** : `requireMember()` injecte `req.communityRole` pour les checks admin downstream.
+- **i18n** : URLs `/:lang/...` (`fr` par défaut). Utiliser `<LocalizedLink>` et `useLocalizedNavigate()`, jamais `<Link>` direct. Clés dans `locales/{fr,en}/{common,app}.json`.
+- **SEO** : chaque page publique utilise `<SEO titleKey descriptionKey />`, via `react-helmet-async`.
+- **Modals** : overlay `fixed inset-0 bg-[var(--color-overlay)]` + `stopPropagation` sur le form.
+- **Upload** : multipart → Multer → Sharp resize → `backend/uploads/` (servi par Express static).
+- **Message reply/quote** : `replyToId` nullable self-relation. Le front stocke un objet `MessageReplyRef` et affiche un bloc cité avec border-left coloré dans la bulle. Bandeau de reply au-dessus de l'input avec bouton X.
 
-## Ce qui reste à faire (V1)
+## Design system
 
-### Phase 5 — Feed & Profil (partiellement complétée)
-- [x] Route GET `/api/communities/:id/feed` (cursor-based)
-- [x] Page feed = page d'accueil communauté
-- [x] Page profil public (UserProfile)
-- [ ] Page profil éditable (photo upload reste à faire)
+Tailwind v4 via plugin Vite. Toutes les couleurs sont des **CSS variables** définies dans `index.css` :
+- `@theme` déclare `primary-*`, `accent-*`, `warm-*` (utilities Tailwind)
+- `:root` définit les tokens pour light mode
+- `.dark` override pour dark mode
 
-### Phase 6 — Upload médias & Polish
-- [ ] Brancher Minio (ou stockage local en dev) pour l'upload de photos
-- [ ] Upload photos matériel (formulaire + backend multipart)
-- [ ] Upload photos/vidéos avis artisans
-- [ ] Upload photo de profil
-- [ ] Resize avec Sharp avant stockage
-- [ ] PWA : manifest + service worker
-- [ ] Responsive polish (vérification mobile complète)
-- [ ] Page 404
+Les composants utilisent `bg-[var(--color-card)]`, `text-[var(--color-text-primary)]`, etc. **Jamais** de `dark:*`, `#fff`, `#000`, `bg-white`, `text-white`, `bg-black`, `text-black`, `slate-*`, `gray-*`.
 
-### V1.1 — Backlog
-- Recherche full-text (matériel + artisans)
-- Multi-communautés UX (switcher rapide)
-- Abonnements (limites par nombre de membres)
-- Modération (signalement faux avis)
-- Notifications push
+Border-radius tokens : `rounded-[var(--radius-card)]` (14px), `rounded-[var(--radius-button)]` (10px), `rounded-[var(--radius-pill)]` (24px), `rounded-[var(--radius-input)]` (8px).
+
+Typographie : Plus Jakarta Sans via Google Fonts (index.html).
+
+## Features par bloc
+
+- **Bloc 0** ✅ — Setup monorepo, Prisma, auth JWT + Google, CI
+- **Bloc 1** ✅ — Communautés (CRUD, codes, invitations, admin, danger zone)
+- **Bloc 2** ✅ — Matériel (CRUD + photos + catégories)
+- **Bloc 3** ✅ — Artisans (CRUD + avis + claim + réponses + profil éditable + fiche publique)
+- **Bloc 4** ✅ — Messagerie temps réel (Socket.io + REST fallback + typing + online + unread + reply/quote)
+- **Bloc 5** ✅ — Feed communauté, profil utilisateur, i18n FR/EN, SEO, 404, landing public, site admin
 
 ## Commandes
 
@@ -280,52 +284,66 @@ Plomberie, Électricité, Maçonnerie, Peinture, Menuiserie, Paysagisme, Couvert
 # Backend
 cd backend
 npm install
-cp .env.example .env  # Configurer DATABASE_URL, JWT_SECRET, etc.
+cp .env.example .env
 npx prisma generate
 npx prisma migrate dev
-npm run dev            # tsx watch src/server.ts → port 3001
+npm run dev                  # tsx watch → :3001
 
 # Frontend
 cd frontend
 npm install
-npm run dev            # Vite → port 5173
+npm run dev                  # Vite → :5173
 
 # Database
-npx prisma studio     # GUI de la DB
-npx prisma migrate dev --name <nom>  # Nouvelle migration
+npx prisma studio
+npx prisma migrate dev --name <nom>
 
-# Deploy (serveur de prod)
-./scripts/setup-db.sh              # Premier setup DB uniquement
-./scripts/deploy.sh                # Déploiement complet
-pm2 logs lecabanon-api             # Voir les logs
+# Si la shadow DB est bloquée (P3014, droit refusé) :
+# 1. Créer manuellement backend/prisma/migrations/<ts>_<nom>/migration.sql
+# 2. psql $DATABASE_URL -f migration.sql
+# 3. INSERT dans _prisma_migrations (id, checksum, migration_name, started_at, finished_at, applied_steps_count)
+# 4. npx prisma generate
 
-# Git workflow
+# Deploy
+./scripts/setup-db.sh        # Premier setup
+./scripts/deploy.sh          # Déploiement complet
+pm2 logs lecabanon-api
+pm2 restart lecabanon-api
+
+# Git
 git checkout dev
 git checkout -b feature/<nom>
-# ... développer ...
 git push origin feature/<nom>
-# Ouvrir PR → dev
-# Quand dev stable : PR dev → main
 ```
 
-## Notes pour Claude Code
+## Comptes de test (seed)
 
-- Toujours utiliser les imports avec `.js` extension dans le backend (ESM)
-- Le client Prisma est dans `../generated/prisma` (pas le default)
-- Les catégories ne sont PAS en base, c'est du string libre — toute modification de catégorie doit être faite en dur dans le frontend ET dans le seed
-- Express 5 est utilisé (pas Express 4) — les handlers async propagent automatiquement les erreurs au error handler
-- Tailwind v4 avec le plugin Vite, pas de fichier `tailwind.config.js`. Les couleurs sont dans `@theme` (index.css), pas dans un config
-- **Ne jamais utiliser de classes `dark:*` dans les `.tsx`** — le dark mode fonctionne via CSS variables overridées dans `.dark` (index.css)
-- **Ne jamais utiliser `#fff`, `#000`, `bg-white`, `text-white`, `bg-black`, `text-black`** — utiliser `var(--color-page)`, `var(--color-card)`, etc.
-- **Ne jamais utiliser `slate-*`, `gray-*`** dans les composants — utiliser les CSS variables `var(--color-text-*)`, `var(--color-border-*)`, etc.
-- Pour les éléments sur fond `bg-primary-600`, utiliser `text-[var(--color-page)]` au lieu de `text-white`
-- Les border-radius utilisent des tokens : `rounded-[var(--radius-card)]` (14px), `rounded-[var(--radius-button)]` (10px), `rounded-[var(--radius-pill)]` (24px), `rounded-[var(--radius-input)]` (8px)
-- React Router v7 (pas v6) — les APIs peuvent différer
-- Le toggle de visibilité des avis (PUBLIC/PRIVATE) concerne l'avis, pas l'artisan
-- L'avis "privé" est visible uniquement par les membres de la communauté (pas uniquement l'auteur malgré ce que dit le label actuel côté front — à corriger)
-- Zod v4 utilise `.issues` (pas `.errors`) pour accéder aux erreurs de validation
-- Toujours brancher depuis `dev`, jamais directement depuis `main`
-- Les PRs vers `main` doivent passer la CI (jobs backend + frontend)
+Mot de passe commun : `Test1234!`
+
+| Email | Rôle |
+|---|---|
+| `felix@lecabanon.fr` | Admin des 3 communautés |
+| `sophie.bertrand@email.fr` | Membre |
+| `karim@kb-elec.fr` | Artisan (fiche claimed) |
+| `jp.dumont@email.fr` | Membre |
+
+**Codes d'accès des communautés seed** : `GUILLON24` (Avenue Guillon), `BELLVUE24` (Belle Vue), `TILLEUL24` (Les Tilleuls).
+
+## Gotchas pour Claude Code
+
+- Backend ESM → imports TOUJOURS avec extension `.js` (`import { x } from "./foo.js"`)
+- Client Prisma dans `backend/generated/prisma/`, pas `node_modules/@prisma/client`
+- Express 5 → les handlers async propagent automatiquement les erreurs
+- Catégories = strings libres en DB, en dur côté front → modifier aux deux endroits
+- Zod v4 → `.issues`, pas `.errors`
+- React Router v7, pas v6 (APIs subtilement différentes)
+- i18n : toute nouvelle route doit passer par `LanguageRouter` et utiliser `LocalizedLink`
+- Le logo de `AppLayout` pointe vers `/` (landing publique), pas `/app`
+- Dark mode : CSS variables uniquement, jamais `dark:*`
+- Pas de `#fff`, `#000`, `bg-white`, `text-white`, `slate-*`, `gray-*` dans les `.tsx`
+- Sur fond `bg-primary-600` utiliser `text-[var(--color-page)]`
+- L'avis visibility `COMMUNITY` = visible par les membres des communautés de l'auteur (pas uniquement l'auteur)
+- Prod : port `:3002`, domaine `https://lecabanon.fr`, pm2 name `lecabanon-api`
+- Uploads stockés en local dans `backend/uploads/` (Minio prévu mais pas branché)
+- Shadow DB Prisma peut échouer en local (P3014) → voir workaround dans Commandes
 - Ne jamais push directement sur `main`
-- En production, le frontend est servi par Express (pas de serveur Vite séparé). Le port est 3002.
-- Les logs pm2 sont dans `logs/` (gitignored)

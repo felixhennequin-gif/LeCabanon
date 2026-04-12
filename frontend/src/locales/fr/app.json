@@ -167,7 +167,9 @@
     "equipment_context": "À propos de <strong>{{name}}</strong>",
     "equipment_context_label": "À propos de :",
     "equipment_prefill": "Bonjour, je vous contacte à propos de : {{name}}\n",
-    "send_message_title": "Envoyer un message"
+    "send_message_title": "Envoyer un message",
+    "reply_to": "En réponse à {{name}}",
+    "cancel_reply": "Annuler la réponse"
   },
   "members": {
     "title": "Membres \u2014 {{name}}",

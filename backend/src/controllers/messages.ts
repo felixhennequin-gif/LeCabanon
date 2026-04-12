@@ -71,7 +71,16 @@ export async function getMessages(req: Request, res: Response, next: NextFunctio
       orderBy: { createdAt: "desc" },
       take: limit + 1,
       ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
-      include: { sender: { select: { id: true, firstName: true, lastName: true, photo: true } } },
+      include: {
+        sender: { select: { id: true, firstName: true, lastName: true, photo: true } },
+        replyTo: {
+          select: {
+            id: true,
+            content: true,
+            sender: { select: { id: true, firstName: true, lastName: true } },
+          },
+        },
+      },
     });
 
     const hasMore = messages.length > limit;
@@ -145,6 +154,7 @@ export async function createConversation(req: Request, res: Response, next: Next
 
 const sendMessageSchema = z.object({
   content: z.string().min(1, "Message requis").max(5000),
+  replyToId: z.string().optional(),
 });
 
 export async function sendMessage(req: Request, res: Response, next: NextFunction) {
@@ -161,8 +171,22 @@ export async function sendMessage(req: Request, res: Response, next: NextFunctio
 
     const [message] = await prisma.$transaction([
       prisma.message.create({
-        data: { content: data.content, senderId: userId, conversationId },
-        include: { sender: { select: { id: true, firstName: true, lastName: true, photo: true } } },
+        data: {
+          content: data.content,
+          senderId: userId,
+          conversationId,
+          replyToId: data.replyToId ?? null,
+        },
+        include: {
+          sender: { select: { id: true, firstName: true, lastName: true, photo: true } },
+          replyTo: {
+            select: {
+              id: true,
+              content: true,
+              sender: { select: { id: true, firstName: true, lastName: true } },
+            },
+          },
+        },
       }),
       prisma.conversation.update({ where: { id: conversationId }, data: { updatedAt: new Date() } }),
     ]);

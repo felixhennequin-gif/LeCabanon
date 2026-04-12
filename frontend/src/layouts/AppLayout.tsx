@@ -60,7 +60,7 @@ export function AppLayout() {
     <div className="min-h-screen flex flex-col">
       <header className="bg-[var(--color-card)] border-b border-[var(--color-border)] sticky top-0 z-50">
         <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
-          <LocalizedLink to="/app" className="flex items-center gap-2 text-primary-600 font-bold text-xl no-underline">
+          <LocalizedLink to="/" className="flex items-center gap-2 text-primary-600 font-bold text-xl no-underline">
             <Warehouse className="w-6 h-6" strokeWidth={1.5} />
             LeCabanon
           </LocalizedLink>
