@@ -60,5 +60,33 @@
   },
   "time": {
     "yesterday": "Hier"
+  },
+  "contact": {
+    "name": "Votre nom",
+    "name_placeholder": "Jean Dupont",
+    "email": "Votre adresse email",
+    "email_placeholder": "jean@exemple.fr",
+    "message": "Votre message",
+    "message_placeholder": "Décrivez votre question ou suggestion...",
+    "submit": "Envoyer",
+    "success": "Votre message a été envoyé. Nous reviendrons vers vous rapidement.",
+    "error": "Une erreur est survenue. Veuillez réessayer."
+  },
+  "admin_site": {
+    "pages": {
+      "title": "Pages du site",
+      "edit": "Modifier la page",
+      "content": "Contenu HTML",
+      "preview": "Aperçu",
+      "save": "Enregistrer",
+      "saved": "Page enregistrée avec succès."
+    },
+    "contact_messages": {
+      "title": "Messages de contact",
+      "no_messages": "Aucun message.",
+      "mark_read": "Marquer comme lu",
+      "unread": "Non lu",
+      "read": "Lu"
+    }
   }
 }
