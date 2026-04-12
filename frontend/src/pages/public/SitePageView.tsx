@@ -13,22 +13,38 @@ export function SitePageView({ slug: slugProp }: { slug?: string }) {
   const params = useParams<{ slug: string }>();
   const slug = slugProp || params.slug;
 
-  const [page, setPage] = useState<SitePageData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+  const [state, setState] = useState<{
+    slug: string | undefined;
+    page: SitePageData | null;
+    loading: boolean;
+    error: boolean;
+  }>({ slug, page: null, loading: true, error: false });
+
+  if (state.slug !== slug) {
+    setState({ slug, page: null, loading: true, error: false });
+  }
+
+  const { page, loading, error } = state;
 
   useEffect(() => {
     if (!slug) return;
-    setLoading(true);
-    setError(false);
+    let cancelled = false;
     fetch(`/api/pages/${slug}`)
       .then((res) => {
         if (!res.ok) throw new Error("Not found");
         return res.json();
       })
-      .then((data) => setPage(data))
-      .catch(() => setError(true))
-      .finally(() => setLoading(false));
+      .then((data) => {
+        if (!cancelled)
+          setState({ slug, page: data, loading: false, error: false });
+      })
+      .catch(() => {
+        if (!cancelled)
+          setState({ slug, page: null, loading: false, error: true });
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [slug]);
 
   if (loading) {
